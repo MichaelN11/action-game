@@ -1,7 +1,8 @@
 #include <algorithm>
 #include "game.h"
 #include "graphics.h"
-#include "SDL.h"
+
+#include "tilesheet.h"
 
 #include <iostream>
 
@@ -9,6 +10,9 @@ const int Game::RESOLUTION_WIDTH = 640;
 const int Game::RESOLUTION_HEIGHT = 480;
 const int Game::MIN_FRAMERATE = 30;
 const float Game::SPRITE_SCALE = 2.0;
+
+// TEMPORARY DELETE LATER
+const std::string filePath = "content/tilesheets/1bit.png";
 
 Game::Game()
 {
@@ -24,6 +28,8 @@ void Game::gameLoop()
 	int maxFrameTimeMS = 1000 / MIN_FRAMERATE;
 	int deltaTimeMS, currentTimeMS;
 	int lastTimeMS = SDL_GetTicks();
+
+	graphics.loadTileSheet(filePath, 16, 16, 0);
 
 	bool running = true;
 	while (running)
@@ -44,11 +50,9 @@ void Game::draw(Graphics& graphics)
 {
 	graphics.clear();
 
-	SDL_Rect sourceRect = { 0, 16, 16, 16 };
 	SDL_Rect destRect = { 100, 100, 16, 16 };
-	const std::string filePath = "content/sprites/1bit.png";
-	SDL_Texture* texture = graphics.loadImage(filePath);
-	graphics.drawImage(texture, &sourceRect, &destRect, true);
+	TileSheet* tileSheet = graphics.getTileSheet(filePath);
+	graphics.drawImage(tileSheet->getTexture(), &(tileSheet->getTileRect(1054)), &destRect, true);
 
 	graphics.display();
 }
