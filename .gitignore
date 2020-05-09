@@ -34,3 +34,6 @@
 # Visual Studio
 *.vcxproj*
 Debug/*
+
+# Resources
+content/sprites/*
