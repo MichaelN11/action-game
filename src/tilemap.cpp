@@ -1,7 +1,7 @@
-#include "SDL.h"
 #include "tilemap.h"
 #include "graphics.h"
 #include "tmxparser.h"
+#include "rectangle.h"
 
 TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 {
@@ -56,14 +56,13 @@ void TileMap::draw(Graphics& graphics)
 			{
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					SDL_Rect destRect;
-					destRect.x = colNum * tileWidth * graphics.getScale();
-					destRect.y = rowNum * tileHeight * graphics.getScale();
-					destRect.w = tileWidth;
-					destRect.h = tileHeight;
+					Rectangle destRect((int)(colNum * tileWidth * graphics.getScale()),
+						(int)(rowNum * tileHeight * graphics.getScale()),
+						tileWidth,
+						tileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
-					graphics.drawImage(filePath, tile.id, &destRect, true);
+					graphics.drawImage(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, true);
 				}
 
 				colNum++;

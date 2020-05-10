@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "game.h"
 #include "graphics.h"
-
 #include "tilemap.h"
 #include "tilesheet.h"
 

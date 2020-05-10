@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include "SDL.h"
 
 /*
 	Graphics class
@@ -9,11 +10,8 @@
 */
 
 // forward declare
-struct SDL_Window;
-struct SDL_Renderer;
-struct SDL_Texture;
-struct SDL_Rect;
 class TileSheet;
+class Rectangle;
 
 class Graphics
 {
@@ -28,10 +26,11 @@ public:
 	SDL_Texture* loadImage(const std::string& filePath, int& width, int& height);
 
 	// Draws the image from the source texture or filePath, drawing the source rectangle into the destination rectangle
-	void drawImage(SDL_Texture* source, SDL_Rect* sourceRect, SDL_Rect* destinationRect, bool scaled);
-	void drawImage(const std::string &filePath, SDL_Rect* sourceRect, SDL_Rect* destinationRect, bool scaled);
+	void drawImage(SDL_Texture* source, Rectangle sourceRect, Rectangle destinationRect, bool scaled);
+	void drawImage(const std::string &filePath, Rectangle sourceRect, Rectangle destinationRect, bool scaled);
 	// Tile sheet must already be loaded
-	void drawImage(const std::string& tileSheetFilePath, int tileNum, SDL_Rect* destinationRect, bool scaled);
+	void drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool scaled);
+	void drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 
 	// Displays the renderer to the window
 	void display();
@@ -51,6 +50,11 @@ public:
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 private:
+	SDL_Rect getSDLRect(Rectangle rect);
+	void scaleRect(Rectangle& rect);
+	// convert from TMX style 3 flip flags to SDL style rotation/flipping
+	void convertRotation(float& angle, int& flip, bool flipDiagonal, bool flipHorizontal, bool flipVertical);
+
 	float spriteScale;
 	SDL_Window* window;
 	SDL_Renderer* renderer;

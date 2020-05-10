@@ -1,4 +1,7 @@
 #include "tilesheet.h"
+#include "SDL.h"
+
+#include "iostream"
 
 TileSheet::TileSheet() :
 	texture(nullptr)
@@ -13,11 +16,10 @@ TileSheet::TileSheet(SDL_Texture* texture, int width, int height, int spriteWidt
 	tileRects.reserve(totalTiles);
 	for (int i = 0; i < totalTiles; i++)
 	{
-		SDL_Rect tileRect;
-		tileRect.x = (i % widthInTiles) * (spriteWidth + spacing);
-		tileRect.y = (i / widthInTiles) * (spriteHeight + spacing);
-		tileRect.w = spriteWidth;
-		tileRect.h = spriteHeight;
+		Rectangle tileRect((i % widthInTiles) * (spriteWidth + spacing),
+			(i / widthInTiles) * (spriteHeight + spacing),
+			spriteWidth,
+			spriteHeight);
 
 		tileRects.push_back(tileRect);
 	}
@@ -28,10 +30,10 @@ SDL_Texture* TileSheet::getTexture()
 	return texture;
 }
 
-SDL_Rect TileSheet::getTileRect(size_t tileNum) const
+Rectangle TileSheet::getTileRect(size_t tileNum) const
 {
 	if (tileNum > 0 && tileNum <= tileRects.size())
 		return tileRects[tileNum - 1];
 	else
-		return SDL_Rect({ 0, 0, 0, 0 });
+		return Rectangle( 0, 0, 0, 0 );
 }
