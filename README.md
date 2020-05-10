@@ -3,3 +3,4 @@
 SDL2
 SDL2_image
 KenneyNL
+tinyxml2

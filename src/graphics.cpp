@@ -51,6 +51,12 @@ void Graphics::drawImage(const std::string& filePath, SDL_Rect* sourceRect, SDL_
 	drawImage(texture, sourceRect, destinationRect, scaled);
 }
 
+void Graphics::drawImage(const std::string& tileSheetFilePath, int tileNum, SDL_Rect* destinationRect, bool scaled)
+{
+	TileSheet* tileSheet = getTileSheet(tileSheetFilePath);
+	drawImage(tileSheet->getTexture(), &(tileSheet->getTileRect(tileNum)), destinationRect, scaled);
+}
+
 void Graphics::display()
 {
 	SDL_RenderPresent(renderer);
@@ -75,5 +81,10 @@ TileSheet* Graphics::loadTileSheet(const std::string& filePath, int tileWidth, i
 TileSheet* Graphics::getTileSheet(const std::string& filePath)
 {
 	return &tileSheetMap[filePath];
+}
+
+float Graphics::getScale()
+{
+	return spriteScale;
 }
 

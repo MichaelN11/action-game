@@ -2,6 +2,7 @@
 #include "game.h"
 #include "graphics.h"
 
+#include "tilemap.h"
 #include "tilesheet.h"
 
 #include <iostream>
@@ -29,6 +30,8 @@ void Game::gameLoop()
 	int deltaTimeMS, currentTimeMS;
 	int lastTimeMS = SDL_GetTicks();
 
+	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
+	tileMap = &tm;
 	graphics.loadTileSheet(filePath, 16, 16, 0);
 
 	bool running = true;
@@ -50,9 +53,10 @@ void Game::draw(Graphics& graphics)
 {
 	graphics.clear();
 
-	SDL_Rect destRect = { 100, 100, 16, 16 };
+	tileMap->draw(graphics);
+	/*SDL_Rect destRect = { 100, 100, 16, 16 };
 	TileSheet* tileSheet = graphics.getTileSheet(filePath);
-	graphics.drawImage(tileSheet->getTexture(), &(tileSheet->getTileRect(1054)), &destRect, true);
+	graphics.drawImage(tileSheet->getTexture(), &(tileSheet->getTileRect(0)), &destRect, true);*/
 
 	graphics.display();
 }

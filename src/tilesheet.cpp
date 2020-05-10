@@ -1,10 +1,7 @@
 #include "tilesheet.h"
 
-// REMOVE LATER
-#include <iostream>
-
 TileSheet::TileSheet() :
-	texture(NULL)
+	texture(nullptr)
 {}
 
 TileSheet::TileSheet(SDL_Texture* texture, int width, int height, int spriteWidth, int spriteHeight, int spacing) :
@@ -24,8 +21,6 @@ TileSheet::TileSheet(SDL_Texture* texture, int width, int height, int spriteWidt
 
 		tileRects.push_back(tileRect);
 	}
-
-	std::cout << "CALLED TILESHEET CONSTRUCTOR" << std::endl;
 }
 
 SDL_Texture* TileSheet::getTexture()
@@ -33,10 +28,10 @@ SDL_Texture* TileSheet::getTexture()
 	return texture;
 }
 
-SDL_Rect TileSheet::getTileRect(int tileNum) const
+SDL_Rect TileSheet::getTileRect(size_t tileNum) const
 {
-	if (tileNum >= 0 && tileNum < tileRects.size())
-		return tileRects[tileNum];
+	if (tileNum > 0 && tileNum <= tileRects.size())
+		return tileRects[tileNum - 1];
 	else
 		return SDL_Rect({ 0, 0, 0, 0 });
 }

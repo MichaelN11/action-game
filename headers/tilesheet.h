@@ -8,7 +8,7 @@ class TileSheet
 public:
 	TileSheet(SDL_Texture* texture, int width, int height, int tileWidth, int tileHeight, int spacing);
 	SDL_Texture* getTexture();
-	SDL_Rect getTileRect(int tileNum) const;
+	SDL_Rect getTileRect(size_t tileNum) const;
 
 	TileSheet();
 private:

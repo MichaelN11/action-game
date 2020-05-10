@@ -4,6 +4,9 @@
 class Graphics;
 union SDL_Event;
 
+//temporary
+class TileMap;
+
 class Game
 {
 public:
@@ -18,4 +21,7 @@ private:
 	static const int RESOLUTION_HEIGHT;
 	static const int MIN_FRAMERATE;
 	static const float SPRITE_SCALE;
+
+	//temporary
+	TileMap* tileMap;
 };

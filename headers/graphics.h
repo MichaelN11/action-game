@@ -30,6 +30,8 @@ public:
 	// Draws the image from the source texture or filePath, drawing the source rectangle into the destination rectangle
 	void drawImage(SDL_Texture* source, SDL_Rect* sourceRect, SDL_Rect* destinationRect, bool scaled);
 	void drawImage(const std::string &filePath, SDL_Rect* sourceRect, SDL_Rect* destinationRect, bool scaled);
+	// Tile sheet must already be loaded
+	void drawImage(const std::string& tileSheetFilePath, int tileNum, SDL_Rect* destinationRect, bool scaled);
 
 	// Displays the renderer to the window
 	void display();
@@ -40,8 +42,10 @@ public:
 	// TileSheets hold the texture and a vector of rectangles containing each tile
 	// Loads tilesheet and returns it
 	TileSheet* loadTileSheet(const std::string& filePath, int tileWidth, int tileHeight, int spacing);
-	// Tries to get tilesheet and return null if not found
+	// Tries to get an already loaded tilesheet and return null if not found
 	TileSheet* getTileSheet(const std::string& filePath);
+
+	float getScale();
 
 	Graphics() = delete;
 	Graphics(const Graphics&) = delete;
