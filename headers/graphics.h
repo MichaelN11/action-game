@@ -11,7 +11,8 @@
 */
 
 // forward declare
-class TileSheet;
+class Texture;
+class Texture;
 
 class Graphics
 {
@@ -21,16 +22,17 @@ public:
 
 	// First checks the textureMap to see if the filePath texture has already been loaded,
 	// if not, loads it into the map, freeing the surface used. Returns the texture from the map.
-	SDL_Texture* loadImage(const std::string& filePath);
-	// Same but stores width and height of the surface
-	SDL_Texture* loadImage(const std::string& filePath, int& width, int& height);
+	bool loadImage(const std::string& filePath);
+	// Tilesheets hold the texture and a vector of rectangles containing each tile
+	// Stored inside the texture
+	bool loadTilesheet(const std::string& filePath, int tileWidth, int tileHeight, int tileSpacing);
 
 	// Draws the image from the source texture or filePath, drawing the source rectangle into the destination rectangle
-	void drawImage(SDL_Texture* source, Rectangle sourceRect, Rectangle destinationRect, bool scaled);
-	void drawImage(const std::string &filePath, Rectangle sourceRect, Rectangle destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, Rectangle destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, Rectangle sourceRect, Rectangle destinationRect, bool scaled);
 	// Tile sheet must already be loaded
-	void drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool scaled);
-	void drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
+	void drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 
 	// Displays the renderer to the window
 	void display();
@@ -38,12 +40,10 @@ public:
 	// Clears the renderer
 	void clear();
 
-	// TileSheets hold the texture and a vector of rectangles containing each tile
-	// Loads tilesheet and returns it
-	TileSheet* loadTileSheet(const std::string& filePath, int tileWidth, int tileHeight, int spacing);
-	// Tries to get an already loaded tilesheet and return null if not found
-	TileSheet* getTileSheet(const std::string& filePath);
-
+	// Destroys textures and removes all references
+	void unloadImage(const std::string& filePath);
+	void unloadAllImages();
+	
 	void offsetView(int xOffset, int yOffset);
 	Rectangle getView() const;
 	float getScale() const;
@@ -52,6 +52,7 @@ public:
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 private:
+	Texture* getTexture(const std::string& filePath);
 	SDL_Rect getSDLRect(Rectangle rect);
 	void scaleRect(Rectangle& rect);
 	// convert from TMX style 3 flip flags to SDL style rotation/flipping
@@ -61,6 +62,5 @@ private:
 	Rectangle view;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	std::unordered_map<std::string, SDL_Texture*> textureMap;
-	std::unordered_map<std::string, TileSheet> tileSheetMap;
+	std::unordered_map<std::string, Texture> textureMap;
 };

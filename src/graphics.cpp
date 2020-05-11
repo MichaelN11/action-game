@@ -1,6 +1,6 @@
 #include "SDL_image.h"
 #include "graphics.h"
-#include "tilesheet.h"
+#include "texture.h"
 
 Graphics::Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale) :
 	spriteScale(spriteScale),
@@ -16,61 +16,91 @@ Graphics::~Graphics()
 	SDL_DestroyWindow(window);
 }
 
-SDL_Texture* Graphics::loadImage(const std::string& filePath, int &width, int &height)
+bool Graphics::loadImage(const std::string& filePath)
 {
 	if (textureMap.count(filePath) == 0)
 	{
 		SDL_Surface* surface = IMG_Load(filePath.c_str());
-		width = surface->w;
-		height = surface->h;
-		textureMap[filePath] = SDL_CreateTextureFromSurface(renderer, surface);
-		SDL_FreeSurface(surface);
+		if (surface)
+		{
+			SDL_Texture* sdlTexture = SDL_CreateTextureFromSurface(renderer, surface);
+			textureMap.emplace(std::piecewise_construct,
+				std::forward_as_tuple(filePath),
+				std::forward_as_tuple(sdlTexture));
+			SDL_FreeSurface(surface);
+		}
 	}
-	return textureMap[filePath];
+	return (textureMap.count(filePath) > 0);
 }
 
-SDL_Texture* Graphics::loadImage(const std::string& filePath)
+bool Graphics::loadTilesheet(const std::string& filePath, int tileWidth, int tileHeight, int tileSpacing)
 {
-	int temp;
-	return loadImage(filePath, temp, temp);
-}
-
-void Graphics::drawImage(SDL_Texture* source, Rectangle sourceRect, Rectangle destinationRect, bool scaled)
-{
-	if (scaled)
+	if (textureMap.count(filePath) == 0)
 	{
-		scaleRect(destinationRect);
+		SDL_Surface* surface = IMG_Load(filePath.c_str());
+		if (surface)
+		{
+			SDL_Texture* sdlTexture = SDL_CreateTextureFromSurface(renderer, surface);
+			textureMap.emplace(std::piecewise_construct,
+				std::forward_as_tuple(filePath),
+				std::forward_as_tuple(sdlTexture, surface->w, surface->h, tileWidth, tileHeight, tileSpacing));
+			SDL_FreeSurface(surface);
+		}
 	}
-	SDL_RenderCopy(renderer, source, &getSDLRect(sourceRect), &getSDLRect(destinationRect));
+	return (textureMap.count(filePath) > 0);
+}
+
+void Graphics::drawImage(const std::string& filePath, Rectangle destinationRect, bool scaled)
+{
+	Texture* texture = getTexture(filePath);
+	if (texture)
+	{
+		if (scaled)
+			scaleRect(destinationRect);
+
+		SDL_RenderCopy(renderer, texture->getSDLTexture(), nullptr, &getSDLRect(destinationRect));
+	}
 }
 
 void Graphics::drawImage(const std::string& filePath, Rectangle sourceRect, Rectangle destinationRect, bool scaled)
 {
-	SDL_Texture* texture = loadImage(filePath);
-	drawImage(texture, sourceRect, destinationRect, scaled);
-}
-
-void Graphics::drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool scaled)
-{
-	TileSheet* tileSheet = getTileSheet(tileSheetFilePath);
-	drawImage(tileSheet->getTexture(), tileSheet->getTileRect(tileNum), destinationRect, scaled);
-}
-
-void Graphics::drawImage(const std::string& tileSheetFilePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
-{
-	TileSheet* tileSheet = getTileSheet(tileSheetFilePath);
-	
-	float angle;
-	int flip;
-
-	convertRotation(angle, flip, flipDiagonal, flipHorizontal, flipVertical);
-
-	if (scaled)
+	Texture* texture = getTexture(filePath);
+	if (texture)
 	{
-		scaleRect(destinationRect);
-	}
+		if (scaled)
+			scaleRect(destinationRect);
 
-	SDL_RenderCopyEx(renderer, tileSheet->getTexture(), &getSDLRect(tileSheet->getTileRect(tileNum)), &getSDLRect(destinationRect), angle, nullptr, (SDL_RendererFlip)flip);
+		SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(sourceRect), &getSDLRect(destinationRect));
+	}
+}
+
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool scaled)
+{
+	Texture* texture = getTexture(filePath);
+	if (texture)
+	{
+		if (scaled)
+			scaleRect(destinationRect);
+
+		SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(texture->getTileRect(tileNum)), &getSDLRect(destinationRect));
+	}
+}
+
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+{
+	Texture* texture = getTexture(filePath);
+
+	if (texture)
+	{
+		float angle = 0;
+		int flip = SDL_FLIP_NONE;
+		convertRotation(angle, flip, flipDiagonal, flipHorizontal, flipVertical);
+
+		if (scaled)
+			scaleRect(destinationRect);
+
+		SDL_RenderCopyEx(renderer, texture->getSDLTexture(), &getSDLRect(texture->getTileRect(tileNum)), &getSDLRect(destinationRect), angle, nullptr, (SDL_RendererFlip)flip);
+	}
 }
 
 void Graphics::display()
@@ -83,20 +113,23 @@ void Graphics::clear()
 	SDL_RenderClear(renderer);
 }
 
-TileSheet* Graphics::loadTileSheet(const std::string& filePath, int tileWidth, int tileHeight, int spacing)
+void Graphics::unloadImage(const std::string& filePath)
 {
-	if (tileSheetMap.count(filePath) == 0)
-	{
-		int width, height;
-		SDL_Texture* texture = loadImage(filePath, width, height);
-		tileSheetMap.emplace(filePath, TileSheet(texture, width, height, tileWidth, tileHeight, spacing));
-	}
-	return &tileSheetMap[filePath];
+	textureMap.erase(filePath);
 }
 
-TileSheet* Graphics::getTileSheet(const std::string& filePath)
+void Graphics::unloadAllImages()
 {
-	return &tileSheetMap[filePath];
+	textureMap.clear();
+}
+
+Texture* Graphics::getTexture(const std::string& filePath)
+{
+	std::unordered_map<std::string, Texture>::iterator it = textureMap.find(filePath);
+	if (it != textureMap.end())
+		return &(it->second);
+	else
+		return nullptr;
 }
 
 void Graphics::offsetView(int xOffset, int yOffset)

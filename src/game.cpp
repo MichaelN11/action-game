@@ -2,7 +2,6 @@
 #include "game.h"
 #include "graphics.h"
 #include "tilemap.h"
-#include "tilesheet.h"
 
 #include <iostream>
 
@@ -33,7 +32,7 @@ void Game::gameLoop()
 	std::cout << "X: " << graphics.getView().getX() << "   Y: " << graphics.getView().getY() << std::endl;
 	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
 	tileMap = &tm;
-	graphics.loadTileSheet(filePath, 16, 16, 0);
+	graphics.loadTilesheet(filePath, 16, 16, 0);
 
 	bool running = true;
 	while (running)

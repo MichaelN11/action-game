@@ -33,7 +33,7 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 
 	for (TMXTileSet tileSet : data.tileSets)
 	{
-		graphics.loadTileSheet(tileSet.source, tileSet.tileWidth, tileSet.tileHeight, tileSet.spacing);
+		graphics.loadTilesheet(tileSet.source, tileSet.tileWidth, tileSet.tileHeight, tileSet.spacing);
 		tileSheetPaths.push_back(tileSet.source);
 	}
 
@@ -47,8 +47,6 @@ void TileMap::draw(Graphics& graphics)
 {
 	// Portion of the tilemap being drawn
 	Rectangle view = graphics.getView();
-	int widthPixels = mapWidth * tileWidth;
-	int heightPixels = mapHeight * tileHeight;
 
 	int scaledTileWidth = (int)(tileWidth * graphics.getScale());
 	int scaledTileHeight = (int)(tileHeight * graphics.getScale());
@@ -82,26 +80,5 @@ void TileMap::draw(Graphics& graphics)
 				}
 			}
 		}
-		//rowNum = 0;
-		//for (std::vector<Tile> row : layer)
-		//{
-		//	colNum = 0;
-		//	for (Tile tile : row)
-		//	{
-		//		if (tile.id >= 0 && tile.tileSheetId >= 0)
-		//		{
-		//			Rectangle destRect((int)(colNum * tileWidth * graphics.getScale()),
-		//				(int)(rowNum * tileHeight * graphics.getScale()),
-		//				tileWidth,
-		//				tileHeight);
-
-		//			std::string filePath = tileSheetPaths.at(tile.tileSheetId);
-		//			graphics.drawImage(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, true);
-		//		}
-
-		//		colNum++;
-		//	}
-		//	rowNum++;
-		//}
 	}
 }
