@@ -11,19 +11,19 @@ public:
 		h(h)
 	{}
 
-	int getX()
+	int getX() const
 	{
 		return x;
 	}
-	int getY()
+	int getY() const
 	{
 		return y;
 	}
-	int getW()
+	int getW() const
 	{
 		return w;
 	}
-	int getH()
+	int getH() const
 	{
 		return h;
 	}
@@ -42,6 +42,15 @@ public:
 	void setH(int n)
 	{
 		h = n;
+	}
+
+	int getX2()
+	{
+		return x + w;
+	}
+	int getY2()
+	{
+		return y + h;
 	}
 private:
 	int x;

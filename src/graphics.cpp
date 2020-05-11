@@ -3,7 +3,8 @@
 #include "tilesheet.h"
 
 Graphics::Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale) :
-	spriteScale(spriteScale)
+	spriteScale(spriteScale),
+	view(Rectangle(0, 0, width, height))
 {
 	SDL_CreateWindowAndRenderer(width, height, windowFlags, &window, &renderer);
 	SDL_SetWindowTitle(window, title.c_str());
@@ -98,7 +99,18 @@ TileSheet* Graphics::getTileSheet(const std::string& filePath)
 	return &tileSheetMap[filePath];
 }
 
-float Graphics::getScale()
+void Graphics::offsetView(int xOffset, int yOffset)
+{
+	view.setX(view.getX() + xOffset);
+	view.setY(view.getY() + yOffset);
+}
+
+Rectangle Graphics::getView() const
+{
+	return view;
+}
+
+float Graphics::getScale() const
 {
 	return spriteScale;
 }

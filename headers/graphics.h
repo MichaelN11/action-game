@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include "SDL.h"
+#include "rectangle.h"
 
 /*
 	Graphics class
@@ -11,7 +12,6 @@
 
 // forward declare
 class TileSheet;
-class Rectangle;
 
 class Graphics
 {
@@ -44,7 +44,9 @@ public:
 	// Tries to get an already loaded tilesheet and return null if not found
 	TileSheet* getTileSheet(const std::string& filePath);
 
-	float getScale();
+	void offsetView(int xOffset, int yOffset);
+	Rectangle getView() const;
+	float getScale() const;
 
 	Graphics() = delete;
 	Graphics(const Graphics&) = delete;
@@ -56,6 +58,7 @@ private:
 	void convertRotation(float& angle, int& flip, bool flipDiagonal, bool flipHorizontal, bool flipVertical);
 
 	float spriteScale;
+	Rectangle view;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	std::unordered_map<std::string, SDL_Texture*> textureMap;
