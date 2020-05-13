@@ -3,6 +3,11 @@
 #include <string>
 #include <vector>
 
+/*
+	TMXParser
+	holds structs and functions to parse Tiled .tmx files and get tiles/objects from them
+*/
+
 
 struct TMXTileSet
 {

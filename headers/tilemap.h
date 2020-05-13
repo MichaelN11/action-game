@@ -3,6 +3,13 @@
 #include <string>
 #include <vector>
 
+#include "eventmanager.h"
+
+/*
+	TileMap class
+	Responsible for constructing and drawing the tilemap of a level
+*/
+
 //forward declare
 class Graphics;
 
@@ -22,6 +29,13 @@ private:
 	std::vector<std::string> tileSheetPaths;
 	std::vector<std::vector<std::vector<Tile>>> tileGridLayers;
 
+	class DrawListener : public EventListener<DrawEvent>
+	{
+	public:
+		TileMap* parent;
+		DrawListener(TileMap& parent) : parent(&parent) {};
+		void onEvent(DrawEvent& dEvent);
+	};
 };
 
 struct Tile

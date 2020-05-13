@@ -3,6 +3,13 @@
 #include <vector>
 #include "rectangle.h"
 
+/*
+	Texture class
+	Manages the SDL_Texture, destroys it when destroyed
+	Also holds a vector of rectangles representing tiles on a tilesheet
+	If texture is not a tilesheet, vector is empty
+*/
+
 // forward declare
 struct SDL_Texture;
 

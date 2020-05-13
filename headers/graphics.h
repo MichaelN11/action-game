@@ -8,10 +8,10 @@
 /*
 	Graphics class
 	Responsible for handling the SDL window and renderer, and drawing images to the window
+	Also holds a map of textures with the filenames as keys
 */
 
 // forward declare
-class Texture;
 class Texture;
 
 class Graphics

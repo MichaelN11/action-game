@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "tilemap.h"
 #include "graphics.h"
 #include "tmxparser.h"
@@ -41,6 +43,8 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 	mapHeight = data.mapHeight;
 	tileWidth = data.tileWidth;
 	tileHeight = data.tileHeight;
+
+	EventManager::registerListener<DrawEvent, DrawListener, TileMap>(*this);
 }
 
 void TileMap::draw(Graphics& graphics)
@@ -52,13 +56,20 @@ void TileMap::draw(Graphics& graphics)
 	int scaledTileHeight = (int)(tileHeight * graphics.getScale());
 
 	// first and last tiles to draw
-	int firstTileCol = view.getX() / scaledTileWidth;
-	int firstTileRow = view.getY() / scaledTileHeight;
-	int lastTileCol = (view.getX2() / scaledTileWidth) + 1;
-	int lastTileRow = (view.getY2() / scaledTileHeight) + 1;
+	int firstTileCol = std::max(view.getX() / scaledTileWidth, 0);
+	int firstTileRow = std::max(view.getY() / scaledTileHeight, 0);
+	int lastTileCol = std::min((view.getX2() / scaledTileWidth) + 1, mapWidth);
+	int lastTileRow = std::min((view.getY2() / scaledTileHeight) + 1, mapHeight);
 	// offset that is subtracted from the axis when starting drawing
-	int drawOffsetX = view.getX() % scaledTileWidth;
-	int drawOffsetY = view.getY() % scaledTileHeight;
+	int drawOffsetX = 0, drawOffsetY = 0;
+	if (view.getX() >= 0)
+		drawOffsetX = view.getX() % scaledTileWidth;
+	else
+		drawOffsetX = view.getX();
+	if (view.getY() >= 0)
+		drawOffsetY = view.getY() % scaledTileHeight;
+	else
+		drawOffsetY = view.getY();
 
 	for (std::vector<std::vector<Tile>> layer : tileGridLayers)
 	{
@@ -81,4 +92,10 @@ void TileMap::draw(Graphics& graphics)
 			}
 		}
 	}
+}
+
+void TileMap::DrawListener::onEvent(DrawEvent& dEvent)
+{
+	if (dEvent.graphics)
+		parent->draw(*(dEvent.graphics));
 }

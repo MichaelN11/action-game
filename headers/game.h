@@ -1,5 +1,12 @@
 #pragma once
 
+/*
+	Game class
+	The main game loop is here
+*/
+
+#include "input.h"
+
 // forward declaration
 class Graphics;
 union SDL_Event;
@@ -15,7 +22,7 @@ private:
 	void gameLoop();
 	void draw(Graphics &graphics);
 	void update(int timeElapsed);
-	void handleEvents(SDL_Event& event);
+	void handleEvents(Input& input, SDL_Event& event);
 
 	static const int RESOLUTION_WIDTH;
 	static const int RESOLUTION_HEIGHT;
