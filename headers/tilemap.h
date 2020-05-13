@@ -28,14 +28,6 @@ private:
 	int tileHeight;
 	std::vector<std::string> tileSheetPaths;
 	std::vector<std::vector<std::vector<Tile>>> tileGridLayers;
-
-	class DrawListener : public EventListener<DrawEvent>
-	{
-	public:
-		TileMap* parent;
-		DrawListener(TileMap& parent) : parent(&parent) {};
-		void onEvent(DrawEvent& dEvent);
-	};
 };
 
 struct Tile

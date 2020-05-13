@@ -2,59 +2,32 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "event.h"
 
 /*
-	EventListener class
-	To capture an event, this should be inherited from and the derived class registered with the manager.
-	Derived class should only contain onEvent function!
-	Can also hold reference to its parent and pass it in constructor
-*/
-
-template<typename EventType>
-class EventListener
-{
-public:
-	EventListener()
-	{
-		static_assert(std::is_base_of<Event, EventType>::value, "type parameter of this class must derive from Event");
-	}
-	virtual ~EventListener() {}
-
-	virtual void onEvent(EventType& pEvent) = 0;
-	
-};
-
-/*
 	EventManager class
-	Keeps static lists of event listeners for each event type
+	Keeps static lists of "event listeners" as functions for each event type
 	Can register listeners and fire events
 */
 
 class EventManager
 {
 public:
-	template<typename EventType, typename Listener>
-	static void registerListener()
+	template<typename EventType>
+	static void registerListener(std::function<void(EventType&)> listener)
 	{
-		static_assert(std::is_base_of<EventListener<EventType>, Listener>::value, "type parameter of event listener must derive from appropriate event listener");
-		listenerList<EventType>.emplace_back(std::make_unique<Listener>());
-	}
-
-	template<typename EventType, typename Listener, typename ParentClass>
-	static void registerListener(ParentClass& parent)
-	{
-		static_assert(std::is_base_of<EventListener<EventType>, Listener>::value, "type parameter of event listener must derive from appropriate event listener");
-		listenerList<EventType>.emplace_back(std::make_unique<Listener>(parent));
+		static_assert(std::is_base_of<Event, EventType>::value, "type parameter of this class must derive from Event");
+		listenerList<EventType>.push_back(listener);
 	}
 
 	template<typename EventType>
 	static void fireEvent(EventType& pEvent)
 	{
-		for (std::unique_ptr<EventListener<EventType>>& listener : listenerList<EventType>)
+		for (std::function<void(EventType&)> listener : listenerList<EventType>)
 		{
-			listener->onEvent(pEvent);
+			listener(pEvent);
 		}
 	}
 
@@ -66,5 +39,5 @@ public:
 
 private:
 	template<typename EventType>
-	static std::vector<std::unique_ptr<EventListener<EventType>>> listenerList;
+	static std::vector<std::function<void(EventType&)>> listenerList;
 };

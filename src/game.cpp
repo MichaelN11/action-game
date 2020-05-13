@@ -37,38 +37,6 @@ void Game::gameLoop()
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 
-	//class MyKeyListener : public EventListener<KeyDownEvent>
-	//{
-	//public:
-	//	Graphics* parent;
-	//	MyKeyListener(Graphics& parent) : parent(&parent) {}
-	//	void onEvent(KeyDownEvent& kEvent)
-	//	{
-	//		//std::cout << "got here!" << std::endl;
-	//		Rectangle view = parent->getView();
-	//		switch (kEvent.keyPressed)
-	//		{
-	//		case Keybind::up :
-	//			//if (view.getY() > 0)
-	//				parent->offsetView(0, -3);
-	//			break;
-	//		case Keybind::down :
-	//			//if (view.getY() < 768 - view.getH())
-	//				parent->offsetView(0, 3);
-	//			break;
-	//		case Keybind::left :
-	//			//if (view.getX() > 0)
-	//				parent->offsetView(-3, 0);
-	//			break;
-	//		case Keybind::right :
-	//			//if (view.getX() < 1536 - view.getW())
-	//				parent->offsetView(3, 0);
-	//			break;
-	//		}
-	//	}
-	//};
-	//EventManager::registerListener<KeyDownEvent, MyKeyListener, Graphics>(graphics);
-
 	bool running = true;
 	while (running)
 	{
@@ -80,8 +48,6 @@ void Game::gameLoop()
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
 		lastTimeMS = currentTimeMS;
-
-		std::cout << "DT: " << deltaTimeMS << "    MFT: " << maxFrameTimeMS << std::endl;
 
 		draw(graphics);
 	}
