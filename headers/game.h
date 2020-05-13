@@ -18,7 +18,10 @@ class Game
 {
 public:
 	Game();
+	void stopGame();
 private:
+	bool gameRunning = true;
+
 	void gameLoop();
 	void draw(Graphics &graphics);
 	void update(int timeElapsed);

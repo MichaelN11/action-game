@@ -2,6 +2,7 @@
 #include "game.h"
 #include "graphics.h"
 #include "tilemap.h"
+#include "globalsystem.h"
 
 #include "eventmanager.h"
 
@@ -27,6 +28,8 @@ void Game::gameLoop()
 	SDL_Event event;
 	Input input;
 
+	globalSystem::initSystemEvents(*this);
+
 	int maxFrameTimeMS = 1000 / MIN_FRAMERATE;
 	int deltaTimeMS, currentTimeMS;
 	int lastTimeMS = SDL_GetTicks();
@@ -37,8 +40,7 @@ void Game::gameLoop()
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 
-	bool running = true;
-	while (running)
+	while (gameRunning)
 	{
 		handleEvents(input, event);
 
@@ -74,4 +76,9 @@ void Game::handleEvents(Input& input, SDL_Event& event)
 	{
 		input.handleSDLEvent(event);
 	}
+}
+
+void Game::stopGame()
+{
+	gameRunning = false;
 }
