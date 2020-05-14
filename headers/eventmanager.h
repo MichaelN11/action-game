@@ -12,31 +12,85 @@
 	Can register listeners and fire events
 */
 
-template<typename EventType>
-class EventManager
+// rework AGAIN to remove static var
+// use wrapper class for vector, interface with function template that static casts downward
+
+class IEventHandler
 {
 public:
-	static void registerListener(std::function<void(EventType&)> listener)
+	virtual ~IEventHandler() {};
+};
+
+template<typename EventType>
+class EventHandler : public IEventHandler
+{
+public:
+	void insert(std::function<void(EventType&)> listener)
 	{
-		static_assert(std::is_base_of<Event, EventType>::value, "type parameter of this class must derive from Event");
 		listenerList.push_back(listener);
 	}
-
-	static void fireEvent(EventType& pEvent)
+	void fireEvent(EventType& pEvent)
 	{
 		for (std::function<void(EventType&)> listener : listenerList)
 		{
 			listener(pEvent);
 		}
 	}
-
-	static void clearListeners()
+	void clear()
 	{
 		listenerList.clear();
 	}
 private:
-	static std::vector<std::function<void(EventType&)>> listenerList;
+	std::vector<std::function<void(EventType&)>> listenerList;
 };
 
-// necessary for linker
-template<typename EventType> std::vector<std::function<void(EventType&)>> EventManager<EventType>::listenerList;
+class EventManager
+{
+public:
+	template<typename EventType>
+	void registerListener(std::function<void(EventType&)> listener)
+	{
+		int eventTypeId = getEventTypeId<EventType>();
+		IEventHandler* iPtr = handlerList.at(eventTypeId).get();
+		EventHandler<EventType>* hPtr = static_cast<EventHandler<EventType>*>(iPtr);
+		hPtr->insert(listener);
+	}
+
+	template<typename EventType>
+	void fireEvent(EventType& pEvent)
+	{
+		int eventTypeId = getEventTypeId<EventType>();
+		IEventHandler* iPtr = handlerList.at(eventTypeId).get();
+		EventHandler<EventType>* hPtr = static_cast<EventHandler<EventType>*>(iPtr);
+		hPtr->fireEvent(pEvent);
+	}
+
+	template<typename EventType>
+	void clearListeners()
+	{
+		int eventTypeId = getEventTypeId<EventType>();
+		IEventHandler* iPtr = handlerList.at(eventTypeId).get();
+		EventHandler<EventType>* hPtr = static_cast<EventHandler<EventType>*>(iPtr);
+		hPtr->clear();
+	}
+
+private:
+	std::vector<std::unique_ptr<IEventHandler>> handlerList;
+
+	int getNextId()
+	{
+		static int id = 0;
+		return id++;
+	}
+
+	template<typename EventType>
+	int getEventTypeId()
+	{
+		static_assert(std::is_base_of<Event, EventType>::value, "type parameter of this class must derive from Event");
+		static int eventTypeId = getNextId();
+		if (eventTypeId >= (int) handlerList.size())
+			handlerList.push_back(std::make_unique<EventHandler<EventType>>());
+		return eventTypeId;
+	}
+
+};

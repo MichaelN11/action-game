@@ -2,14 +2,14 @@
 #include "eventmanager.h"
 #include "game.h"
 
-void globalSystem::initSystemEvents(Game& game)
+void globalSystem::initSystemEvents(Game& game, EventManager& eventManager)
 {
-	EventManager<QuitEvent>::registerListener([&](QuitEvent& qEvent)
+	eventManager.registerListener<QuitEvent>([&](QuitEvent& qEvent)
 		{
 			exitProgram(game);
 		});
 
-	EventManager<KeyDownEvent>::registerListener([&](KeyDownEvent& kdEvent)
+	eventManager.registerListener<KeyDownEvent>([&](KeyDownEvent& kdEvent)
 		{
 			if (kdEvent.keyPressed == Keybind::escape)
 			{

@@ -8,6 +8,7 @@
 #include "input.h"
 
 // forward declaration
+class EventManager;
 class Graphics;
 union SDL_Event;
 
@@ -23,7 +24,7 @@ private:
 	bool gameRunning = true;
 
 	void gameLoop();
-	void draw(Graphics &graphics);
+	void draw(Graphics &graphics, EventManager& eventManager);
 	void update(int timeElapsed);
 	void handleEvents(Input& input, SDL_Event& event);
 

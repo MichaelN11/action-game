@@ -6,9 +6,10 @@
 */
 
 class Game;
+class EventManager;
 
 namespace globalSystem
 {
-	void initSystemEvents(Game& game);
+	void initSystemEvents(Game& game, EventManager& eventManager);
 	void exitProgram(Game& game);
 }

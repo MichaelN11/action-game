@@ -3,7 +3,8 @@
 #include "input.h"
 #include "eventmanager.h"
 
-Input::Input()
+Input::Input(EventManager& eventManager) :
+	eventManager(&eventManager)
 {
 	keybindMap.emplace(SDL_SCANCODE_ESCAPE, Keybind::escape);
 	keybindMap.emplace(SDL_SCANCODE_UP, Keybind::up);
@@ -35,17 +36,17 @@ void Input::handleSDLEvent(SDL_Event& sdlEvent)
 void Input::keyDownEvent(Keybind key)
 {
 	KeyDownEvent kEvent(key);
-	EventManager<KeyDownEvent>::fireEvent(kEvent);
+	eventManager->fireEvent<KeyDownEvent>(kEvent);
 }
 
 void Input::keyUpEvent(Keybind key)
 {
 	KeyUpEvent kEvent(key);
-	EventManager<KeyUpEvent>::fireEvent(kEvent);
+	eventManager->fireEvent<KeyUpEvent>(kEvent);
 }
 
 void Input::quitEvent()
 {
 	QuitEvent qEvent;
-	EventManager<QuitEvent>::fireEvent(qEvent);
+	eventManager->fireEvent<QuitEvent>(qEvent);
 }

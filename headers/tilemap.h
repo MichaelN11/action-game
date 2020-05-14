@@ -18,7 +18,7 @@ struct Tile;
 class TileMap
 {
 public:
-	TileMap(Graphics &graphics, const std::string& tmxFileName);
+	TileMap(Graphics &graphics, EventManager& eventManager, const std::string& tmxFileName);
 	void draw(Graphics& graphics);
 private:
 	// height and width in tiles

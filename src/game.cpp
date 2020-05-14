@@ -25,10 +25,11 @@ Game::Game()
 void Game::gameLoop()
 {
 	Graphics graphics(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE);
+	EventManager eventManager;
 	SDL_Event event;
-	Input input;
+	Input input(eventManager);
 
-	globalSystem::initSystemEvents(*this);
+	globalSystem::initSystemEvents(*this, eventManager);
 
 	int maxFrameTimeMS = 1000 / MIN_FRAMERATE;
 	int deltaTimeMS, currentTimeMS;
@@ -36,7 +37,7 @@ void Game::gameLoop()
 
 	graphics.offsetView(100, 100);
 	std::cout << "X: " << graphics.getView().getX() << "   Y: " << graphics.getView().getY() << std::endl;
-	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
+	TileMap tm(graphics, eventManager, "content/maps/sample_fantasy.tmx");
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 
@@ -49,20 +50,20 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		//std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+		std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
 
-		draw(graphics);
+		draw(graphics, eventManager);
 	}
 }
 
-void Game::draw(Graphics& graphics)
+void Game::draw(Graphics& graphics, EventManager& eventManager)
 {
 	graphics.clear();
 
 	DrawEvent drawEvent(&graphics);
-	EventManager<DrawEvent>::fireEvent(drawEvent);
+	eventManager.fireEvent<DrawEvent>(drawEvent);
 
 	//tileMap->draw(graphics);
 
