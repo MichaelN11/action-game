@@ -35,17 +35,17 @@ void Input::handleSDLEvent(SDL_Event& sdlEvent)
 void Input::keyDownEvent(Keybind key)
 {
 	KeyDownEvent kEvent(key);
-	EventManager::fireEvent<KeyDownEvent>(kEvent);
+	EventManager<KeyDownEvent>::fireEvent(kEvent);
 }
 
 void Input::keyUpEvent(Keybind key)
 {
 	KeyUpEvent kEvent(key);
-	EventManager::fireEvent<KeyUpEvent>(kEvent);
+	EventManager<KeyUpEvent>::fireEvent(kEvent);
 }
 
 void Input::quitEvent()
 {
 	QuitEvent qEvent;
-	EventManager::fireEvent<QuitEvent>(qEvent);
+	EventManager<QuitEvent>::fireEvent(qEvent);
 }

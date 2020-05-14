@@ -44,7 +44,7 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 	tileWidth = data.tileWidth;
 	tileHeight = data.tileHeight;
 
-	EventManager::registerListener<DrawEvent>([this](DrawEvent& dEvent)
+	EventManager<DrawEvent>::registerListener([this](DrawEvent& dEvent)
 		{
 			if (dEvent.graphics)
 				draw(*(dEvent.graphics));

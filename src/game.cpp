@@ -10,7 +10,7 @@
 
 const int Game::RESOLUTION_WIDTH = 640;
 const int Game::RESOLUTION_HEIGHT = 480;
-const int Game::MIN_FRAMERATE = 30;
+const int Game::MIN_FRAMERATE = 60;
 const float Game::SPRITE_SCALE = 2.0;
 
 // TEMPORARY DELETE LATER
@@ -49,6 +49,8 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
+		//std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+
 		lastTimeMS = currentTimeMS;
 
 		draw(graphics);
@@ -60,7 +62,9 @@ void Game::draw(Graphics& graphics)
 	graphics.clear();
 
 	DrawEvent drawEvent(&graphics);
-	EventManager::fireEvent<DrawEvent>(drawEvent);
+	EventManager<DrawEvent>::fireEvent(drawEvent);
+
+	//tileMap->draw(graphics);
 
 	graphics.display();
 }

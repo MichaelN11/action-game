@@ -4,12 +4,12 @@
 
 void globalSystem::initSystemEvents(Game& game)
 {
-	EventManager::registerListener<QuitEvent>([&](QuitEvent& qEvent) 
+	EventManager<QuitEvent>::registerListener([&](QuitEvent& qEvent)
 		{
 			exitProgram(game);
 		});
 
-	EventManager::registerListener<KeyDownEvent>([&](KeyDownEvent& kdEvent)
+	EventManager<KeyDownEvent>::registerListener([&](KeyDownEvent& kdEvent)
 		{
 			if (kdEvent.keyPressed == Keybind::escape)
 			{
