@@ -5,7 +5,7 @@
 #include "tmxparser.h"
 #include "rectangle.h"
 
-TileMap::TileMap(Graphics &graphics, EventManager& eventManager, const std::string& tmxFileName)
+TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 {
 	TMXData data = tmxparser::parseTileMap(tmxFileName);
 	for (std::vector<std::vector<TMXTile>> tmxLayer : data.tileGridLayers)
@@ -43,12 +43,6 @@ TileMap::TileMap(Graphics &graphics, EventManager& eventManager, const std::stri
 	mapHeight = data.mapHeight;
 	tileWidth = data.tileWidth;
 	tileHeight = data.tileHeight;
-
-	eventManager.registerListener<DrawEvent>([this](DrawEvent& dEvent)
-		{
-			if (dEvent.graphics)
-				draw(*(dEvent.graphics));
-		});
 }
 
 void TileMap::draw(Graphics& graphics)

@@ -27,3 +27,6 @@ struct KeyUpEvent : Event
 
 struct QuitEvent : Event
 {};
+
+struct TestEvent : Event
+{};

@@ -1,8 +1,8 @@
 #include <algorithm>
 #include "game.h"
 #include "graphics.h"
-#include "tilemap.h"
 #include "globalsystem.h"
+#include "tilemap.h"
 
 #include "eventmanager.h"
 
@@ -37,9 +37,15 @@ void Game::gameLoop()
 
 	graphics.offsetView(100, 100);
 	std::cout << "X: " << graphics.getView().getX() << "   Y: " << graphics.getView().getY() << std::endl;
-	TileMap tm(graphics, eventManager, "content/maps/sample_fantasy.tmx");
+	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
+
+	eventManager.registerListener<DrawEvent>([this](DrawEvent& dEvent)
+		{
+			if (dEvent.graphics)
+				tileMap->draw(*(dEvent.graphics));
+		});
 
 	while (gameRunning)
 	{
@@ -50,7 +56,7 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+		//std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
 
