@@ -53,7 +53,7 @@ public:
 	}
 
 	template<typename EventType>
-	void fireEvent(EventType& pEvent)
+	void fireEvent(EventType pEvent)
 	{
 		EventHandler<EventType>* handler = getHandler<EventType>();
 		handler->fireEvent(pEvent);

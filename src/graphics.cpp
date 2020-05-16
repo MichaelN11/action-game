@@ -138,6 +138,12 @@ void Graphics::offsetView(int xOffset, int yOffset)
 	view.setY(view.getY() + yOffset);
 }
 
+void Graphics::setView(int x, int y)
+{
+	view.setX(x);
+	view.setY(y);
+}
+
 Rectangle Graphics::getView() const
 {
 	return view;

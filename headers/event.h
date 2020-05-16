@@ -28,5 +28,8 @@ struct KeyUpEvent : Event
 struct QuitEvent : Event
 {};
 
-struct TestEvent : Event
-{};
+struct UpdateEvent : Event
+{
+	UpdateEvent(int deltaTime) : deltaTime(deltaTime) {}
+	int deltaTime;
+};

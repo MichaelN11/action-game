@@ -15,16 +15,11 @@ struct InactiveComponent : public Component
 	InactiveComponent(int entityId) : Component(entityId) {}
 };
 
-struct TestComponent : public Component
-{
-	int test = 0;
-};
-
 struct PositionComponent : public Component
 {
-	PositionComponent(int entityId, int x, int y) : Component(entityId), x(x), y(y) {}
-	int x = 0;
-	int y = 0;
+	PositionComponent(int entityId, float x, float y) : Component(entityId), x(x), y(y) {}
+	float x;
+	float y;
 };
 
 struct SpriteComponent : public Component
@@ -34,4 +29,17 @@ struct SpriteComponent : public Component
 	int tileNum;
 	int width;
 	int height;
+};
+
+struct MovementComponent : public Component
+{
+	MovementComponent(int entityId, float dx, float dy, float moveSpeed) : Component(entityId), dx(dx), dy(dy), moveSpeed(moveSpeed) {}
+	float dx;
+	float dy;
+	float moveSpeed;
+};
+
+struct PlayerComponent : public Component
+{
+	PlayerComponent(int entityId) : Component(entityId) {}
 };

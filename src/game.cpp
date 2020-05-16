@@ -4,10 +4,12 @@
 #include "systemevents.h"
 #include "tilemap.h"
 
-#include "componentmanager.h"
-#include "eventmanager.h"
+#include "entitymanager.h"
+//#include "eventmanager.h"
 
 #include "spritesystem.h"
+#include "positionupdatesystem.h"
+#include "playersystem.h"
 
 #include <iostream>
 
@@ -17,6 +19,7 @@ const int Game::MIN_FRAMERATE = 60;
 const float Game::SPRITE_SCALE = 2.0;
 
 // TEMPORARY DELETE LATER
+// do need to load tilesheets before use
 const std::string filePath = "content/tilesheets/1bit.png";
 
 Game::Game()
@@ -28,10 +31,9 @@ Game::Game()
 void Game::gameLoop()
 {
 	Graphics graphics(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE);
-	EventManager eventManager;
 	SDL_Event event;
 	Input input(eventManager);
-	ComponentManager componentManager;
+	EntityManager entityManager;
 
 	systemEvents::initSystemEvents(*this, eventManager);
 
@@ -45,25 +47,12 @@ void Game::gameLoop()
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 
-	SpriteComponent sprite1(0, filePath, 25, 16, 16);
-	PositionComponent pos1(0, 100, 100);
-	SpriteComponent sprite2(1, filePath, 26, 16, 16);
-	PositionComponent pos2(1, 150, 150);
-	componentManager.addComponent<SpriteComponent>(sprite1);
-	componentManager.addComponent<PositionComponent>(pos1);
-	componentManager.addComponent<SpriteComponent>(sprite2);
-	componentManager.addComponent<PositionComponent>(pos2);
-	//componentManager.addComponent<InactiveComponent>(InactiveComponent(0));
-	SpriteSystem spriteSystem;
+	entityManager.createEntity(componentManager, 300.f, 200.f, EntityManager::PLAYER);
+	entityManager.createEntity(componentManager, 150.f, 150.f, EntityManager::DUMMY);
 
-	eventManager.registerListener<DrawEvent>([&](DrawEvent& dEvent)
-		{
-			if (dEvent.graphics)
-			{
-				tileMap->draw(*(dEvent.graphics));
-				spriteSystem.drawSprites(componentManager, graphics);
-			}
-		});
+	SpriteSystem spriteSystem(componentManager, eventManager, graphics);
+	PositionUpdateSystem posUpdateSystem(componentManager, eventManager, graphics.getView());
+	PlayerSystem playerSystem(componentManager, eventManager);
 
 	while (gameRunning)
 	{
@@ -74,27 +63,33 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		//std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+		std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
 
-		draw(graphics, eventManager);
+		draw(graphics);
 	}
 }
 
-void Game::draw(Graphics& graphics, EventManager& eventManager)
+void Game::draw(Graphics& graphics)
 {
 	graphics.clear();
 
-	DrawEvent drawEvent(&graphics);
-	eventManager.fireEvent<DrawEvent>(drawEvent);
+	// TEMP CAMERA
+	Rectangle view = graphics.getView();
+	auto playerList = componentManager.getComponentList<PlayerComponent>();
+	PositionComponent* playerPos = componentManager.getComponent<PositionComponent>(playerList.at(0)->entityId);
+	graphics.setView((int)playerPos->x - view.getW() / 2, (int)playerPos->y - view.getH() / 2);
+
+	tileMap->draw(graphics);
+	eventManager.fireEvent<DrawEvent>(DrawEvent(&graphics));
 
 	graphics.display();
 }
 
-void Game::update(int timeElapsed)
+void Game::update(int deltaTime)
 {
-
+	eventManager.fireEvent<UpdateEvent>(UpdateEvent(deltaTime));
 }
 
 void Game::handleEvents(Input& input, SDL_Event& event)

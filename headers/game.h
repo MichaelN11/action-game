@@ -6,9 +6,11 @@
 */
 
 #include "input.h"
+#include "eventmanager.h"
+#include "componentmanager.h"
 
 // forward declaration
-class EventManager;
+//class EventManager;
 class Graphics;
 union SDL_Event;
 
@@ -22,9 +24,11 @@ public:
 	void stopGame();
 private:
 	bool gameRunning = true;
+	EventManager eventManager;
+	ComponentManager componentManager;
 
 	void gameLoop();
-	void draw(Graphics &graphics, EventManager& eventManager);
+	void draw(Graphics &graphics);
 	void update(int timeElapsed);
 	void handleEvents(Input& input, SDL_Event& event);
 

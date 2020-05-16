@@ -45,6 +45,7 @@ public:
 	void unloadAllImages();
 	
 	void offsetView(int xOffset, int yOffset);
+	void setView(int x, int y);
 	Rectangle getView() const;
 	float getScale() const;
 

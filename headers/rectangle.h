@@ -11,6 +11,11 @@ public:
 		h(h)
 	{}
 
+	bool contains(int pointX, int pointY) const
+	{
+		return (pointX > x && pointX < getX2() && pointY > y && pointY < getY2());
+	}
+
 	int getX() const
 	{
 		return x;
@@ -44,11 +49,11 @@ public:
 		h = n;
 	}
 
-	int getX2()
+	int getX2() const
 	{
 		return x + w;
 	}
-	int getY2()
+	int getY2() const
 	{
 		return y + h;
 	}
