@@ -87,7 +87,8 @@ private:
 	EventHandler<EventType>* getHandler()
 	{
 		int eventTypeId = EventManager::getEventTypeId<EventType>();
-		if (handlerMap.count(eventTypeId) == 0)
+		auto it = handlerMap.find(eventTypeId);
+		if (it == handlerMap.end())
 			handlerMap.emplace(eventTypeId, std::make_unique<EventHandler<EventType>>());
 		IEventHandler* iPtr = handlerMap.at(eventTypeId).get();
 		EventHandler<EventType>* hPtr = static_cast<EventHandler<EventType>*>(iPtr);

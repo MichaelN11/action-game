@@ -8,7 +8,7 @@
 class Game;
 class EventManager;
 
-namespace globalSystem
+namespace systemEvents
 {
 	void initSystemEvents(Game& game, EventManager& eventManager);
 	void exitProgram(Game& game);

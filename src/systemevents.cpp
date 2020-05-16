@@ -1,8 +1,8 @@
-#include "globalsystem.h"
+#include "systemevents.h"
 #include "eventmanager.h"
 #include "game.h"
 
-void globalSystem::initSystemEvents(Game& game, EventManager& eventManager)
+void systemEvents::initSystemEvents(Game& game, EventManager& eventManager)
 {
 	eventManager.registerListener<QuitEvent>([&](QuitEvent& qEvent)
 		{
@@ -18,7 +18,7 @@ void globalSystem::initSystemEvents(Game& game, EventManager& eventManager)
 		});
 }
 
-void globalSystem::exitProgram(Game& game)
+void systemEvents::exitProgram(Game& game)
 {
 	game.stopGame();
 }

@@ -1,10 +1,13 @@
 #include <algorithm>
 #include "game.h"
 #include "graphics.h"
-#include "globalsystem.h"
+#include "systemevents.h"
 #include "tilemap.h"
 
+#include "componentmanager.h"
 #include "eventmanager.h"
+
+#include "spritesystem.h"
 
 #include <iostream>
 
@@ -28,8 +31,9 @@ void Game::gameLoop()
 	EventManager eventManager;
 	SDL_Event event;
 	Input input(eventManager);
+	ComponentManager componentManager;
 
-	globalSystem::initSystemEvents(*this, eventManager);
+	systemEvents::initSystemEvents(*this, eventManager);
 
 	int maxFrameTimeMS = 1000 / MIN_FRAMERATE;
 	int deltaTimeMS, currentTimeMS;
@@ -41,10 +45,24 @@ void Game::gameLoop()
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 
-	eventManager.registerListener<DrawEvent>([this](DrawEvent& dEvent)
+	SpriteComponent sprite1(0, filePath, 25, 16, 16);
+	PositionComponent pos1(0, 100, 100);
+	SpriteComponent sprite2(1, filePath, 26, 16, 16);
+	PositionComponent pos2(1, 150, 150);
+	componentManager.addComponent<SpriteComponent>(sprite1);
+	componentManager.addComponent<PositionComponent>(pos1);
+	componentManager.addComponent<SpriteComponent>(sprite2);
+	componentManager.addComponent<PositionComponent>(pos2);
+	//componentManager.addComponent<InactiveComponent>(InactiveComponent(0));
+	SpriteSystem spriteSystem;
+
+	eventManager.registerListener<DrawEvent>([&](DrawEvent& dEvent)
 		{
 			if (dEvent.graphics)
+			{
 				tileMap->draw(*(dEvent.graphics));
+				spriteSystem.drawSprites(componentManager, graphics);
+			}
 		});
 
 	while (gameRunning)
@@ -70,8 +88,6 @@ void Game::draw(Graphics& graphics, EventManager& eventManager)
 
 	DrawEvent drawEvent(&graphics);
 	eventManager.fireEvent<DrawEvent>(drawEvent);
-
-	//tileMap->draw(graphics);
 
 	graphics.display();
 }
