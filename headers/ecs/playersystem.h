@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include "enums.h"
+
 //forward declare
 class ComponentManager;
 class EventManager;
@@ -10,10 +13,8 @@ public:
 	PlayerSystem(ComponentManager& compManager, EventManager& eventManager);
 private:
 	ComponentManager& compManager;
-	void moveUp();
-	void moveDown();
-	void moveLeft();
-	void moveRight();
-	void stopMoving();
-	void setMovespeed(int xDirection, int yDirection);
+	void setMovement(const std::unordered_map<Keybind, bool>& heldKeys);
+	void setMovespeed(float xDirection, float yDirection);
+
+	static const float DIAGONAL_SPEED;
 };

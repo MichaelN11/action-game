@@ -24,11 +24,13 @@ struct PositionComponent : public Component
 
 struct SpriteComponent : public Component
 {
-	SpriteComponent(int entityId, std::string filePath, int tileNum, int width, int height) : Component(entityId), filePath(filePath), tileNum(tileNum), width(width), height(height) {}
+	SpriteComponent(int entityId, std::string filePath, int tileNum, int width, int height, int layer) : Component(entityId), filePath(filePath), 
+		tileNum(tileNum), width(width), height(height), layer(layer) {}
 	std::string filePath;
 	int tileNum;
 	int width;
 	int height;
+	int layer;
 };
 
 struct MovementComponent : public Component

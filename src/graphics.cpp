@@ -2,10 +2,13 @@
 #include "graphics.h"
 #include "texture.h"
 
-Graphics::Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale) :
-	spriteScale(spriteScale),
-	view(Rectangle(0, 0, width, height))
+Graphics::Graphics()
+{}
+
+void Graphics::init(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale)
 {
+	this->spriteScale = spriteScale;
+	view = Rectangle(0, 0, width, height);
 	SDL_CreateWindowAndRenderer(width, height, windowFlags, &window, &renderer);
 	SDL_SetWindowTitle(window, title.c_str());
 }

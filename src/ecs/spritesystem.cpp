@@ -1,26 +1,21 @@
-#include "spritesystem.h"
-#include "componentmanager.h"
+#include <cmath>
+
+#include "ecs/spritesystem.h"
+#include "ecs/componentmanager.h"
 #include "graphics.h"
 #include "eventmanager.h"
-
-SpriteSystem::SpriteSystem(ComponentManager& compManager, EventManager& eventManager, Graphics& graphics) :
+SpriteSystem::SpriteSystem(ComponentManager& compManager) :
 	compManager(compManager)
 {
-	eventManager.registerListener<DrawEvent>([&](DrawEvent& dEvent)
-		{
-			if (dEvent.graphics)
-			{
-				drawSprites(graphics);
-			}
-		});
 }
 
 void SpriteSystem::drawSprites(Graphics& graphics)
 {
 	Rectangle view = graphics.getView();
-	auto spriteCompList = compManager.getComponentList<SpriteComponent>();
-	for (auto sprite : spriteCompList)
+	auto spriteCompMap = compManager.getComponentSorted<SpriteComponent>();
+	for (auto layerSpritePair : spriteCompMap)
 	{
+		SpriteComponent* sprite = layerSpritePair.second.get();
 		InactiveComponent* inactive = compManager.getComponent<InactiveComponent>(sprite->entityId);
 		if (!inactive)
 		{

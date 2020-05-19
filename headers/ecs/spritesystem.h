@@ -8,7 +8,7 @@ class Graphics;
 class SpriteSystem
 {
 public:
-	SpriteSystem(ComponentManager& compManager, EventManager& eventManager, Graphics& graphics);
+	SpriteSystem(ComponentManager& compManager);
 	void drawSprites(Graphics& graphics);
 private:
 	ComponentManager& compManager;

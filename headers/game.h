@@ -7,7 +7,8 @@
 
 #include "input.h"
 #include "eventmanager.h"
-#include "componentmanager.h"
+#include "ecs/ecs.h"
+#include "graphics.h"
 
 // forward declaration
 //class EventManager;
@@ -24,8 +25,9 @@ public:
 	void stopGame();
 private:
 	bool gameRunning = true;
+	Graphics graphics;
 	EventManager eventManager;
-	ComponentManager componentManager;
+	ECS ecs;
 
 	void gameLoop();
 	void draw(Graphics &graphics);

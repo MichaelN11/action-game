@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <map>
 #include <memory>
 
 #include "component.h"
@@ -21,6 +22,8 @@ public:
 	std::unordered_map<int, std::shared_ptr<ComponentType>> componentMap;
 	// not every component has a vector. empty until getComponentList called
 	std::vector<std::shared_ptr<ComponentType>> componentList;
+	// not every component has a sorted multimap, empty unless addcomponent with sort key is called
+	std::multimap<int, std::shared_ptr<ComponentType>> componentSorted;
 
 	void removeEntity(int entityId)
 	{
@@ -37,6 +40,15 @@ public:
 					if (vectorIt != lastEl)
 						*vectorIt = std::move(*lastEl);
 					componentList.pop_back();
+					break;
+				}
+			}
+
+			for (auto mMapIt = componentSorted.begin(); mMapIt != componentSorted.end(); ++mMapIt)
+			{
+				if (mMapIt->second->entityId == entityId)
+				{
+					componentSorted.erase(mMapIt);
 					break;
 				}
 			}
@@ -62,6 +74,32 @@ public:
 		}
 
 		holder->componentMap.emplace(component.entityId, std::move(componentPtr));
+	}
+
+	// adds a component, and also adds it to a (sorted) multimap which can be used to retrieve the components in order of the keys
+	template<typename ComponentType>
+	void addComponent(ComponentType component, int sortKey)
+	{
+		ComponentHolder<ComponentType>* holder = getHolder<ComponentType>();
+
+		std::shared_ptr<ComponentType> componentPtr = std::make_shared<ComponentType>(component);
+
+		// add to sorted multimap
+		holder->componentSorted.emplace(sortKey, componentPtr);
+
+		if (holder->componentList.size() > 0)
+		{
+			holder->componentList.push_back(componentPtr);
+		}
+
+		holder->componentMap.emplace(component.entityId, std::move(componentPtr));
+	}
+
+	// sprite components automatically sorted by layer
+	template<>
+	void addComponent(SpriteComponent component)
+	{
+		addComponent(component, component.layer);
 	}
 
 	template<typename ComponentType>
@@ -93,6 +131,14 @@ public:
 			}
 		}
 		return holder->componentList;
+	}
+
+	// If vector of componenttype is already filled, returns reference, otherwise fills it from map then returns reference
+	template<typename ComponentType>
+	std::multimap<int, std::shared_ptr<ComponentType>>& getComponentSorted()
+	{
+		ComponentHolder<ComponentType>* holder = getHolder<ComponentType>();
+		return holder->componentSorted;
 	}
 
 	// Sets component's "exists" field to false and removes it from map

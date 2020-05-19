@@ -1,23 +1,21 @@
-#include "positionupdatesystem.h"
+#include "ecs/positionupdatesystem.h"
 #include "eventmanager.h"
-#include "componentmanager.h"
+#include "ecs/componentmanager.h"
 
 const int PositionUpdateSystem::MAX_ACTIVE_DISTANCE = 100;
 
-PositionUpdateSystem::PositionUpdateSystem(ComponentManager& compManager, EventManager& eventManager, const Rectangle& view) :
+PositionUpdateSystem::PositionUpdateSystem(ComponentManager& compManager) :
 	compManager(compManager),
-	activeBounds(Rectangle(view.getX() - MAX_ACTIVE_DISTANCE, view.getY() - MAX_ACTIVE_DISTANCE,
-		view.getW() + MAX_ACTIVE_DISTANCE * 2, view.getH() + MAX_ACTIVE_DISTANCE * 2))
+	view(view)
 {
-	eventManager.registerListener<UpdateEvent>([this](UpdateEvent& uEvent) 
-		{
-			positionUpdate(uEvent.deltaTime);
-		});
 }
 
 // For every entity with a position, check if entity is active, if so, check if entity can move and move it, then check if entity is within the active bounds. if not, make it inactive.
-void PositionUpdateSystem::positionUpdate(int deltaTime)
+void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle& view)
 {
+	Rectangle activeBounds = Rectangle(view.getX() - MAX_ACTIVE_DISTANCE, view.getY() - MAX_ACTIVE_DISTANCE,
+		view.getW() + MAX_ACTIVE_DISTANCE * 2, view.getH() + MAX_ACTIVE_DISTANCE * 2);
+
 	auto positionList = compManager.getComponentList<PositionComponent>();
 	for (auto position : positionList)
 	{
@@ -35,6 +33,14 @@ void PositionUpdateSystem::positionUpdate(int deltaTime)
 				!(compManager.getComponent<PlayerComponent>(position->entityId)))
 			{
 				compManager.addComponent<InactiveComponent>(InactiveComponent(position->entityId));
+			}
+		}
+		else
+		{
+			// if it's inactive and in the bounds, make it active
+			if (activeBounds.contains((int)position->x, (int)position->y))
+			{
+				compManager.removeComponent<InactiveComponent>(position->entityId);
 			}
 		}
 	}

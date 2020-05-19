@@ -17,8 +17,10 @@ class Texture;
 class Graphics
 {
 public:
-	Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale);
+	Graphics();
 	~Graphics();
+
+	void init(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale);
 
 	// First checks the textureMap to see if the filePath texture has already been loaded,
 	// if not, loads it into the map, freeing the surface used. Returns the texture from the map.
@@ -49,7 +51,6 @@ public:
 	Rectangle getView() const;
 	float getScale() const;
 
-	Graphics() = delete;
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 private:

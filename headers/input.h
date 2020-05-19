@@ -18,5 +18,6 @@ public:
 	void quitEvent();
 private:
 	std::unordered_map<SDL_Scancode, Keybind> keybindMap;
+	std::unordered_map<Keybind, bool> heldKeys;
 	EventManager* eventManager;
 };

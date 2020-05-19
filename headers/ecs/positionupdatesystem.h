@@ -14,11 +14,11 @@ class EventManager;
 class PositionUpdateSystem
 {
 public:
-	PositionUpdateSystem(ComponentManager& compManager, EventManager& eventManager, const Rectangle& view);
-	void positionUpdate(int deltaTime);
+	PositionUpdateSystem(ComponentManager& compManager);
+	void positionUpdate(int deltaTime, const Rectangle& view);
 private:
 	ComponentManager& compManager;
-	Rectangle activeBounds;
+	const Rectangle& view;
 
 	// distance away from view where entities remain active
 	static const int MAX_ACTIVE_DISTANCE;
