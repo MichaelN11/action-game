@@ -1,6 +1,7 @@
 #include "SDL_image.h"
 #include "graphics.h"
-#include "texture.h"
+
+#include <cmath>
 
 Graphics::Graphics()
 {}
@@ -8,7 +9,6 @@ Graphics::Graphics()
 void Graphics::init(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale)
 {
 	this->spriteScale = spriteScale;
-	view = Rectangle(0, 0, width, height);
 	SDL_CreateWindowAndRenderer(width, height, windowFlags, &window, &renderer);
 	SDL_SetWindowTitle(window, title.c_str());
 }
@@ -53,7 +53,7 @@ bool Graphics::loadTilesheet(const std::string& filePath, int tileWidth, int til
 	return (textureMap.count(filePath) > 0);
 }
 
-void Graphics::drawImage(const std::string& filePath, Rectangle destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, Rectangle<int> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -65,7 +65,7 @@ void Graphics::drawImage(const std::string& filePath, Rectangle destinationRect,
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, Rectangle sourceRect, Rectangle destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, Rectangle<int> sourceRect, Rectangle<int> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -77,7 +77,7 @@ void Graphics::drawImage(const std::string& filePath, Rectangle sourceRect, Rect
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -85,11 +85,13 @@ void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle des
 		if (scaled)
 			scaleRect(destinationRect);
 
-		SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(texture->getTileRect(tileNum)), &getSDLRect(destinationRect));
+		Rectangle<int> sourceRect = texture->getTileRect(tileNum);
+
+		SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(sourceRect), &getSDLRect(destinationRect));
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 
@@ -135,21 +137,91 @@ Texture* Graphics::getTexture(const std::string& filePath)
 		return nullptr;
 }
 
-void Graphics::offsetView(int xOffset, int yOffset)
+void Graphics::createBackgroundTexture(int width, int height)
 {
-	view.setX(view.getX() + xOffset);
-	view.setY(view.getY() + yOffset);
+	background = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height));
+	bgWidth = width;
+	bgHeight = height;
 }
 
-void Graphics::setView(int x, int y)
+void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
-	view.setX(x);
-	view.setY(y);
+	if (background)
+	{
+		SDL_SetRenderTarget(renderer, background->getSDLTexture());
+
+		Texture* texture = getTexture(filePath);
+
+		if (texture)
+		{
+			float angle = 0;
+			int flip = SDL_FLIP_NONE;
+			convertRotation(angle, flip, flipDiagonal, flipHorizontal, flipVertical);
+
+			if (scaled)
+				scaleRect(destinationRect);
+
+			SDL_RenderCopyEx(renderer, texture->getSDLTexture(), &getSDLRect(texture->getTileRect(tileNum)), &getSDLRect(destinationRect), angle, nullptr, (SDL_RendererFlip)flip);
+		}
+
+		// reset render target
+		SDL_SetRenderTarget(renderer, nullptr);
+	}
 }
 
-Rectangle Graphics::getView() const
+void Graphics::drawBackground(const Rectangle<float> view)
 {
-	return view;
+	int sourceX = (view.getX() > 0) ? (int)std::round(view.getX()) : 0;
+	int sourceY = (view.getY() > 0) ? (int)std::round(view.getY()) : 0;
+
+	int rectWidth;
+	if (view.getX() < 0)
+	{
+		if (view.getX2() > bgWidth)
+			rectWidth = bgWidth;
+		else if (view.getX2() > 0)
+			rectWidth = (int)(view.getX2() + 0.5f);
+		else
+			rectWidth = 0;
+	}
+	else if (view.getX2() > bgWidth)
+	{
+		if (view.getX() < bgWidth)
+			rectWidth = bgWidth - (int)(view.getX() + 0.5f);
+		else
+			rectWidth = 0;
+	}
+	else
+	{
+		rectWidth = (int)(view.getW() + 0.5f);
+	}
+	int rectHeight;
+	if (view.getY() < 0)
+	{
+		if (view.getY2() > bgHeight)
+			rectHeight = bgHeight;
+		else if (view.getY2() > 0)
+			rectHeight = (int)(view.getY2() + 0.5f);
+		else
+			rectHeight = 0;
+	}
+	else if (view.getY2() > bgHeight)
+	{
+		if (view.getY() < bgHeight)
+			rectHeight = bgHeight - (int)(view.getY() + 0.5f);
+		else
+			rectHeight = 0;
+	}
+	else
+	{
+		rectHeight = (int)(view.getH()+ 0.5f);
+	}
+	int destX = (view.getX() > 0) ? 0 : (int)(view.getX() + 0.5f) * -1;
+	int destY = (view.getY() > 0) ? 0 : (int)(view.getY() + 0.5f) * -1;
+	Rectangle<int> srcRect(sourceX, sourceY, rectWidth, rectHeight);
+	Rectangle<int> destRect(destX, destY, rectWidth, rectHeight);
+
+	SDL_RenderCopy(renderer, background->getSDLTexture(), &getSDLRect(srcRect), &getSDLRect(destRect));
 }
 
 float Graphics::getScale() const
@@ -157,12 +229,12 @@ float Graphics::getScale() const
 	return spriteScale;
 }
 
-SDL_Rect Graphics::getSDLRect(Rectangle rect)
+SDL_Rect Graphics::getSDLRect(Rectangle<int> rect)
 {
 	return SDL_Rect({ rect.getX(), rect.getY(), rect.getW(), rect.getH() });
 }
 
-void Graphics::scaleRect(Rectangle& rect)
+void Graphics::scaleRect(Rectangle<int>& rect)
 {
 	rect.setH((int)(rect.getH() * spriteScale));
 	rect.setW((int)(rect.getW() * spriteScale));

@@ -14,7 +14,7 @@ Texture::Texture(SDL_Texture* texture, int width, int height, int spriteWidth, i
 	tilesheet.reserve(totalTiles);
 	for (int i = 0; i < totalTiles; i++)
 	{
-		Rectangle tileRect((i % widthInTiles) * (spriteWidth + tileSpacing),
+		Rectangle<int> tileRect((i % widthInTiles) * (spriteWidth + tileSpacing),
 			(i / widthInTiles) * (spriteHeight + tileSpacing),
 			spriteWidth,
 			spriteHeight);
@@ -33,10 +33,10 @@ SDL_Texture* Texture::getSDLTexture()
 	return sdlTexture;
 }
 
-Rectangle Texture::getTileRect(size_t tileNum) const
+Rectangle<int> Texture::getTileRect(size_t tileNum) const
 {
 	if (tileNum > 0 && tileNum <= tilesheet.size())
 		return tilesheet[tileNum - 1];
 	else
-		return Rectangle( 0, 0, 0, 0 );
+		return Rectangle<int>( 0, 0, 0, 0 );
 }

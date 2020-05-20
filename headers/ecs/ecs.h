@@ -23,11 +23,13 @@ class ECS
 {
 public:
 	ECS(EventManager& eventManager);
-	void draw(Graphics& graphics);
-	void update(int deltaTime, const Rectangle& view);
+	void draw(Graphics& graphics, const Rectangle<float>& view);
+	void update(int deltaTime, const Rectangle<float>& view);
 	
 	void createEntity(const EntityData& data);
 	void createEntity(float x, float y, const EntityData& data);
+
+	std::pair<float, float> getPlayerPosition();
 
 	static const EntityData PLAYER;
 	static const EntityData DUMMY;

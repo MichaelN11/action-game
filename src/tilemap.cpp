@@ -45,49 +45,42 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 	tileHeight = data.tileHeight;
 }
 
-void TileMap::draw(Graphics& graphics)
+void TileMap::drawToBackground(Graphics& graphics)
 {
-	// Portion of the tilemap being drawn
-	Rectangle view = graphics.getView();
-
 	int scaledTileWidth = (int)(tileWidth * graphics.getScale());
 	int scaledTileHeight = (int)(tileHeight * graphics.getScale());
 
-	// first and last tiles to draw
-	int firstTileCol = std::max(view.getX() / scaledTileWidth, 0);
-	int firstTileRow = std::max(view.getY() / scaledTileHeight, 0);
-	int lastTileCol = std::min((view.getX2() / scaledTileWidth) + 1, mapWidth);
-	int lastTileRow = std::min((view.getY2() / scaledTileHeight) + 1, mapHeight);
-	// offset that is subtracted from the axis when starting drawing
-	int drawOffsetX = 0, drawOffsetY = 0;
-	if (view.getX() >= 0)
-		drawOffsetX = view.getX() % scaledTileWidth;
-	else
-		drawOffsetX = view.getX();
-	if (view.getY() >= 0)
-		drawOffsetY = view.getY() % scaledTileHeight;
-	else
-		drawOffsetY = view.getY();
+	graphics.createBackgroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
 
 	for (std::vector<std::vector<Tile>> layer : tileGridLayers)
 	{
-		for (int rowNum = firstTileRow; rowNum < lastTileRow; rowNum++)
+		for (size_t rowNum = 0; rowNum < layer.size(); rowNum++)
 		{
-			for (int colNum = firstTileCol; colNum < lastTileCol; colNum++)
+			for (size_t colNum = 0; colNum < layer.at(0).size(); colNum++)
 			{
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle destRect((colNum - firstTileCol) * scaledTileWidth - drawOffsetX,
-						(rowNum - firstTileRow) * scaledTileHeight - drawOffsetY,
+					Rectangle<int> destRect(colNum * scaledTileWidth,
+						rowNum * scaledTileHeight,
 						scaledTileWidth,
 						scaledTileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
-					graphics.drawImage(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, false);
+					graphics.drawToBackgroundTexture(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, false);
 				}
 			}
 		}
 	}
+}
+
+int TileMap::getWidth() const
+{
+	return mapWidth * tileWidth;
+}
+
+int TileMap::getHeight() const
+{
+	return mapHeight * tileHeight;
 }

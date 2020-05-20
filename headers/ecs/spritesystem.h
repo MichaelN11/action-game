@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rectangle.h"
+
 // forward declare
 class EventManager;
 class ComponentManager;
@@ -9,7 +11,7 @@ class SpriteSystem
 {
 public:
 	SpriteSystem(ComponentManager& compManager);
-	void drawSprites(Graphics& graphics);
+	void drawSprites(Graphics& graphics, const Rectangle<float>& view);
 private:
 	ComponentManager& compManager;
 };

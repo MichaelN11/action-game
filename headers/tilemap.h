@@ -19,7 +19,10 @@ class TileMap
 {
 public:
 	TileMap(Graphics &graphics, const std::string& tmxFileName);
-	void draw(Graphics& graphics);
+	// Draws the entire tilemap into the background texture
+	void drawToBackground(Graphics& graphics);
+	int getWidth() const;
+	int getHeight() const;
 private:
 	// height and width in tiles
 	int mapWidth;

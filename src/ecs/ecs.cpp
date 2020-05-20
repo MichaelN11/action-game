@@ -2,6 +2,9 @@
 #include "graphics.h"
 #include "eventmanager.h"
 
+// temp
+#include <cmath>
+
 ECS::ECS(EventManager& eventManager) :
 	playerSystem(compManager, eventManager),
 	posUpdateSystem(compManager),
@@ -10,20 +13,21 @@ ECS::ECS(EventManager& eventManager) :
 
 }
 
-void ECS::draw(Graphics& graphics)
+void ECS::draw(Graphics& graphics, const Rectangle<float>& view)
 {
-	// TEMP CAMERA
-	Rectangle view = graphics.getView();
-	auto playerList = compManager.getComponentList<PlayerComponent>();
-	PositionComponent* playerPos = compManager.getComponent<PositionComponent>(playerList.at(0)->entityId);
-	graphics.setView((int)playerPos->x - view.getW() / 2, (int)playerPos->y - view.getH() / 2);
-
-	spriteSystem.drawSprites(graphics);
+	spriteSystem.drawSprites(graphics, view);
 }
 
-void ECS::update(int deltaTime, const Rectangle& view)
+void ECS::update(int deltaTime, const Rectangle<float>& view)
 {
 	posUpdateSystem.positionUpdate(deltaTime, view);
+}
+
+std::pair<float, float> ECS::getPlayerPosition()
+{
+	auto playerList = compManager.getComponentList<PlayerComponent>();
+	PositionComponent* playerPos = compManager.getComponent<PositionComponent>(playerList.at(0)->entityId);
+	return std::make_pair(playerPos->x, playerPos->y);
 }
 
 void ECS::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)

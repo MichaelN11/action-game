@@ -9,6 +9,7 @@
 #include "eventmanager.h"
 #include "ecs/ecs.h"
 #include "graphics.h"
+#include "gameview.h"
 
 // forward declaration
 //class EventManager;
@@ -28,6 +29,7 @@ private:
 	Graphics graphics;
 	EventManager eventManager;
 	ECS ecs;
+	GameView gameView;
 
 	void gameLoop();
 	void draw(Graphics &graphics);

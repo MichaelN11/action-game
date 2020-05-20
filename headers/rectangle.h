@@ -1,65 +1,66 @@
 #pragma once
 
+template<typename T>
 class Rectangle
 
 {
 public:
-	Rectangle(int x = 0, int y = 0, int w = 0, int h = 0) :
+	Rectangle(T x = 0, T y = 0, T w = 0, T h = 0) :
 		x(x),
 		y(y),
 		w(w),
 		h(h)
 	{}
 
-	bool contains(int pointX, int pointY) const
+	bool contains(T pointX, T pointY) const
 	{
 		return (pointX > x && pointX < getX2() && pointY > y && pointY < getY2());
 	}
 
-	int getX() const
+	T getX() const
 	{
 		return x;
 	}
-	int getY() const
+	T getY() const
 	{
 		return y;
 	}
-	int getW() const
+	T getW() const
 	{
 		return w;
 	}
-	int getH() const
+	T getH() const
 	{
 		return h;
 	}
-	void setX(int n)
+	void setX(T n)
 	{
 		x = n;
 	}
-	void setY(int n)
+	void setY(T n)
 	{
 		y = n;
 	}
-	void setW(int n)
+	void setW(T n)
 	{
 		w = n;
 	}
-	void setH(int n)
+	void setH(T n)
 	{
 		h = n;
 	}
 
-	int getX2() const
+	T getX2() const
 	{
 		return x + w;
 	}
-	int getY2() const
+	T getY2() const
 	{
 		return y + h;
 	}
 private:
-	int x;
-	int y;
-	int w;
-	int h;
+	T x;
+	T y;
+	T w;
+	T h;
 };

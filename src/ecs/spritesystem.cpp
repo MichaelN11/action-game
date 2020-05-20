@@ -4,14 +4,14 @@
 #include "ecs/componentmanager.h"
 #include "graphics.h"
 #include "eventmanager.h"
+
 SpriteSystem::SpriteSystem(ComponentManager& compManager) :
 	compManager(compManager)
 {
 }
 
-void SpriteSystem::drawSprites(Graphics& graphics)
+void SpriteSystem::drawSprites(Graphics& graphics, const Rectangle<float>& view)
 {
-	Rectangle view = graphics.getView();
 	auto spriteCompMap = compManager.getComponentSorted<SpriteComponent>();
 	for (auto layerSpritePair : spriteCompMap)
 	{
@@ -22,7 +22,9 @@ void SpriteSystem::drawSprites(Graphics& graphics)
 			PositionComponent* position = compManager.getComponent<PositionComponent>(sprite->entityId);
 			if (position)
 			{
-				Rectangle rect((int)position->x - view.getX(), (int)position->y - view.getY(), sprite->width, sprite->height);
+				int destX = (int)std::round(position->x - view.getX());
+				int destY = (int)std::round(position->y - view.getY());
+				Rectangle<int> rect(destX, destY, sprite->width, sprite->height);
 				graphics.drawImage(sprite->filePath, sprite->tileNum, rect, true);
 			}
 		}

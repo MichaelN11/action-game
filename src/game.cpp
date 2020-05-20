@@ -15,7 +15,8 @@ const float Game::SPRITE_SCALE = 2.0;
 const std::string filePath = "content/tilesheets/1bit.png";
 
 Game::Game() :
-	ecs(eventManager)
+	ecs(eventManager),
+	gameView(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, &ecs)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	graphics.init(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE);
@@ -36,9 +37,18 @@ void Game::gameLoop()
 	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
+	tileMap->drawToBackground(graphics);
+
+	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap->getWidth() * SPRITE_SCALE), (int)(tileMap->getHeight() * SPRITE_SCALE)));
 
 	ecs.createEntity(300.f, 200.f, ECS::PLAYER);
 	ecs.createEntity(300.f, 300.f, ECS::DUMMY);
+	ecs.createEntity(400.f, 300.f, ECS::DUMMY);
+	ecs.createEntity(500.f, 300.f, ECS::DUMMY);
+	ecs.createEntity(600.f, 300.f, ECS::DUMMY);
+	ecs.createEntity(300.f, 400.f, ECS::DUMMY);
+	ecs.createEntity(300.f, 500.f, ECS::DUMMY);
+	ecs.createEntity(300.f, 600.f, ECS::DUMMY);
 
 	while (gameRunning)
 	{
@@ -61,15 +71,18 @@ void Game::draw(Graphics& graphics)
 {
 	graphics.clear();
 
-	tileMap->draw(graphics);
-	ecs.draw(graphics);
+	std::cout << "x: " << gameView.getView().getX() << ",   y: " << gameView.getView().getY() << std::endl;
+	//tileMap->draw(graphics);
+	graphics.drawBackground(gameView.getView());
+	ecs.draw(graphics, gameView.getView());
 
 	graphics.display();
 }
 
 void Game::update(int deltaTime)
 {
-	ecs.update(deltaTime, graphics.getView());
+	gameView.update(deltaTime);
+	ecs.update(deltaTime, gameView.getView());
 }
 
 void Game::handleEvents(Input& input, SDL_Event& event)
