@@ -3,10 +3,17 @@
 #include "ecs/playersystem.h"
 #include "ecs/positionupdatesystem.h"
 #include "ecs/spritesystem.h"
+#include "ecs/animationsystem.h"
 
 // forward declare
 class Graphics;
 class EventManager;
+
+struct PlayerAnim
+{
+	static std::unordered_map<DrawState, std::vector<AnimationFrame>> create_map();
+	static std::unordered_map<DrawState, std::vector<AnimationFrame>> map;
+};
 
 struct EntityData
 {
@@ -17,6 +24,8 @@ struct EntityData
 	int spriteLayer = -1;
 	float moveSpeed = -1.f;
 	bool player = false;
+	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
+	int animationTimeToUpdate = -1;
 };
 
 class ECS
@@ -43,4 +52,5 @@ private:
 	PlayerSystem playerSystem;
 	PositionUpdateSystem posUpdateSystem;
 	SpriteSystem spriteSystem;
+	AnimationSystem animationSystem;
 };

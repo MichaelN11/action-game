@@ -2,8 +2,8 @@
 #include "ecs/componentmanager.h"
 #include "eventmanager.h"
 
-//const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
-const float PlayerSystem::DIAGONAL_SPEED = 1.f;
+const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
+//const float PlayerSystem::DIAGONAL_SPEED = 1.f;
 
 PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventManager) :
 	compManager(compManager)
@@ -15,7 +15,7 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 				kdEvent.keyPressed == Keybind::left ||
 				kdEvent.keyPressed == Keybind::right)
 			{
-				setMovement(kdEvent.heldKeys);
+				parseMovement(kdEvent.heldKeys);
 			}
 		});
 	eventManager.registerListener<KeyUpEvent>([this](KeyUpEvent& kuEvent)
@@ -25,12 +25,12 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 				kuEvent.keyReleased == Keybind::left ||
 				kuEvent.keyReleased == Keybind::right)
 			{
-				setMovement(kuEvent.heldKeys);
+				parseMovement(kuEvent.heldKeys);
 			}
 		});
 }
 
-void PlayerSystem::setMovement(const std::unordered_map<Keybind, bool>& heldKeys)
+void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKeys)
 {
 	bool up = false, down = false, left = false, right = false;
 	auto upIt = heldKeys.find(Keybind::up);
@@ -48,43 +48,43 @@ void PlayerSystem::setMovement(const std::unordered_map<Keybind, bool>& heldKeys
 
 	if (up && left && !down && !right)
 	{
-		setMovespeed(-DIAGONAL_SPEED, -DIAGONAL_SPEED);
+		updateMovement(-DIAGONAL_SPEED, -DIAGONAL_SPEED);
 	}
 	else if (up && right && !down && !left)
 	{
-		setMovespeed(DIAGONAL_SPEED, -DIAGONAL_SPEED);
+		updateMovement(DIAGONAL_SPEED, -DIAGONAL_SPEED);
 	}
 	else if (down && right && !up && !left)
 	{
-		setMovespeed(DIAGONAL_SPEED, DIAGONAL_SPEED);
+		updateMovement(DIAGONAL_SPEED, DIAGONAL_SPEED);
 	}
 	else if (down && left && !up && !right)
 	{
-		setMovespeed(-DIAGONAL_SPEED, DIAGONAL_SPEED);
+		updateMovement(-DIAGONAL_SPEED, DIAGONAL_SPEED);
 	}
 	else if (up && !down)
 	{
-		setMovespeed(0, -1);
+		updateMovement(0, -1);
 	}
 	else if (right && !left)
 	{
-		setMovespeed(1, 0);
+		updateMovement(1, 0);
 	}
 	else if (down && !up)
 	{
-		setMovespeed(0, 1);
+		updateMovement(0, 1);
 	}
 	else if (left && !right)
 	{
-		setMovespeed(-1, 0);
+		updateMovement(-1, 0);
 	}
 	else
 	{
-		setMovespeed(0, 0);
+		updateMovement(0, 0);
 	}
 }
 
-void PlayerSystem::setMovespeed(float xDirection, float yDirection)
+void PlayerSystem::updateMovement(float xDirection, float yDirection)
 {
 	auto playerList = compManager.getComponentList<PlayerComponent>();
 	for (auto player : playerList)
@@ -94,6 +94,39 @@ void PlayerSystem::setMovespeed(float xDirection, float yDirection)
 			MovementComponent* movement = compManager.getComponent<MovementComponent>(player->entityId);
 			if (movement)
 			{
+				StateComponent* state = compManager.getComponent<StateComponent>(player->entityId);
+				if (yDirection == 0 && xDirection == 0)
+				{
+					switch (state->drawState)
+					{
+						case DrawState::walkRight:
+							state->drawState = DrawState::standRight;
+							break;
+						case DrawState::walkLeft:
+							state->drawState = DrawState::standLeft;
+							break;
+						case DrawState::walkUp:
+							state->drawState = DrawState::standUp;
+							break;
+						default:
+							state->drawState = DrawState::standDown;
+					}
+				}
+				else if (yDirection == 0)
+				{
+					if (xDirection > 0)
+						state->drawState = DrawState::walkRight;
+					else if (xDirection < 0)
+						state->drawState = DrawState::walkLeft;
+				}
+				else if (xDirection == 0)
+				{
+					if (yDirection > 0)
+						state->drawState = DrawState::walkDown;
+					else if (yDirection < 0)
+						state->drawState = DrawState::walkUp;
+				}
+
 				movement->dx = movement->moveSpeed * xDirection;
 				movement->dy = movement->moveSpeed * yDirection;
 			}

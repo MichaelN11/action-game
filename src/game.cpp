@@ -37,6 +37,7 @@ void Game::gameLoop()
 	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
 	tileMap = &tm;
 	graphics.loadTilesheet(filePath, 16, 16, 0);
+	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
 	tileMap->drawToBackground(graphics);
 
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap->getWidth() * SPRITE_SCALE), (int)(tileMap->getHeight() * SPRITE_SCALE)));
@@ -59,7 +60,7 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		//std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+		std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
 
@@ -71,7 +72,7 @@ void Game::draw(Graphics& graphics)
 {
 	graphics.clear();
 
-	std::cout << "x: " << gameView.getView().getX() << ",   y: " << gameView.getView().getY() << std::endl;
+	//std::cout << "x: " << gameView.getView().getX() << ",   y: " << gameView.getView().getY() << std::endl;
 	//tileMap->draw(graphics);
 	graphics.drawBackground(gameView.getView());
 	ecs.draw(graphics, gameView.getView());

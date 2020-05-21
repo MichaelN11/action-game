@@ -25,7 +25,7 @@ void SpriteSystem::drawSprites(Graphics& graphics, const Rectangle<float>& view)
 				int destX = (int)std::round(position->x - view.getX());
 				int destY = (int)std::round(position->y - view.getY());
 				Rectangle<int> rect(destX, destY, sprite->width, sprite->height);
-				graphics.drawImage(sprite->filePath, sprite->tileNum, rect, true);
+				graphics.drawImage(sprite->filePath, sprite->tileNum, rect, sprite->flipDiagonal, sprite->flipHorizontal, sprite->flipVertical, true);
 			}
 		}
 	}
