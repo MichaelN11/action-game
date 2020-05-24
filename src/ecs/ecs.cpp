@@ -56,11 +56,7 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 	}
 	if (data.boundingBox.getW() > 0)
 	{
-		compManager.addComponent(BoundingBoxComponent(entityId, data.boundingBox));
-	}
-	if (data.solid)
-	{
-		compManager.addComponent(SolidComponent(entityId));
+		compManager.addComponent(CollisionComponent(entityId, data.boundingBox, data.solid));
 	}
 }
 
@@ -132,9 +128,9 @@ const EntityData ECS::DUMMY =
 	// animation time to update
 	-1,
 	// bounding box
-	Rectangle<float>(),
+	Rectangle<float>(0.f, 0.f, 32.f, 32.f),
 	// solid
-	false
+	true
 };
 
 std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_map()

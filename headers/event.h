@@ -31,3 +31,10 @@ struct MoveEvent : Event
 	float dx;
 	float dy;
 };
+
+struct CollisionEvent : Event
+{
+	CollisionEvent(int colliderId, int otherId) : colliderId(colliderId), otherId(otherId) {}
+	int colliderId;
+	int otherId;
+};

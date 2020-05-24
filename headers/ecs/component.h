@@ -83,15 +83,10 @@ struct AnimationComponent : public Component
 	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
 };
 
-struct BoundingBoxComponent : public Component
+struct CollisionComponent : public Component
 {
-	BoundingBoxComponent(int entityId, Rectangle<float> boundingBox) : Component(entityId), boundingBox(boundingBox)
+	CollisionComponent(int entityId, Rectangle<float> boundingBox, bool solid) : Component(entityId), boundingBox(boundingBox), solid(solid)
 	{}
+	bool solid = false;
 	Rectangle<float> boundingBox;
-};
-
-struct SolidComponent : public Component
-{
-	SolidComponent(int entityId) : Component(entityId)
-	{}
 };
