@@ -17,10 +17,8 @@
 class Graphics
 {
 public:
-	Graphics();
+	Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale);
 	~Graphics();
-
-	void init(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale);
 
 	// First checks the textureMap to see if the filePath texture has already been loaded,
 	// if not, loads it into the map, freeing the surface used. Returns the texture from the map.

@@ -24,14 +24,10 @@ struct KeyUpEvent : Event
 struct QuitEvent : Event
 {};
 
-//struct UpdateEvent : Event
-//{
-//	UpdateEvent(int deltaTime) : deltaTime(deltaTime) {}
-//	int deltaTime;
-//};
-
-//struct DrawEvent : Event
-//{
-//	DrawEvent(Graphics* g) : graphics(g) {}
-//	Graphics* graphics = nullptr;
-//};
+struct MoveEvent : Event
+{
+	MoveEvent(int entityId, float dx, float dy) : entityId(entityId), dx(dx), dy(dy) {}
+	int entityId;
+	float dx;
+	float dy;
+};

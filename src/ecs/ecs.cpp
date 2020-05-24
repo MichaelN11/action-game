@@ -5,11 +5,13 @@
 // temp
 #include <cmath>
 
-ECS::ECS(EventManager& eventManager) :
+ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
+	eventManager(eventManager),
 	playerSystem(compManager, eventManager),
 	posUpdateSystem(compManager),
 	spriteSystem(compManager),
-	animationSystem(compManager)
+	animationSystem(compManager),
+	collisionSystem(compManager, eventManager, tileMap)
 {
 
 }
@@ -21,7 +23,7 @@ void ECS::draw(Graphics& graphics, const Rectangle<float>& view)
 
 void ECS::update(int deltaTime, const Rectangle<float>& view)
 {
-	posUpdateSystem.positionUpdate(deltaTime, view);
+	posUpdateSystem.positionUpdate(deltaTime, view, eventManager);
 
 	animationSystem.update(deltaTime);
 }
@@ -49,8 +51,16 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 	}
 	if (data.animationMap)
 	{
-		compManager.addComponent(StateComponent(entityId, DrawState::walkLeft));
+		compManager.addComponent(StateComponent(entityId, DrawState::standDown));
 		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap));
+	}
+	if (data.boundingBox.getW() > 0)
+	{
+		compManager.addComponent(BoundingBoxComponent(entityId, data.boundingBox));
+	}
+	if (data.solid)
+	{
+		compManager.addComponent(SolidComponent(entityId));
 	}
 }
 
@@ -88,21 +98,25 @@ const EntityData ECS::PLAYER =
 	// sprite layer
 	2,
 	// move speed
-	0.1f,
+	0.2f,
 	// is player
 	true,
 	// animation map
 	&PlayerAnim::map,
 	// animation time to update
-	150
+	150,
+	// bounding box
+	Rectangle<float>(8.f, 8.f, 16.f, 24.f),
+	// solid
+	true
 };
 
 const EntityData ECS::DUMMY =
 {
 	// sprite file name path
-	"content/tilesheets/1bit.png",
+	"content/tilesheets/tileset_legacy.png",
 	// tile number on spritesheet
-	26,
+	32,
 	// sprite width
 	16,
 	// sprite height
@@ -116,7 +130,11 @@ const EntityData ECS::DUMMY =
 	// animation map
 	nullptr,
 	// animation time to update
-	-1
+	-1,
+	// bounding box
+	Rectangle<float>(),
+	// solid
+	false
 };
 
 std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_map()

@@ -5,7 +5,10 @@
 #include "tmxparser.h"
 #include "rectangle.h"
 
-TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
+TileMap::TileMap(Graphics& graphics) : graphics(graphics)
+{}
+
+void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_map<int, Rectangle<float>>& tileCollisions)
 {
 	TMXData data = tmxparser::parseTileMap(tmxFileName);
 	for (std::vector<std::vector<TMXTile>> tmxLayer : data.tileGridLayers)
@@ -23,6 +26,7 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 				tile.flippedHorizontally = tmxTile.flippedHorizontally;
 				tile.flippedVertically = tmxTile.flippedVertically;
 				tile.id = tmxTile.gid;
+
 				tile.tileSheetId = tmxTile.tileSetId;
 				row.push_back(tile);
 			}
@@ -39,16 +43,36 @@ TileMap::TileMap(Graphics &graphics, const std::string& tmxFileName)
 		tileSheetPaths.push_back(tileSet.source);
 	}
 
+	// creating collision grid
+	int collisionLayerNum = 0;
+	for (std::vector<Tile> tileRow : tileGridLayers.at(collisionLayerNum))
+	{
+		std::vector<Rectangle<float>> collisionRow;
+		for (Tile tile : tileRow)
+		{
+			auto it = tileCollisions.find(tile.id);
+			if (it != tileCollisions.end())
+			{
+				collisionRow.push_back(it->second);
+			}
+			else
+			{
+				collisionRow.push_back(Rectangle<float>());
+			}
+		}
+		collisionGrid.push_back(collisionRow);
+	}
+
 	mapWidth = data.mapWidth;
 	mapHeight = data.mapHeight;
 	tileWidth = data.tileWidth;
 	tileHeight = data.tileHeight;
 }
 
-void TileMap::drawToBackground(Graphics& graphics)
+void TileMap::drawToBackground()
 {
-	int scaledTileWidth = (int)(tileWidth * graphics.getScale());
-	int scaledTileHeight = (int)(tileHeight * graphics.getScale());
+	int scaledTileWidth = getScaledTileWidth();
+	int scaledTileHeight = getScaledTileHeight();
 
 	graphics.createBackgroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
 
@@ -83,4 +107,29 @@ int TileMap::getWidth() const
 int TileMap::getHeight() const
 {
 	return mapHeight * tileHeight;
+}
+
+int TileMap::getScaledTileWidth() const
+{
+	return (int)(tileWidth * graphics.getScale());
+}
+
+int TileMap::getScaledTileHeight() const
+{
+	return (int)(tileHeight * graphics.getScale());
+}
+
+int TileMap::getHeightInTiles() const
+{
+	return mapHeight;
+}
+
+int TileMap::getWidthInTiles() const
+{
+	return mapWidth;
+}
+
+const std::vector<std::vector<Rectangle<float>>>& TileMap::getCollisionGrid() const
+{
+	return collisionGrid;
 }

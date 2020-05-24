@@ -10,14 +10,12 @@
 #include "ecs/ecs.h"
 #include "graphics.h"
 #include "gameview.h"
+#include "tilemap.h"
 
 // forward declaration
 //class EventManager;
 class Graphics;
 union SDL_Event;
-
-//temporary
-class TileMap;
 
 class Game
 {
@@ -41,6 +39,16 @@ private:
 	static const int MIN_FRAMERATE;
 	static const float SPRITE_SCALE;
 
+	//struct SDLInit
+	//{
+	//	SDLInit()
+	//	{
+	//		SDL_Init(SDL_INIT_EVERYTHING);
+	//	}
+	//};
+
+	//SDLInit sdlInit;
+
 	//temporary
-	TileMap* tileMap;
+	TileMap tileMap;
 };

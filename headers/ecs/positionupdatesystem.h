@@ -15,7 +15,7 @@ class PositionUpdateSystem
 {
 public:
 	PositionUpdateSystem(ComponentManager& compManager);
-	void positionUpdate(int deltaTime, const Rectangle<float>& view);
+	void positionUpdate(int deltaTime, const Rectangle<float>& view, EventManager& eventManager);
 private:
 	ComponentManager& compManager;
 	const Rectangle<float>& view;

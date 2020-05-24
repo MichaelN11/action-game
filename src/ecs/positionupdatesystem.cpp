@@ -1,8 +1,7 @@
 #include "ecs/positionupdatesystem.h"
 #include "eventmanager.h"
 #include "ecs/componentmanager.h"
-
-#include <iostream>
+#include "rectangle.h"
 
 const int PositionUpdateSystem::MAX_ACTIVE_DISTANCE = 100;
 
@@ -13,7 +12,7 @@ PositionUpdateSystem::PositionUpdateSystem(ComponentManager& compManager) :
 }
 
 // For every entity with a position, check if entity is active, if so, check if entity can move and move it, then check if entity is within the active bounds. if not, make it inactive.
-void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>& view)
+void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>& view, EventManager& eventManager)
 {
 	Rectangle<float> activeBounds = Rectangle<float>(view.getX() - MAX_ACTIVE_DISTANCE, view.getY() - MAX_ACTIVE_DISTANCE,
 		view.getW() + MAX_ACTIVE_DISTANCE * 2, view.getH() + MAX_ACTIVE_DISTANCE * 2);
@@ -26,8 +25,12 @@ void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>&
 			MovementComponent* movement = compManager.getComponent<MovementComponent>(position->entityId);
 			if (movement)
 			{
-				position->x += movement->dx * deltaTime;
-				position->y += movement->dy * deltaTime;
+				if (movement->dx != 0 || movement->dy != 0)
+				{
+					position->x += movement->dx * deltaTime;
+					position->y += movement->dy * deltaTime;
+					eventManager.fireEvent(MoveEvent(position->entityId, movement->dx, movement->dy));
+				}
 			}
 
 			// if entity not in active bounds and is not a player, make it inactive

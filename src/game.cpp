@@ -15,11 +15,12 @@ const float Game::SPRITE_SCALE = 2.0;
 const std::string filePath = "content/tilesheets/1bit.png";
 
 Game::Game() :
-	ecs(eventManager),
+	//sdlInit(),
+	graphics(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE),
+	tileMap(graphics),
+	ecs(eventManager, tileMap),
 	gameView(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, &ecs)
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
-	graphics.init(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE);
 	gameLoop();
 }
 
@@ -34,15 +35,24 @@ void Game::gameLoop()
 	int deltaTimeMS, currentTimeMS;
 	int lastTimeMS = SDL_GetTicks();
 
-	TileMap tm(graphics, "content/maps/sample_fantasy.tmx");
-	tileMap = &tm;
+	std::unordered_map<int, Rectangle<float>> tileCollisions;
+	std::vector<int> solidTileIds = { 33, 68, 137, 138, 417, 326, 227, 387, 386, 385, 354, 369, 418, 401, 453, 359, 556, 297, 
+		38, 241, 293, 292, 488, 424, 358, 523, 524, 525, 491, 492, 493, 166, 451, 481, 450, 449, 450, 452, 71, 422, 271, 102 };
+	for (int id : solidTileIds)
+	{
+		tileCollisions.emplace(id, Rectangle<float>(0.f, 0.f, 32.f, 24.f));
+	}
+
+	tileMap.initFromTMX("content/maps/sample_fantasy.tmx", tileCollisions);
+
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
-	tileMap->drawToBackground(graphics);
 
-	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap->getWidth() * SPRITE_SCALE), (int)(tileMap->getHeight() * SPRITE_SCALE)));
+	tileMap.drawToBackground();
 
-	ecs.createEntity(300.f, 200.f, ECS::PLAYER);
+	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * SPRITE_SCALE), (int)(tileMap.getHeight() * SPRITE_SCALE)));
+
+	ecs.createEntity(200.f, 200.f, ECS::PLAYER);
 	ecs.createEntity(300.f, 300.f, ECS::DUMMY);
 	ecs.createEntity(400.f, 300.f, ECS::DUMMY);
 	ecs.createEntity(500.f, 300.f, ECS::DUMMY);
@@ -73,7 +83,6 @@ void Game::draw(Graphics& graphics)
 	graphics.clear();
 
 	//std::cout << "x: " << gameView.getView().getX() << ",   y: " << gameView.getView().getY() << std::endl;
-	//tileMap->draw(graphics);
 	graphics.drawBackground(gameView.getView());
 	ecs.draw(graphics, gameView.getView());
 

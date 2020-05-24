@@ -3,7 +3,6 @@
 #include "rectangle.h"
 
 // forward declare
-class EventManager;
 class ComponentManager;
 class Graphics;
 

@@ -3,10 +3,7 @@
 
 #include <cmath>
 
-Graphics::Graphics()
-{}
-
-void Graphics::init(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale)
+Graphics::Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale)
 {
 	this->spriteScale = spriteScale;
 	SDL_CreateWindowAndRenderer(width, height, windowFlags, &window, &renderer);

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "enums.h"
+#include "rectangle.h"
 
 struct Component
 {
@@ -80,4 +81,17 @@ struct AnimationComponent : public Component
 	int frameNum = 0;
 	int timeToUpdate;
 	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
+};
+
+struct BoundingBoxComponent : public Component
+{
+	BoundingBoxComponent(int entityId, Rectangle<float> boundingBox) : Component(entityId), boundingBox(boundingBox)
+	{}
+	Rectangle<float> boundingBox;
+};
+
+struct SolidComponent : public Component
+{
+	SolidComponent(int entityId) : Component(entityId)
+	{}
 };

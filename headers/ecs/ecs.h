@@ -4,10 +4,12 @@
 #include "ecs/positionupdatesystem.h"
 #include "ecs/spritesystem.h"
 #include "ecs/animationsystem.h"
+#include "ecs/collisionsystem.h"
 
 // forward declare
 class Graphics;
 class EventManager;
+class TileMap;
 
 struct PlayerAnim
 {
@@ -26,12 +28,14 @@ struct EntityData
 	bool player = false;
 	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
 	int animationTimeToUpdate = -1;
+	Rectangle<float> boundingBox;
+	bool solid = false;
 };
 
 class ECS
 {
 public:
-	ECS(EventManager& eventManager);
+	ECS(EventManager& eventManager, const TileMap& tileMap);
 	void draw(Graphics& graphics, const Rectangle<float>& view);
 	void update(int deltaTime, const Rectangle<float>& view);
 	
@@ -48,9 +52,11 @@ private:
 	int getNextEntityId();
 	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data);
 
+	EventManager& eventManager;
 	ComponentManager compManager;
 	PlayerSystem playerSystem;
 	PositionUpdateSystem posUpdateSystem;
 	SpriteSystem spriteSystem;
 	AnimationSystem animationSystem;
+	CollisionSystem collisionSystem;
 };
