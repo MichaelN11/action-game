@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <array>
 
 #include "event.h"
 
@@ -67,7 +68,10 @@ public:
 	}
 
 private:
-	std::unordered_map<int, std::unique_ptr<IEventHandler>> handlerMap;
+	//std::unordered_map<int, std::unique_ptr<IEventHandler>> handlerMap;
+
+	const static int MAX_EVENT_TYPES = 100;
+	std::array<std::unique_ptr<IEventHandler>, MAX_EVENT_TYPES> eventHandlerArray;
 
 	static int getNextId()
 	{
@@ -87,10 +91,12 @@ private:
 	EventHandler<EventType>* getHandler()
 	{
 		int eventTypeId = EventManager::getEventTypeId<EventType>();
-		auto it = handlerMap.find(eventTypeId);
-		if (it == handlerMap.end())
-			handlerMap.emplace(eventTypeId, std::make_unique<EventHandler<EventType>>());
-		IEventHandler* iPtr = handlerMap.at(eventTypeId).get();
+		auto& uniquePtr = eventHandlerArray.at(eventTypeId);
+		if (!uniquePtr)
+		{
+			uniquePtr = std::make_unique<EventHandler<EventType>>();
+		}
+		IEventHandler* iPtr = uniquePtr.get();
 		EventHandler<EventType>* hPtr = static_cast<EventHandler<EventType>*>(iPtr);
 		return hPtr;
 	}

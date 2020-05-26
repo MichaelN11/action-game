@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <map>
 #include <memory>
+#include <array>
 
 #include "component.h"
 
@@ -117,6 +118,39 @@ public:
 			return nullptr;
 	}
 
+	/// TESTING
+	// TESTING
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	//TESTING
+	//template<>
+	//InactiveComponent* getComponent<InactiveComponent>(int entityId)
+	//{
+	//	int componentTypeId = ComponentManager::getComponentTypeId<InactiveComponent>();
+	//	auto it = componentHolderMap.find(componentTypeId);
+	//	if (it == componentHolderMap.end())
+	//		componentHolderMap.emplace(componentTypeId, std::make_unique<ComponentHolder<InactiveComponent>>());
+	//	IComponentHolder* iPtr = componentHolderMap.at(componentTypeId).get();
+
+	//	ComponentHolder<InactiveComponent>* hPtr = static_cast<ComponentHolder<InactiveComponent>*>(iPtr);
+
+	//	auto it2 = hPtr->componentMap.find(entityId);
+
+	//	if (it2 != hPtr->componentMap.end())
+	//	{
+	//		return it2->second.get();
+	//	}
+	//	else
+	//		return nullptr;
+	//}
+
+	//std::unique_ptr<InactiveComponent> ictest;
+
+	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
 	// If vector of componenttype is already filled, returns reference, otherwise fills it from map then returns reference
 	template<typename ComponentType>
 	std::vector<std::shared_ptr<ComponentType>>& getComponentList()
@@ -153,9 +187,9 @@ public:
 
 	void removeAllComponents(int entityId)
 	{
-		for (auto it = componentHolderMap.begin(); it != componentHolderMap.end(); ++it)
+		for (auto it = componentHolderArray.begin(); it != componentHolderArray.end(); ++it)
 		{
-			it->second.get()->removeEntity(entityId);
+			it->get()->removeEntity(entityId);
 		}
 	}
 
@@ -177,7 +211,10 @@ public:
 
 private:
 	// map of interface of component holders that gets casted to a holder of component type
-	std::unordered_map<int, std::unique_ptr<IComponentHolder>> componentHolderMap;
+	//std::unordered_map<int, std::unique_ptr<IComponentHolder>> componentHolderMap;
+
+	const static int MAX_COMPONENT_TYPES = 100;
+	std::array<std::unique_ptr<IComponentHolder>, MAX_COMPONENT_TYPES> componentHolderArray;
 
 	static int getNextId()
 	{
@@ -197,10 +234,12 @@ private:
 	ComponentHolder<ComponentType>* getHolder()
 	{
 		int componentTypeId = ComponentManager::getComponentTypeId<ComponentType>();
-		auto it = componentHolderMap.find(componentTypeId);
-		if (it == componentHolderMap.end())
-			componentHolderMap.emplace(componentTypeId, std::make_unique<ComponentHolder<ComponentType>>());
-		IComponentHolder* iPtr = componentHolderMap.at(componentTypeId).get();
+		auto& uniquePtr = componentHolderArray.at(componentTypeId);
+		if (!uniquePtr)
+		{
+			uniquePtr = std::make_unique<ComponentHolder<ComponentType>>();
+		}
+		IComponentHolder* iPtr = uniquePtr.get();
 		ComponentHolder<ComponentType>* hPtr = static_cast<ComponentHolder<ComponentType>*>(iPtr);
 		return hPtr;
 	}
