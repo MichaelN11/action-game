@@ -18,6 +18,7 @@ void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>&
 		view.getW() + MAX_ACTIVE_DISTANCE * 2, view.getH() + MAX_ACTIVE_DISTANCE * 2);
 
 	auto positionList = compManager.getComponentList<PositionComponent>();
+
 	for (auto position : positionList)
 	{
 		auto entity = compManager.getEntityComponents(position->entityId);

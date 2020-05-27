@@ -52,14 +52,21 @@ void Game::gameLoop()
 
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * SPRITE_SCALE), (int)(tileMap.getHeight() * SPRITE_SCALE)));
 
+	ecs.createEntity(300.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(332.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(364.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(396.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(428.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(460.f, 364.f, ECS::DUMMY);
+	ecs.createEntity(492.f, 364.f, ECS::DUMMY);
+
+	ecs.destroyEntity(3);
 	ecs.createEntity(200.f, 200.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::DUMMY);
-	ecs.createEntity(400.f, 300.f, ECS::DUMMY);
-	ecs.createEntity(500.f, 300.f, ECS::DUMMY);
-	ecs.createEntity(600.f, 300.f, ECS::DUMMY);
-	ecs.createEntity(300.f, 400.f, ECS::DUMMY);
-	ecs.createEntity(300.f, 500.f, ECS::DUMMY);
-	ecs.createEntity(300.f, 600.f, ECS::DUMMY);
+
+	for (int i = 0; i < 200; i++)
+	{
+		ecs.createEntity(-300.f, -600.f, ECS::DUMMY);
+	}
 
 	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
 	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
@@ -171,7 +178,8 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
+		if (deltaTimeMS > 20)
+			std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
 

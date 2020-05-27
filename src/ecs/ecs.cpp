@@ -5,6 +5,9 @@
 // temp
 #include <cmath>
 
+// DELETE LATER
+#include <iostream>
+
 ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	eventManager(eventManager),
 	playerSystem(compManager, eventManager),
@@ -26,6 +29,13 @@ void ECS::update(int deltaTime, const Rectangle<float>& view)
 	posUpdateSystem.positionUpdate(deltaTime, view, eventManager);
 
 	animationSystem.update(deltaTime);
+
+	afterUpdate();
+}
+
+void ECS::afterUpdate()
+{
+	collisionSystem.afterUpdate();
 }
 
 std::pair<float, float> ECS::getPlayerPosition()
@@ -37,6 +47,8 @@ std::pair<float, float> ECS::getPlayerPosition()
 
 void ECS::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
 {
+	std::cout << "Entity # " << entityId << " created." << std::endl;
+
 	if (data.spritePath != "")
 	{
 		compManager.addComponent(SpriteComponent(entityId, data.spritePath, data.tileNum, data.spriteWidth, data.spriteHeight, data.spriteLayer));
@@ -74,9 +86,26 @@ void ECS::createEntity(float x, float y, const EntityData& data)
 	createEntityFromData(compManager, entityId, data);
 }
 
+void ECS::destroyEntity(int entityId)
+{
+	compManager.removeAllComponents(entityId);
+	unusedEntityIds.push_back(entityId);
+
+	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
+}
+
 int ECS::getNextEntityId()
 {
-	return nextEntityId++;
+	if (unusedEntityIds.size() > 0)
+	{
+		int unusedId = unusedEntityIds.at(unusedEntityIds.size() - 1);
+		unusedEntityIds.pop_back();
+		return unusedId;
+	}
+	else
+	{
+		return nextEntityId++;
+	}
 }
 
 // sprite sheets need to be explicitly loaded with graphics class before they can be used

@@ -14,10 +14,13 @@ class CollisionSystem
 {
 public:
 	CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap);
+	void afterUpdate();
 private:
 	ComponentManager& compManager;
 	EventManager& eventManager;
 	const TileMap& tileMap;
+
+	std::vector<CollisionComponent*> collisionList;
 
 	void checkCollisions(int entityId);
 	void checkTileCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp);

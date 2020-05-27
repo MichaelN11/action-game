@@ -38,9 +38,11 @@ public:
 	ECS(EventManager& eventManager, const TileMap& tileMap);
 	void draw(Graphics& graphics, const Rectangle<float>& view);
 	void update(int deltaTime, const Rectangle<float>& view);
+	void afterUpdate();
 	
 	void createEntity(const EntityData& data);
 	void createEntity(float x, float y, const EntityData& data);
+	void destroyEntity(int entityId);
 
 	std::pair<float, float> getPlayerPosition();
 
@@ -48,6 +50,7 @@ public:
 	static const EntityData DUMMY;
 private:
 	int nextEntityId = 0;
+	std::vector<int> unusedEntityIds;
 
 	int getNextEntityId();
 	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data);

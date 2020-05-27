@@ -55,6 +55,7 @@ class ComponentManager
 {
 private:
 	const static int MAX_COMPONENT_TYPES = 100;
+	const static int MAX_NUM_ENTITIES = 1000;
 
 	static int getNextId()
 	{
@@ -155,15 +156,11 @@ public:
 
 	EntityComponents* getEntityComponents(int entityId)
 	{
-		auto it = entityIdMap.find(entityId);
-		if (it != entityIdMap.end())
-		{
-			return &(it->second);
-		}
+
+		if (entityId < (int)entityArray.size() && entityArray[entityId].componentArray.size() > 0)
+			return &entityArray[entityId];
 		else
-		{
 			return nullptr;
-		}
 	}
 
 	template<typename ComponentType>
@@ -182,9 +179,9 @@ public:
 
 		if (holder->componentList.size() == 0)
 		{
-			for (auto it = entityIdMap.begin(); it != entityIdMap.end(); ++it)
+			for (auto it = entityArray.begin(); it != entityArray.end(); ++it)
 			{
-				auto sharedPtr = it->second.getComponentShared<ComponentType>();
+				auto sharedPtr = it->getComponentShared<ComponentType>();
 				if (sharedPtr)
 				{
 					holder->componentList.push_back(sharedPtr);
@@ -209,24 +206,23 @@ public:
 
 		holder->removeEntity(entityId);
 
-		auto it = entityIdMap.find(entityId);
-		if (it != entityIdMap.end())
-		{
-			it->second.removeComponent<ComponentType>();
-		}
+		if (entityId < (int)entityArray.size())
+			entityArray[entityId].removeComponent<ComponentType>();
 	}
 
 	void removeAllComponents(int entityId)
 	{
 		for (auto it = componentHolderArray.begin(); it != componentHolderArray.end(); ++it)
 		{
-			it->get()->removeEntity(entityId);
+			if (*it)
+			{
+				it->get()->removeEntity(entityId);
+			}
 		}
 
-		auto it = entityIdMap.find(entityId);
-		if (it != entityIdMap.end())
+		if (entityId < (int)entityArray.size())
 		{
-			entityIdMap.erase(it);
+			entityArray[entityId] = EntityComponents();
 		}
 	}
 
@@ -247,10 +243,8 @@ public:
 	//}
 
 private:
-	// map of interface of component holders that gets casted to a holder of component type
-	//std::unordered_map<int, std::unique_ptr<IComponentHolder>> componentHolderMap;
 	std::array<std::unique_ptr<IComponentHolder>, MAX_COMPONENT_TYPES> componentHolderArray;
-	std::unordered_map<int, EntityComponents> entityIdMap;
+	std::array<EntityComponents, MAX_NUM_ENTITIES> entityArray;
 
 	template<typename ComponentType>
 	ComponentHolder<ComponentType>* getHolder()
@@ -270,18 +264,14 @@ private:
 	template<typename ComponentType>
 	void addComponentToEntityComponents(int entityId, std::shared_ptr<ComponentType> componentPtr)
 	{
-		EntityComponents* entity;
-		auto it = entityIdMap.find(entityId);
-		if (it == entityIdMap.end())
+		if (entityId < (int)entityArray.size())
 		{
-			entityIdMap.emplace(entityId, EntityComponents());
-			entity = &entityIdMap.at(entityId);
+			EntityComponents* entity;
+
+			entity = &(entityArray[entityId]);
+
+			entity->addComponent<ComponentType>(std::move(componentPtr));
 		}
-		else
-		{
-			entity = &(it->second);
-		}
-		entity->addComponent<ComponentType>(std::move(componentPtr));
 	}
 
 

@@ -36,19 +36,34 @@ void CollisionSystem::checkCollisions(int entityId)
 
 void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp)
 {
-	auto collisionList = compManager.getComponentList<CollisionComponent>();
+	// first collision check this update
+	if (collisionList.size() == 0)
+	{
+		auto newCollisionList = compManager.getComponentList<CollisionComponent>();
+		for (auto sharedPtr : newCollisionList)
+		{
+			collisionList.push_back(sharedPtr.get());
+		}
+	}
+
 	Rectangle<float> boundingBox = collisionComp->boundingBox;
 	boundingBox.shift(positionComp->x, positionComp->y);
 
 	float xMoveStored = 0;
 	float yMoveStored = 0;
 
-	for (auto other : collisionList)
+	auto it = collisionList.begin();
+	while (it != collisionList.end())
 	{
+		CollisionComponent* other = *it;
 		if (other->entityId != collisionComp->entityId)
 		{
 			auto entity = compManager.getEntityComponents(other->entityId);
-			if (!entity->getComponent<InactiveComponent>())
+			if (entity->getComponent<InactiveComponent>())
+			{
+				it = collisionList.erase(it);
+			}
+			else
 			{
 				PositionComponent* otherPos = entity->getComponent<PositionComponent>();
 
@@ -79,12 +94,21 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 
 					eventManager.fireEvent<CollisionEvent>(CollisionEvent(collisionComp->entityId, other->entityId));
 				}
+
+				++it;
 			}
 		}
+		else
+		{
+			++it;
+		}
 	}
-
-	positionComp->x += xMoveStored;
-	positionComp->y += yMoveStored;
+	
+	if (xMoveStored != 0 || yMoveStored != 0)
+	{
+		positionComp->x += xMoveStored;
+		positionComp->y += yMoveStored;
+	}
 }
 
 void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp)
@@ -135,4 +159,9 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 		positionComp->x += xMoveStored;
 		positionComp->y += yMoveStored;
 	}
+}
+
+void CollisionSystem::afterUpdate()
+{
+	collisionList.clear();
 }
