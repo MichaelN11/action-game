@@ -9,10 +9,11 @@ void AnimationSystem::update(int deltaTime)
 	auto animationList = compManager.getComponentList<AnimationComponent>();
 	for (auto animation : animationList)
 	{
-		auto sprite = compManager.getComponent<SpriteComponent>(animation->entityId);
+		auto entity = compManager.getEntityComponents(animation->entityId);
+		auto sprite = entity->getComponent<SpriteComponent>();
 		if (sprite)
 		{
-			auto state = compManager.getComponent<StateComponent>(animation->entityId);
+			auto state = entity->getComponent<StateComponent>();
 
 			// if state changed, set the sprite to frame 0 of the animation
 			if (state && animation->prevState != state->drawState)

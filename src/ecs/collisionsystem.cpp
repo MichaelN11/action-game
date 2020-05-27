@@ -45,35 +45,40 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 
 	for (auto other : collisionList)
 	{
-		if (other->entityId != collisionComp->entityId && !compManager.getComponent<InactiveComponent>(other->entityId))
+		if (other->entityId != collisionComp->entityId)
 		{
-			PositionComponent* otherPos = compManager.getComponent<PositionComponent>(other->entityId);
-			Rectangle<float> otherBox = other->boundingBox;
-			otherBox.shift(otherPos->x, otherPos->y);
-
-			if (boundingBox.isColliding(otherBox))
+			auto entity = compManager.getEntityComponents(other->entityId);
+			if (!entity->getComponent<InactiveComponent>())
 			{
-				if (collisionComp->solid && other->solid)
-				{
-					float xMove, yMove;
-					boundingBox.getCollisionDirection(otherBox, xMove, yMove);
-					if (xMove == 0 || yMove == 0)
-					{
-						positionComp->x += xMove;
-						positionComp->y += yMove;
-						boundingBox.shift(xMove, yMove);
-						xMoveStored = 0;
-						yMoveStored = 0;
-					}
-					else
-					{
-						// allow for sliding along "walls" made up of multiple entities while still checking for diagonal collision
-						xMoveStored = xMove;
-						yMoveStored = yMove;
-					}
-				}
+				PositionComponent* otherPos = entity->getComponent<PositionComponent>();
 
-				eventManager.fireEvent<CollisionEvent>(CollisionEvent(collisionComp->entityId, other->entityId));
+				Rectangle<float> otherBox = other->boundingBox;
+				otherBox.shift(otherPos->x, otherPos->y);
+
+				if (boundingBox.isColliding(otherBox))
+				{
+					if (collisionComp->solid && other->solid)
+					{
+						float xMove, yMove;
+						boundingBox.getCollisionDirection(otherBox, xMove, yMove);
+						if (xMove == 0 || yMove == 0)
+						{
+							positionComp->x += xMove;
+							positionComp->y += yMove;
+							boundingBox.shift(xMove, yMove);
+							xMoveStored = 0;
+							yMoveStored = 0;
+						}
+						else
+						{
+							// allow for sliding along "walls" made up of multiple entities while still checking for diagonal collision
+							xMoveStored = xMove;
+							yMoveStored = yMove;
+						}
+					}
+
+					eventManager.fireEvent<CollisionEvent>(CollisionEvent(collisionComp->entityId, other->entityId));
+				}
 			}
 		}
 	}

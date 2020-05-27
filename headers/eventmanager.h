@@ -5,6 +5,7 @@
 #include <memory>
 #include <functional>
 #include <array>
+#include <cassert>
 
 #include "event.h"
 
@@ -76,7 +77,9 @@ private:
 	static int getNextId()
 	{
 		static int id = 0;
-		return id++;
+		++id;
+		assert(id < MAX_EVENT_TYPES);
+		return id;
 	}
 
 	template<typename EventType>

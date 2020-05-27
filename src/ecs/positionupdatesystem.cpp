@@ -20,9 +20,10 @@ void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>&
 	auto positionList = compManager.getComponentList<PositionComponent>();
 	for (auto position : positionList)
 	{
-		if (!(compManager.getComponent<InactiveComponent>(position->entityId)))
+		auto entity = compManager.getEntityComponents(position->entityId);
+		if (!(entity->getComponent<InactiveComponent>()))
 		{
-			MovementComponent* movement = compManager.getComponent<MovementComponent>(position->entityId);
+			MovementComponent* movement = entity->getComponent<MovementComponent>();
 			if (movement)
 			{
 				if (movement->dx != 0 || movement->dy != 0)
@@ -35,7 +36,7 @@ void PositionUpdateSystem::positionUpdate(int deltaTime, const Rectangle<float>&
 
 			// if entity not in active bounds and is not a player, make it inactive
 			if (!(activeBounds.contains(position->x, position->y)) &&
-				!(compManager.getComponent<PlayerComponent>(position->entityId)))
+				!(entity->getComponent<PlayerComponent>()))
 			{
 				compManager.addComponent<InactiveComponent>(InactiveComponent(position->entityId));
 			}

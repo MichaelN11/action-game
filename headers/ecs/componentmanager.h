@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <array>
+#include <cassert>
 
 #include "component.h"
 
@@ -19,8 +20,6 @@ template<typename ComponentType>
 class ComponentHolder : public IComponentHolder
 {
 public:
-	// every component has a map. map key is the entity id.
-	std::unordered_map<int, std::shared_ptr<ComponentType>> componentMap;
 	// not every component has a vector. empty until getComponentList called
 	std::vector<std::shared_ptr<ComponentType>> componentList;
 	// not every component has a sorted multimap, empty unless addcomponent with sort key is called
@@ -28,30 +27,25 @@ public:
 
 	void removeEntity(int entityId)
 	{
-		auto mapIt = componentMap.find(entityId);
 
-		if (mapIt != componentMap.end())
+		for (auto vectorIt = componentList.begin(); vectorIt != componentList.end(); ++vectorIt)
 		{
-			componentMap.erase(entityId);
-			for (auto vectorIt = componentList.begin(); vectorIt != componentList.end(); ++vectorIt)
+			if (vectorIt->get()->entityId == entityId)
 			{
-				if (vectorIt->get()->entityId == entityId)
-				{
-					auto lastEl = componentList.end() - 1;
-					if (vectorIt != lastEl)
-						*vectorIt = std::move(*lastEl);
-					componentList.pop_back();
-					break;
-				}
+				auto lastEl = componentList.end() - 1;
+				if (vectorIt != lastEl)
+					*vectorIt = std::move(*lastEl);
+				componentList.pop_back();
+				break;
 			}
+		}
 
-			for (auto mMapIt = componentSorted.begin(); mMapIt != componentSorted.end(); ++mMapIt)
+		for (auto mMapIt = componentSorted.begin(); mMapIt != componentSorted.end(); ++mMapIt)
+		{
+			if (mMapIt->second->entityId == entityId)
 			{
-				if (mMapIt->second->entityId == entityId)
-				{
-					componentSorted.erase(mMapIt);
-					break;
-				}
+				componentSorted.erase(mMapIt);
+				break;
 			}
 		}
 	}
@@ -59,9 +53,65 @@ public:
 
 class ComponentManager
 {
-public:
+private:
+	const static int MAX_COMPONENT_TYPES = 100;
 
-	// Adds shared ptr to component to the component type's map, and if the vector for the component type is already filled, adds it to that too
+	static int getNextId()
+	{
+		static int id = 0;
+		++id;
+		assert(id < MAX_COMPONENT_TYPES);
+		return id;
+	}
+
+	template<typename ComponentType>
+	static int getComponentTypeId()
+	{
+		static_assert(std::is_base_of<Component, ComponentType>::value, "type parameter of this class must derive from Component");
+		static int componentTypeId = getNextId();
+		return componentTypeId;
+	}
+public:
+	class EntityComponents
+	{
+	public:
+		template<typename ComponentType>
+		ComponentType* getComponent()
+		{
+			int componentTypeId = getComponentTypeId<ComponentType>();
+			Component* cPtr = componentArray[componentTypeId].get();
+			ComponentType* tPtr = static_cast<ComponentType*>(cPtr);
+			return tPtr;
+		}
+
+	private:
+		std::array<std::shared_ptr<Component>, MAX_COMPONENT_TYPES> componentArray;
+
+		template<typename ComponentType>
+		std::shared_ptr<ComponentType> getComponentShared()
+		{
+			int componentTypeId = getComponentTypeId<ComponentType>();
+			return std::static_pointer_cast<ComponentType, Component>(componentArray[componentTypeId]);
+		}
+
+		template<typename ComponentType>
+		void removeComponent()
+		{
+			int componentTypeId = getComponentTypeId<ComponentType>();
+			componentArray[componentTypeId] = nullptr;
+		}
+
+		template<typename ComponentType>
+		void addComponent(std::shared_ptr<ComponentType> component)
+		{
+			int componentTypeId = getComponentTypeId<ComponentType>();
+			componentArray[componentTypeId] = std::static_pointer_cast<Component, ComponentType>(component);
+		}
+
+		friend class ComponentManager;
+	};
+
+	// Adds shared ptr to component to the entity's component collection, and if the vector for the component type is already filled, adds it to that too
 	template<typename ComponentType>
 	void addComponent(ComponentType component)
 	{
@@ -74,7 +124,7 @@ public:
 			holder->componentList.push_back(componentPtr);
 		}
 
-		holder->componentMap.emplace(component.entityId, std::move(componentPtr));
+		addComponentToEntityComponents(component.entityId, componentPtr);
 	}
 
 	// adds a component, and also adds it to a (sorted) multimap which can be used to retrieve the components in order of the keys
@@ -93,7 +143,7 @@ public:
 			holder->componentList.push_back(componentPtr);
 		}
 
-		holder->componentMap.emplace(component.entityId, std::move(componentPtr));
+		addComponentToEntityComponents(component.entityId, componentPtr);
 	}
 
 	// sprite components automatically sorted by layer
@@ -103,53 +153,26 @@ public:
 		addComponent(component, component.layer);
 	}
 
+	EntityComponents* getEntityComponents(int entityId)
+	{
+		auto it = entityIdMap.find(entityId);
+		if (it != entityIdMap.end())
+		{
+			return &(it->second);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	template<typename ComponentType>
 	ComponentType* getComponent(int entityId)
 	{
-		ComponentHolder<ComponentType>* holder = getHolder<ComponentType>();
+		EntityComponents* entity = getEntityComponents(entityId);
 
-		auto it = holder->componentMap.find(entityId);
-
-		if (it != holder->componentMap.end())
-		{
-			return it->second.get();
-		}
-		else
-			return nullptr;
+		return entity->getComponent<ComponentType>();
 	}
-
-	/// TESTING
-	// TESTING
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	//TESTING
-	//template<>
-	//InactiveComponent* getComponent<InactiveComponent>(int entityId)
-	//{
-	//	int componentTypeId = ComponentManager::getComponentTypeId<InactiveComponent>();
-	//	auto it = componentHolderMap.find(componentTypeId);
-	//	if (it == componentHolderMap.end())
-	//		componentHolderMap.emplace(componentTypeId, std::make_unique<ComponentHolder<InactiveComponent>>());
-	//	IComponentHolder* iPtr = componentHolderMap.at(componentTypeId).get();
-
-	//	ComponentHolder<InactiveComponent>* hPtr = static_cast<ComponentHolder<InactiveComponent>*>(iPtr);
-
-	//	auto it2 = hPtr->componentMap.find(entityId);
-
-	//	if (it2 != hPtr->componentMap.end())
-	//	{
-	//		return it2->second.get();
-	//	}
-	//	else
-	//		return nullptr;
-	//}
-
-	//std::unique_ptr<InactiveComponent> ictest;
-
-	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
 
 	// If vector of componenttype is already filled, returns reference, otherwise fills it from map then returns reference
 	template<typename ComponentType>
@@ -159,15 +182,19 @@ public:
 
 		if (holder->componentList.size() == 0)
 		{
-			for (auto it = holder->componentMap.begin(); it != holder->componentMap.end(); ++it)
+			for (auto it = entityIdMap.begin(); it != entityIdMap.end(); ++it)
 			{
-				holder->componentList.push_back(it->second);
+				auto sharedPtr = it->second.getComponentShared<ComponentType>();
+				if (sharedPtr)
+				{
+					holder->componentList.push_back(sharedPtr);
+				}
 			}
 		}
 		return holder->componentList;
 	}
 
-	// If vector of componenttype is already filled, returns reference, otherwise fills it from map then returns reference
+	// gets the sorted map of components. must already be filled
 	template<typename ComponentType>
 	std::multimap<int, std::shared_ptr<ComponentType>>& getComponentSorted()
 	{
@@ -175,14 +202,18 @@ public:
 		return holder->componentSorted;
 	}
 
-	// Sets component's "exists" field to false and removes it from map
-	// component is removed from vector during iteration
 	template<typename ComponentType>
 	void removeComponent(int entityId)
 	{
 		ComponentHolder<ComponentType>* holder = getHolder<ComponentType>();
 
 		holder->removeEntity(entityId);
+
+		auto it = entityIdMap.find(entityId);
+		if (it != entityIdMap.end())
+		{
+			it->second.removeComponent<ComponentType>();
+		}
 	}
 
 	void removeAllComponents(int entityId)
@@ -190,6 +221,12 @@ public:
 		for (auto it = componentHolderArray.begin(); it != componentHolderArray.end(); ++it)
 		{
 			it->get()->removeEntity(entityId);
+		}
+
+		auto it = entityIdMap.find(entityId);
+		if (it != entityIdMap.end())
+		{
+			entityIdMap.erase(it);
 		}
 	}
 
@@ -212,23 +249,8 @@ public:
 private:
 	// map of interface of component holders that gets casted to a holder of component type
 	//std::unordered_map<int, std::unique_ptr<IComponentHolder>> componentHolderMap;
-
-	const static int MAX_COMPONENT_TYPES = 100;
 	std::array<std::unique_ptr<IComponentHolder>, MAX_COMPONENT_TYPES> componentHolderArray;
-
-	static int getNextId()
-	{
-		static int id = 0;
-		return id++;
-	}
-
-	template<typename ComponentType>
-	static int getComponentTypeId()
-	{
-		static_assert(std::is_base_of<Component, ComponentType>::value, "type parameter of this class must derive from Component");
-		static int eventTypeId = getNextId();
-		return eventTypeId;
-	}
+	std::unordered_map<int, EntityComponents> entityIdMap;
 
 	template<typename ComponentType>
 	ComponentHolder<ComponentType>* getHolder()
@@ -243,4 +265,25 @@ private:
 		ComponentHolder<ComponentType>* hPtr = static_cast<ComponentHolder<ComponentType>*>(iPtr);
 		return hPtr;
 	}
+
+
+	template<typename ComponentType>
+	void addComponentToEntityComponents(int entityId, std::shared_ptr<ComponentType> componentPtr)
+	{
+		EntityComponents* entity;
+		auto it = entityIdMap.find(entityId);
+		if (it == entityIdMap.end())
+		{
+			entityIdMap.emplace(entityId, EntityComponents());
+			entity = &entityIdMap.at(entityId);
+		}
+		else
+		{
+			entity = &(it->second);
+		}
+		entity->addComponent<ComponentType>(std::move(componentPtr));
+	}
+
+
 };
+

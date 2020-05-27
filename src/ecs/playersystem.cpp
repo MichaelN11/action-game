@@ -89,12 +89,13 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 	auto playerList = compManager.getComponentList<PlayerComponent>();
 	for (auto player : playerList)
 	{
-		if (!(compManager.getComponent<InactiveComponent>(player->entityId)))
+		auto entity = compManager.getEntityComponents(player->entityId);
+		if (!(entity->getComponent<InactiveComponent>()))
 		{
-			MovementComponent* movement = compManager.getComponent<MovementComponent>(player->entityId);
+			MovementComponent* movement = entity->getComponent<MovementComponent>();
 			if (movement)
 			{
-				StateComponent* state = compManager.getComponent<StateComponent>(player->entityId);
+				StateComponent* state = entity->getComponent<StateComponent>();
 				if (yDirection == 0 && xDirection == 0)
 				{
 					switch (state->drawState)
