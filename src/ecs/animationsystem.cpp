@@ -14,29 +14,28 @@ void AnimationSystem::update(int deltaTime)
 		if (sprite)
 		{
 			auto state = entity->getComponent<StateComponent>();
-
-			// if state changed, set the sprite to frame 0 of the animation
-			if (state && animation->prevState != state->drawState)
+			if (state)
 			{
-				animation->frameNum = 0;
-				animation->prevState = state->drawState;
-				animation->timeElapsed = animation->timeToUpdate;
-
-				//	auto it = animation->animationMap->find(animation->prevState);
-				//	if (it != animation->animationMap->end())
-				//	{
-				//		auto& frameList = it->second;
-				//		if (frameList.size() > 0)
-				//		{
-				//			AnimationFrame& frame = frameList.at(0);
-				//			sprite->tileNum = frame.tileNum;
-				//			sprite->flipHorizontal = frame.flipHorizontal;
-				//			sprite->flipVertical = frame.flipVertical;
-				//			sprite->flipDiagonal = frame.flipDiagonal;
-				//		}
-				//	}
-				//}
-				//else
+				// small buffer when changing sprites, useful for things like diagonal movement
+				if (state->bufferedDrawState != state->drawState)
+				{
+					if (state->drawBuffer >= state->drawBufferMax)
+					{
+						state->drawState = state->bufferedDrawState;
+						state->drawBuffer = 0;
+					}
+					else
+					{
+						state->drawBuffer += deltaTime;
+					}
+				}
+				// if state changed, set the sprite to frame 0 of the animation
+				if (animation->prevState != state->drawState)
+				{
+					animation->frameNum = 0;
+					animation->prevState = state->drawState;
+					animation->timeElapsed = animation->timeToUpdate;
+				}
 			}
 			auto it = animation->animationMap->find(animation->prevState);
 			if (it != animation->animationMap->end())

@@ -58,9 +58,22 @@ struct PlayerComponent : public Component
 
 struct StateComponent : public Component
 {
-	StateComponent(int entityId, DrawState drawState) : Component(entityId), drawState(drawState)
+	StateComponent(int entityId, DrawState drawState, int drawBuffer) : Component(entityId), drawState(drawState), bufferedDrawState(drawState), drawBufferMax(drawBuffer)
 	{}
 	DrawState drawState;
+	DrawState bufferedDrawState;
+	int drawBuffer = 0;
+	const int drawBufferMax;
+	void setDrawState(DrawState dState)
+	{
+		drawState = dState;
+		bufferedDrawState = dState;
+	}
+	void setBufferedDrawState(DrawState dState)
+	{
+		bufferedDrawState = dState;
+		drawBuffer = 0;
+	}
 };
 
 struct AnimationFrame

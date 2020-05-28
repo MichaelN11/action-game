@@ -1,6 +1,7 @@
 #include "ecs/ecs.h"
 #include "graphics.h"
 #include "eventmanager.h"
+#include "config.h"
 
 // temp
 #include <cmath>
@@ -63,12 +64,14 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 	}
 	if (data.animationMap)
 	{
-		compManager.addComponent(StateComponent(entityId, DrawState::standDown));
+		compManager.addComponent(StateComponent(entityId, DrawState::standDown, 100));
 		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap));
 	}
 	if (data.boundingBox.getW() > 0)
 	{
-		compManager.addComponent(CollisionComponent(entityId, data.boundingBox, data.solid));
+		Rectangle<float> bBox = data.boundingBox;
+		bBox.scalePositionAndSize(config::SPRITE_SCALE);
+		compManager.addComponent(CollisionComponent(entityId, bBox, data.solid));
 	}
 }
 
@@ -81,7 +84,7 @@ void ECS::createEntity(const EntityData& data)
 void ECS::createEntity(float x, float y, const EntityData& data)
 {
 	int entityId = getNextEntityId();
-	PositionComponent position(entityId, x, y);
+	PositionComponent position(entityId, x * config::SPRITE_SCALE, y * config::SPRITE_SCALE);
 	compManager.addComponent(position);
 	createEntityFromData(compManager, entityId, data);
 }
@@ -131,7 +134,7 @@ const EntityData ECS::PLAYER =
 	// animation time to update
 	150,
 	// bounding box
-	Rectangle<float>(8.f, 8.f, 16.f, 24.f),
+	Rectangle<float>(4.f, 4.f, 8.f, 12.f),
 	// solid
 	true
 };
@@ -157,7 +160,7 @@ const EntityData ECS::DUMMY =
 	// animation time to update
 	-1,
 	// bounding box
-	Rectangle<float>(0.f, 0.f, 32.f, 32.f),
+	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
 	// solid
 	true
 };
@@ -170,17 +173,17 @@ std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_ma
 	map[DrawState::standLeft] = std::vector<AnimationFrame>({ { 3, false, false, false } });
 	map[DrawState::standRight] = std::vector<AnimationFrame>({ { 3, false, true, false } });
 	map[DrawState::walkDown] = std::vector<AnimationFrame>({ 
-		{ 1, false, false, false },
-		{ 1, false, true, false } });
+		{ 1, false, true, false },
+		{ 1, false, false, false } });
 	map[DrawState::walkUp] = std::vector<AnimationFrame>({
-		{ 2, false, false, false },
-		{ 2, false, true, false } });
+		{ 2, false, true, false },
+		{ 2, false, false, false } });
 	map[DrawState::walkLeft] = std::vector<AnimationFrame>({
-		{ 3, false, false, false },
-		{ 4, false, false, false } });
+		{ 4, false, false, false },
+		{ 3, false, false, false } });
 	map[DrawState::walkRight] = std::vector<AnimationFrame>({
-		{ 3, false, true, false },
-		{ 4, false, true, false } });
+		{ 4, false, true, false },
+		{ 3, false, true, false } });
 	return map;
 }
 

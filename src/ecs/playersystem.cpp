@@ -96,36 +96,61 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 			if (movement)
 			{
 				StateComponent* state = entity->getComponent<StateComponent>();
-				if (yDirection == 0 && xDirection == 0)
+				if (state)
 				{
-					switch (state->drawState)
+					bool standing = (state->bufferedDrawState == DrawState::standDown ||
+						state->bufferedDrawState == DrawState::standLeft ||
+						state->bufferedDrawState == DrawState::standUp ||
+						state->bufferedDrawState == DrawState::standRight);
+
+					if (yDirection == 0 && xDirection == 0)
 					{
+						switch (state->drawState)
+						{
 						case DrawState::walkRight:
-							state->drawState = DrawState::standRight;
+							state->setDrawState(DrawState::standRight);
 							break;
 						case DrawState::walkLeft:
-							state->drawState = DrawState::standLeft;
+							state->setDrawState(DrawState::standLeft);
 							break;
 						case DrawState::walkUp:
-							state->drawState = DrawState::standUp;
+							state->setDrawState(DrawState::standUp);
 							break;
 						default:
-							state->drawState = DrawState::standDown;
+							state->setDrawState(DrawState::standDown);
+						}
 					}
-				}
-				else if (yDirection == 0)
-				{
-					if (xDirection > 0)
-						state->drawState = DrawState::walkRight;
-					else if (xDirection < 0)
-						state->drawState = DrawState::walkLeft;
-				}
-				else if (xDirection == 0)
-				{
-					if (yDirection > 0)
-						state->drawState = DrawState::walkDown;
-					else if (yDirection < 0)
-						state->drawState = DrawState::walkUp;
+					// if standing change to walking immediately, if walking, buffer the change
+					else if (yDirection == 0)
+					{
+						if (xDirection > 0)
+						{
+							state->setBufferedDrawState(DrawState::walkRight);
+							if (standing)
+								state->drawState = DrawState::walkRight;
+						}
+						else if (xDirection < 0)
+						{
+							state->setBufferedDrawState(DrawState::walkLeft);
+							if (standing)
+								state->drawState = DrawState::walkLeft;
+						}
+					}
+					else if (xDirection == 0)
+					{
+						if (yDirection > 0)
+						{
+							state->setBufferedDrawState(DrawState::walkDown);
+							if (standing)
+								state->drawState = DrawState::walkDown;
+						}
+						else if (yDirection < 0)
+						{
+							state->setBufferedDrawState(DrawState::walkUp);
+							if (standing)
+								state->drawState = DrawState::walkUp;
+						}
+					}
 				}
 
 				movement->dx = movement->moveSpeed * xDirection;

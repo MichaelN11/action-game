@@ -5,6 +5,10 @@
 
 #include <algorithm>
 
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELETE LATER
+//#include <iostream>
+
 CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap) :
 	compManager(compManager),
 	eventManager(eventManager),
@@ -18,10 +22,11 @@ CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& ev
 
 void CollisionSystem::checkCollisions(int entityId)
 {
-	auto collision = compManager.getComponent<CollisionComponent>(entityId);
+	auto entity = compManager.getEntityComponents(entityId);
+	auto collision = entity->getComponent<CollisionComponent>();
 	if (collision)
 	{
-		auto position = compManager.getComponent<PositionComponent>(entityId);
+		auto position = entity->getComponent<PositionComponent>();
 		if (position)
 		{
 			if (collision->solid)
@@ -140,6 +145,8 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 						boundingBox.getCollisionDirection(tileCollisionBox, xMove, yMove);
 						if (xMove == 0 || yMove == 0)
 						{
+							//std::cout << "player    x: " << positionComp->x << "   y: " << positionComp->y << std::endl;
+
 							positionComp->x += xMove;
 							positionComp->y += yMove;
 							boundingBox.shift(xMove, yMove);
@@ -156,8 +163,12 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 				}
 			}
 		}
-		positionComp->x += xMoveStored;
-		positionComp->y += yMoveStored;
+		if (xMoveStored != 0 || yMoveStored != 0)
+		{
+			//std::cout << "xMoveStored: " << xMoveStored << "   yMoveStored: " << yMoveStored << std::endl;
+			positionComp->x += xMoveStored;
+			positionComp->y += yMoveStored;
+		}
 	}
 }
 

@@ -2,24 +2,20 @@
 #include "game.h"
 #include "systemevents.h"
 #include "tilemap.h"
+#include "config.h"
 
 #include <iostream>
-
-const int Game::RESOLUTION_WIDTH = 640;
-const int Game::RESOLUTION_HEIGHT = 480;
-const int Game::MIN_FRAMERATE = 60;
-const float Game::SPRITE_SCALE = 2.0;
 
 // TEMPORARY DELETE LATER
 // do need to load tilesheets before use
 const std::string filePath = "content/tilesheets/1bit.png";
 
 Game::Game() :
-	//sdlInit(),
-	graphics(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 0, "Action Game", SPRITE_SCALE),
+	sdlInit(),
+	graphics(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, 0, "Action Game", config::SPRITE_SCALE),
 	tileMap(graphics),
 	ecs(eventManager, tileMap),
-	gameView(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, &ecs)
+	gameView(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, &ecs)
 {
 	gameLoop();
 }
@@ -31,7 +27,7 @@ void Game::gameLoop()
 
 	systemEvents::initSystemEvents(*this, eventManager);
 
-	int maxFrameTimeMS = 1000 / MIN_FRAMERATE;
+	int maxFrameTimeMS = 1000 / config::MIN_FRAMERATE;
 	int deltaTimeMS, currentTimeMS;
 	int lastTimeMS = SDL_GetTicks();
 
@@ -40,7 +36,7 @@ void Game::gameLoop()
 		38, 241, 293, 292, 488, 424, 358, 523, 524, 525, 491, 492, 493, 166, 451, 481, 450, 449, 450, 452, 71, 422, 271, 102 };
 	for (int id : solidTileIds)
 	{
-		tileCollisions.emplace(id, Rectangle<float>(0.f, 0.f, 32.f, 24.f));
+		tileCollisions.emplace(id, Rectangle<float>(0.f, 0.f, 16.f, 16.f));
 	}
 
 	tileMap.initFromTMX("content/maps/sample_fantasy.tmx", tileCollisions);
@@ -50,7 +46,7 @@ void Game::gameLoop()
 
 	tileMap.drawToBackground();
 
-	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * SPRITE_SCALE), (int)(tileMap.getHeight() * SPRITE_SCALE)));
+	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * config::SPRITE_SCALE), (int)(tileMap.getHeight() * config::SPRITE_SCALE)));
 
 	ecs.createEntity(300.f, 364.f, ECS::DUMMY);
 	ecs.createEntity(332.f, 364.f, ECS::DUMMY);
@@ -63,109 +59,109 @@ void Game::gameLoop()
 	ecs.destroyEntity(3);
 	ecs.createEntity(200.f, 200.f, ECS::PLAYER);
 
-	for (int i = 0; i < 200; i++)
-	{
-		ecs.createEntity(-300.f, -600.f, ECS::DUMMY);
-	}
+	//for (int i = 0; i < 200; i++)
+	//{
+	//	ecs.createEntity(-300.f, -600.f, ECS::DUMMY);
+	//}
 
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(400.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(500.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(600.f, 300.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 400.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 500.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-	ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(600.f, 300.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 400.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 500.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
+	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
 
 	eventManager.registerListener<CollisionEvent>([](CollisionEvent e) {});
 
@@ -178,7 +174,7 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		if (deltaTimeMS > 20)
+		if (deltaTimeMS > 16)
 			std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;

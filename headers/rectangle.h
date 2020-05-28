@@ -46,6 +46,14 @@ public:
 		yDirection = yDir;
 	}
 
+	void scalePositionAndSize(float scale)
+	{
+		x = (T)(x * scale);
+		y = (T)(y * scale);
+		w = (T)(w * scale);
+		h = (T)(h * scale);
+	}
+
 	void shift(T shiftX, T shiftY)
 	{
 		x += shiftX;

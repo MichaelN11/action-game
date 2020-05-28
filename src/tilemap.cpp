@@ -53,7 +53,9 @@ void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_m
 			auto it = tileCollisions.find(tile.id);
 			if (it != tileCollisions.end())
 			{
-				collisionRow.push_back(it->second);
+				Rectangle<float> rect = it->second;
+				rect.scalePositionAndSize(graphics.getScale());
+				collisionRow.push_back(rect);
 			}
 			else
 			{
