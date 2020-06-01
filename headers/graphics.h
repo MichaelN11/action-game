@@ -44,10 +44,14 @@ public:
 	void unloadImage(const std::string& filePath);
 	void unloadAllImages();
 
-	// Draws to a background texture that is then drawn all at once, useful for drawing tilemaps
+	// Draws to a texture that is then drawn all at once, useful for drawing tilemaps
 	void createBackgroundTexture(int width, int height);
+	void createForegroundTexture(int width, int height);
 	void drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
+	void drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 	void drawBackground(const Rectangle<float> view);
+	void drawForeground(const Rectangle<float> view);
+	void drawTextureToScreen(const Rectangle<float> view, Texture* texture, int tWidth, int tHeight);
 	
 	float getScale() const;
 
@@ -65,5 +69,7 @@ private:
 	SDL_Renderer* renderer;
 	std::unordered_map<std::string, Texture> textureMap;
 	std::unique_ptr<Texture> background;
+	std::unique_ptr<Texture> foreground;
 	int bgWidth = 0, bgHeight = 0;
+	int fgWidth = 0, fgHeight = 0;
 };

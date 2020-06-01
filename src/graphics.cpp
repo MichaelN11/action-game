@@ -141,25 +141,34 @@ void Graphics::createBackgroundTexture(int width, int height)
 	bgHeight = height;
 }
 
+void Graphics::createForegroundTexture(int width, int height)
+{
+	foreground = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height));
+	SDL_SetTextureBlendMode(foreground.get()->getSDLTexture(), SDL_BLENDMODE_BLEND);
+	fgWidth = width;
+	fgHeight = height;
+}
+
 void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
 	if (background)
 	{
 		SDL_SetRenderTarget(renderer, background->getSDLTexture());
 
-		Texture* texture = getTexture(filePath);
+		drawImage(filePath, tileNum, destinationRect, flipDiagonal, flipHorizontal, flipVertical, scaled);
 
-		if (texture)
-		{
-			float angle = 0;
-			int flip = SDL_FLIP_NONE;
-			convertRotation(angle, flip, flipDiagonal, flipHorizontal, flipVertical);
+		// reset render target
+		SDL_SetRenderTarget(renderer, nullptr);
+	}
+}
 
-			if (scaled)
-				scaleRect(destinationRect);
+void Graphics::drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+{
+	if (foreground)
+	{
+		SDL_SetRenderTarget(renderer, foreground->getSDLTexture());
 
-			SDL_RenderCopyEx(renderer, texture->getSDLTexture(), &getSDLRect(texture->getTileRect(tileNum)), &getSDLRect(destinationRect), angle, nullptr, (SDL_RendererFlip)flip);
-		}
+		drawImage(filePath, tileNum, destinationRect, flipDiagonal, flipHorizontal, flipVertical, scaled);
 
 		// reset render target
 		SDL_SetRenderTarget(renderer, nullptr);
@@ -168,23 +177,35 @@ void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum,
 
 void Graphics::drawBackground(const Rectangle<float> view)
 {
+	if (background)
+		drawTextureToScreen(view, background.get(), bgWidth, bgHeight);
+}
+
+void Graphics::drawForeground(const Rectangle<float> view)
+{
+	if (foreground)
+		drawTextureToScreen(view, foreground.get(), fgWidth, fgHeight);
+}
+
+void Graphics::drawTextureToScreen(const Rectangle<float> view, Texture* texture, int tWidth, int tHeight)
+{
 	int sourceX = (view.getX() > 0) ? (int)std::round(view.getX()) : 0;
 	int sourceY = (view.getY() > 0) ? (int)std::round(view.getY()) : 0;
 
 	int rectWidth;
 	if (view.getX() < 0)
 	{
-		if (view.getX2() > bgWidth)
-			rectWidth = bgWidth;
+		if (view.getX2() > tWidth)
+			rectWidth = tWidth;
 		else if (view.getX2() > 0)
 			rectWidth = (int)(view.getX2() + 0.5f);
 		else
 			rectWidth = 0;
 	}
-	else if (view.getX2() > bgWidth)
+	else if (view.getX2() > tWidth)
 	{
-		if (view.getX() < bgWidth)
-			rectWidth = bgWidth - (int)(view.getX() + 0.5f);
+		if (view.getX() < tWidth)
+			rectWidth = tWidth - (int)(view.getX() + 0.5f);
 		else
 			rectWidth = 0;
 	}
@@ -195,30 +216,30 @@ void Graphics::drawBackground(const Rectangle<float> view)
 	int rectHeight;
 	if (view.getY() < 0)
 	{
-		if (view.getY2() > bgHeight)
-			rectHeight = bgHeight;
+		if (view.getY2() > tHeight)
+			rectHeight = tHeight;
 		else if (view.getY2() > 0)
 			rectHeight = (int)(view.getY2() + 0.5f);
 		else
 			rectHeight = 0;
 	}
-	else if (view.getY2() > bgHeight)
+	else if (view.getY2() > tHeight)
 	{
-		if (view.getY() < bgHeight)
-			rectHeight = bgHeight - (int)(view.getY() + 0.5f);
+		if (view.getY() < tHeight)
+			rectHeight = tHeight - (int)(view.getY() + 0.5f);
 		else
 			rectHeight = 0;
 	}
 	else
 	{
-		rectHeight = (int)(view.getH()+ 0.5f);
+		rectHeight = (int)(view.getH() + 0.5f);
 	}
 	int destX = (view.getX() > 0) ? 0 : (int)(view.getX() + 0.5f) * -1;
 	int destY = (view.getY() > 0) ? 0 : (int)(view.getY() + 0.5f) * -1;
 	Rectangle<int> srcRect(sourceX, sourceY, rectWidth, rectHeight);
 	Rectangle<int> destRect(destX, destY, rectWidth, rectHeight);
 
-	SDL_RenderCopy(renderer, background->getSDLTexture(), &getSDLRect(srcRect), &getSDLRect(destRect));
+	SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(srcRect), &getSDLRect(destRect));
 }
 
 float Graphics::getScale() const

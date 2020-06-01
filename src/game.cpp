@@ -44,8 +44,6 @@ void Game::gameLoop()
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
 
-	tileMap.drawToBackground();
-
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * config::SPRITE_SCALE), (int)(tileMap.getHeight() * config::SPRITE_SCALE)));
 
 	ecs.createEntity(300.f, 364.f, ECS::DUMMY);
@@ -58,6 +56,8 @@ void Game::gameLoop()
 
 	ecs.destroyEntity(3);
 	ecs.createEntity(200.f, 200.f, ECS::PLAYER);
+	
+	ecs.createEntity(200.f, 350.f, ECS::DUMMY);
 
 	//for (int i = 0; i < 200; i++)
 	//{
@@ -174,7 +174,7 @@ void Game::gameLoop()
 		deltaTimeMS = currentTimeMS - lastTimeMS;
 		update(std::min(deltaTimeMS, maxFrameTimeMS));
 
-		if (deltaTimeMS > 16)
+		if (deltaTimeMS > 5)
 			std::cout << "DeltaTime: " << deltaTimeMS << ",  Max Frame Time: " << maxFrameTimeMS << std::endl;
 
 		lastTimeMS = currentTimeMS;
@@ -190,6 +190,7 @@ void Game::draw(Graphics& graphics)
 	//std::cout << "x: " << gameView.getView().getX() << ",   y: " << gameView.getView().getY() << std::endl;
 	graphics.drawBackground(gameView.getView());
 	ecs.draw(graphics, gameView.getView());
+	graphics.drawForeground(gameView.getView());
 
 	graphics.display();
 }

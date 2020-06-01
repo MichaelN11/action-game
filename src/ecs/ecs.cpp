@@ -152,7 +152,7 @@ const EntityData ECS::DUMMY =
 	// sprite layer
 	1,
 	// move speed
-	0.f,
+	0.1f,
 	// is player
 	false,
 	// animation map

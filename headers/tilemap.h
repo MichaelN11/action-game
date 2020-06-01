@@ -21,8 +21,9 @@ class TileMap
 public:
 	TileMap(Graphics &graphics);
 	void initFromTMX(const std::string& tmxFileName, const std::unordered_map<int, Rectangle<float>>& tileCollisions);
-	// Draws the entire tilemap into the background texture
+	// Draws the tilemap bg layer into the background texture
 	void drawToBackground();
+	void drawToForeground();
 	int getWidth() const;
 	int getHeight() const;
 	int getScaledTileWidth() const;

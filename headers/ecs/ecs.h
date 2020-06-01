@@ -46,6 +46,12 @@ public:
 
 	std::pair<float, float> getPlayerPosition();
 
+	// mainly for testing
+	//ComponentManager& getCompManager()
+	//{
+	//	return compManager;
+	//}
+
 	static const EntityData PLAYER;
 	static const EntityData DUMMY;
 private:

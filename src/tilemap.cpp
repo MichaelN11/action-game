@@ -69,6 +69,9 @@ void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_m
 	mapHeight = data.mapHeight;
 	tileWidth = data.tileWidth;
 	tileHeight = data.tileHeight;
+
+	drawToBackground();
+	drawToForeground();
 }
 
 void TileMap::drawToBackground()
@@ -78,8 +81,11 @@ void TileMap::drawToBackground()
 
 	graphics.createBackgroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
 
-	for (std::vector<std::vector<Tile>> layer : tileGridLayers)
+	size_t bgLayerIndex = 0;
+	if (bgLayerIndex < tileGridLayers.size())
 	{
+		std::vector<std::vector<Tile>> layer = tileGridLayers.at(bgLayerIndex);
+
 		for (size_t rowNum = 0; rowNum < layer.size(); rowNum++)
 		{
 			for (size_t colNum = 0; colNum < layer.at(0).size(); colNum++)
@@ -95,6 +101,39 @@ void TileMap::drawToBackground()
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
 					graphics.drawToBackgroundTexture(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, false);
+				}
+			}
+		}
+	}
+}
+
+void TileMap::drawToForeground()
+{
+	int scaledTileWidth = getScaledTileWidth();
+	int scaledTileHeight = getScaledTileHeight();
+
+	graphics.createForegroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
+
+	size_t fgLayerIndex = 1;
+	if (fgLayerIndex < tileGridLayers.size())
+	{
+		std::vector<std::vector<Tile>> layer = tileGridLayers.at(fgLayerIndex);
+
+		for (size_t rowNum = 0; rowNum < layer.size(); rowNum++)
+		{
+			for (size_t colNum = 0; colNum < layer.at(0).size(); colNum++)
+			{
+				Tile tile = layer.at(rowNum).at(colNum);
+				if (tile.id >= 0 && tile.tileSheetId >= 0)
+				{
+					Rectangle<int> destRect(colNum * scaledTileWidth,
+						rowNum * scaledTileHeight,
+						scaledTileWidth,
+						scaledTileHeight);
+
+					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
+					// scaled is false because it's already scaled here
+					graphics.drawToForegroundTexture(filePath, tile.id, destRect, tile.flippedDiagonally, tile.flippedHorizontally, tile.flippedVertically, false);
 				}
 			}
 		}
