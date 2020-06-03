@@ -7,7 +7,7 @@
 #include <cmath>
 
 // DELETE LATER
-#include <iostream>
+//#include <iostream>
 
 ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	eventManager(eventManager),
@@ -15,7 +15,8 @@ ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	posUpdateSystem(compManager),
 	spriteSystem(compManager),
 	animationSystem(compManager),
-	collisionSystem(compManager, eventManager, tileMap)
+	collisionSystem(compManager, eventManager, tileMap),
+	damageSystem(compManager, eventManager)
 {
 
 }
@@ -48,7 +49,7 @@ std::pair<float, float> ECS::getPlayerPosition()
 
 void ECS::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
 {
-	std::cout << "Entity # " << entityId << " created." << std::endl;
+//	std::cout << "Entity # " << entityId << " created." << std::endl;
 
 	if (data.spritePath != "")
 	{
@@ -71,7 +72,19 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 	{
 		Rectangle<float> bBox = data.boundingBox;
 		bBox.scalePositionAndSize(config::SPRITE_SCALE);
-		compManager.addComponent(CollisionComponent(entityId, bBox, data.solid));
+		compManager.addComponent(CollisionComponent(entityId, bBox, data.solid, data.interactable));
+	}
+	if (data.health > 0)
+	{
+		compManager.addComponent(HealthComponent(entityId, data.health));
+	}
+	if (data.damage > 0)
+	{
+		compManager.addComponent(DamageComponent(entityId, data.damage, data.damageGroups));
+	}
+	if (data.group != Group::none)
+	{
+		compManager.addComponent(GroupComponent(entityId, data.group, data.hostileGroups));
 	}
 }
 
@@ -94,7 +107,7 @@ void ECS::destroyEntity(int entityId)
 	compManager.removeAllComponents(entityId);
 	unusedEntityIds.push_back(entityId);
 
-	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
+//	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
 }
 
 int ECS::getNextEntityId()
@@ -136,7 +149,19 @@ const EntityData ECS::PLAYER =
 	// bounding box
 	Rectangle<float>(4.f, 4.f, 8.f, 12.f),
 	// solid
-	true
+	true,
+	// interactable
+	true,
+	// health
+	100,
+	// damage
+	0,
+	// damage group
+	{ },
+	// group
+	Group::player,
+	// hostile groups
+	{ Group::enemy }
 };
 
 const EntityData ECS::DUMMY =
@@ -162,7 +187,19 @@ const EntityData ECS::DUMMY =
 	// bounding box
 	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
 	// solid
-	true
+	true,
+	// interactable
+	true,
+	// health
+	100,
+	// damage
+	10,
+	// damage group
+	{ Group::player },
+	// group
+	Group::enemy,
+	// hostile groups
+	{ Group::player }
 };
 
 std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_map()

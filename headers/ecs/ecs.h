@@ -5,6 +5,7 @@
 #include "ecs/spritesystem.h"
 #include "ecs/animationsystem.h"
 #include "ecs/collisionsystem.h"
+#include "ecs/damagesystem.h"
 
 // forward declare
 class Graphics;
@@ -30,6 +31,12 @@ struct EntityData
 	int animationTimeToUpdate = -1;
 	Rectangle<float> boundingBox;
 	bool solid = false;
+	bool interactable = false;
+	int health = -1;
+	int damage = -1;
+	std::vector<Group> damageGroups;
+	Group group;
+	std::vector<Group> hostileGroups;
 };
 
 class ECS
@@ -68,4 +75,5 @@ private:
 	SpriteSystem spriteSystem;
 	AnimationSystem animationSystem;
 	CollisionSystem collisionSystem;
+	DamageSystem damageSystem;
 };

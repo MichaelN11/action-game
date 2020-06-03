@@ -1,5 +1,4 @@
 #include "ecs/collisionsystem.h"
-#include "ecs/componentmanager.h"
 #include "eventmanager.h"
 #include "tilemap.h"
 
@@ -22,7 +21,7 @@ CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& ev
 
 void CollisionSystem::checkCollisions(int entityId)
 {
-	auto entity = compManager.getEntityComponents(entityId);
+	ComponentManager::EntityComponents* entity = compManager.getEntityComponents(entityId);
 	auto collision = entity->getComponent<CollisionComponent>();
 	if (collision)
 	{
@@ -34,13 +33,14 @@ void CollisionSystem::checkCollisions(int entityId)
 				checkTileCollisions(collision, position);
 			}
 
-			checkEntityCollisions(collision, position);
+			checkEntityCollisions(collision, position, entity);
 		}
 	}
 }
 
-void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp)
+void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp, ComponentManager::EntityComponents* entityComponents)
 {
+
 	// first collision check this update
 	if (collisionList.size() == 0)
 	{
@@ -63,14 +63,14 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 		CollisionComponent* other = *it;
 		if (other->entityId != collisionComp->entityId)
 		{
-			auto entity = compManager.getEntityComponents(other->entityId);
-			if (entity->getComponent<InactiveComponent>())
+			auto otherEntity = compManager.getEntityComponents(other->entityId);
+			if (otherEntity->getComponent<InactiveComponent>())
 			{
 				it = collisionList.erase(it);
 			}
 			else
 			{
-				PositionComponent* otherPos = entity->getComponent<PositionComponent>();
+				PositionComponent* otherPos = otherEntity->getComponent<PositionComponent>();
 
 				Rectangle<float> otherBox = other->boundingBox;
 				otherBox.shift(otherPos->x, otherPos->y);
@@ -97,7 +97,14 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 						}
 					}
 
-					eventManager.fireEvent<CollisionEvent>(CollisionEvent(collisionComp->entityId, other->entityId));
+					if (collisionComp->interactable && other->interactable)
+					{
+						// damage events
+						if (entityComponents->getComponent<DamageComponent>())
+							eventManager.fireEvent<DamageEvent>(DamageEvent(entityComponents, otherEntity));
+						if (otherEntity->getComponent<DamageComponent>())
+							eventManager.fireEvent<DamageEvent>(DamageEvent(otherEntity, entityComponents));
+					}
 				}
 
 				++it;

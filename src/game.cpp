@@ -63,7 +63,6 @@ void Game::gameLoop()
 	//{
 	//	ecs.createEntity(-300.f, -600.f, ECS::DUMMY);
 	//}
-
 	//ecs.createEntity(300.f, 300.f, ECS::PLAYER);
 	//ecs.createEntity(400.f, 300.f, ECS::PLAYER);
 	//ecs.createEntity(500.f, 300.f, ECS::PLAYER);
@@ -162,8 +161,6 @@ void Game::gameLoop()
 	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
 	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
 	//ecs.createEntity(300.f, 600.f, ECS::PLAYER);
-
-	eventManager.registerListener<CollisionEvent>([](CollisionEvent e) {});
 
 	while (gameRunning)
 	{

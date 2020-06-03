@@ -2,13 +2,11 @@
 
 #include <vector>
 #include "rectangle.h"
+#include "componentmanager.h"
 
 // forward declare
-class ComponentManager;
 class EventManager;
 class TileMap;
-struct CollisionComponent;
-struct PositionComponent;
 
 class CollisionSystem
 {
@@ -24,5 +22,5 @@ private:
 
 	void checkCollisions(int entityId);
 	void checkTileCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp);
-	void checkEntityCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp);
+	void checkEntityCollisions(CollisionComponent* collisionComp, PositionComponent* positionComp, ComponentManager::EntityComponents* entityComponents);
 };

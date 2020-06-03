@@ -1,6 +1,7 @@
 #pragma once
 
 #include "enums.h"
+#include "ecs/componentmanager.h"
 
 class Graphics;
 
@@ -32,9 +33,9 @@ struct MoveEvent : Event
 	float dy;
 };
 
-struct CollisionEvent : Event
+struct DamageEvent : Event
 {
-	CollisionEvent(int colliderId, int otherId) : colliderId(colliderId), otherId(otherId) {}
-	int colliderId;
-	int otherId;
+	DamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target) : source(source), target(target) {}
+	ComponentManager::EntityComponents* source;
+	ComponentManager::EntityComponents* target;
 };
