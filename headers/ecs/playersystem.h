@@ -6,6 +6,7 @@
 
 // forward declare
 class EventManager;
+class MovementSystem;
 
 class PlayerSystem : public System
 {

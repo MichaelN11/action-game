@@ -1,6 +1,7 @@
 #include "ecs/playersystem.h"
 #include "ecs/componentmanager.h"
 #include "eventmanager.h"
+#include "ecs/movement.h"
 
 const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
@@ -90,72 +91,9 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 	for (auto player : playerList)
 	{
 		auto entity = compManager.getEntityComponents(player->entityId);
-		if (!(entity->getComponent<InactiveComponent>()))
+		if (entity && !(entity->getComponent<InactiveComponent>()))
 		{
-			MovementComponent* movement = entity->getComponent<MovementComponent>();
-			if (movement)
-			{
-				StateComponent* state = entity->getComponent<StateComponent>();
-				if (state)
-				{
-					bool standing = (state->bufferedDrawState == DrawState::standDown ||
-						state->bufferedDrawState == DrawState::standLeft ||
-						state->bufferedDrawState == DrawState::standUp ||
-						state->bufferedDrawState == DrawState::standRight);
-
-					if (yDirection == 0 && xDirection == 0)
-					{
-						switch (state->drawState)
-						{
-						case DrawState::walkRight:
-							state->setDrawState(DrawState::standRight);
-							break;
-						case DrawState::walkLeft:
-							state->setDrawState(DrawState::standLeft);
-							break;
-						case DrawState::walkUp:
-							state->setDrawState(DrawState::standUp);
-							break;
-						default:
-							state->setDrawState(DrawState::standDown);
-						}
-					}
-					// if standing change to walking immediately, if walking, buffer the change
-					else if (yDirection == 0)
-					{
-						if (xDirection > 0)
-						{
-							state->setBufferedDrawState(DrawState::walkRight);
-							if (standing)
-								state->drawState = DrawState::walkRight;
-						}
-						else if (xDirection < 0)
-						{
-							state->setBufferedDrawState(DrawState::walkLeft);
-							if (standing)
-								state->drawState = DrawState::walkLeft;
-						}
-					}
-					else if (xDirection == 0)
-					{
-						if (yDirection > 0)
-						{
-							state->setBufferedDrawState(DrawState::walkDown);
-							if (standing)
-								state->drawState = DrawState::walkDown;
-						}
-						else if (yDirection < 0)
-						{
-							state->setBufferedDrawState(DrawState::walkUp);
-							if (standing)
-								state->drawState = DrawState::walkUp;
-						}
-					}
-				}
-
-				movement->dx = movement->moveSpeed * xDirection;
-				movement->dy = movement->moveSpeed * yDirection;
-			}
+			movement::standardMove(entity, xDirection, yDirection);
 		}
 	}
 }
