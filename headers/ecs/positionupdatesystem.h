@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rectangle.h"
+#include "system.h"
 
 // forward declare
-class ComponentManager;
 class EventManager;
 /*
 	PositionUpdateSystem class
@@ -11,13 +11,12 @@ class EventManager;
 	also checks positions to make entities inactive
 */
 
-class PositionUpdateSystem
+class PositionUpdateSystem : public System
 {
 public:
 	PositionUpdateSystem(ComponentManager& compManager);
 	void positionUpdate(int deltaTime, const Rectangle<float>& view, EventManager& eventManager);
 private:
-	ComponentManager& compManager;
 	const Rectangle<float>& view;
 
 	// distance away from view where entities remain active

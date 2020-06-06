@@ -6,7 +6,7 @@ const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
 
 PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventManager) :
-	compManager(compManager)
+	System(compManager)
 {
 	eventManager.registerListener<KeyDownEvent>([this](KeyDownEvent& kdEvent)
 		{

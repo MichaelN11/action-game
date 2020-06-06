@@ -1,16 +1,14 @@
 #pragma once
 
 #include "rectangle.h"
+#include "system.h"
 
 // forward declare
-class ComponentManager;
 class Graphics;
 
-class SpriteSystem
+class SpriteSystem : public System
 {
 public:
 	SpriteSystem(ComponentManager& compManager);
 	void drawSprites(Graphics& graphics, const Rectangle<float>& view);
-private:
-	ComponentManager& compManager;
 };

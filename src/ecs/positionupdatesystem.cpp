@@ -6,7 +6,7 @@
 const int PositionUpdateSystem::MAX_ACTIVE_DISTANCE = 100;
 
 PositionUpdateSystem::PositionUpdateSystem(ComponentManager& compManager) :
-	compManager(compManager),
+	System(compManager),
 	view(view)
 {
 }

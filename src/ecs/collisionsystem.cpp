@@ -9,7 +9,7 @@
 //#include <iostream>
 
 CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap) :
-	compManager(compManager),
+	System(compManager),
 	eventManager(eventManager),
 	tileMap(tileMap)
 {

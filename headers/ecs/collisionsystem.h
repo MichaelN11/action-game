@@ -2,19 +2,18 @@
 
 #include <vector>
 #include "rectangle.h"
-#include "componentmanager.h"
+#include "system.h"
 
 // forward declare
 class EventManager;
 class TileMap;
 
-class CollisionSystem
+class CollisionSystem : public System
 {
 public:
 	CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap);
 	void afterUpdate();
 private:
-	ComponentManager& compManager;
 	EventManager& eventManager;
 	const TileMap& tileMap;
 

@@ -2,17 +2,16 @@
 
 #include <unordered_map>
 #include "enums.h"
+#include "system.h"
 
-//forward declare
-class ComponentManager;
+// forward declare
 class EventManager;
 
-class PlayerSystem
+class PlayerSystem : public System
 {
 public:
 	PlayerSystem(ComponentManager& compManager, EventManager& eventManager);
 private:
-	ComponentManager& compManager;
 	void parseMovement(const std::unordered_map<Keybind, bool>& heldKeys);
 	void updateMovement(float xDirection, float yDirection);
 

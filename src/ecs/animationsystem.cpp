@@ -1,7 +1,7 @@
 #include "ecs/animationsystem.h"
 #include "ecs/componentmanager.h"
 
-AnimationSystem::AnimationSystem(ComponentManager& compManager) : compManager(compManager)
+AnimationSystem::AnimationSystem(ComponentManager& compManager) : System(compManager)
 {}
 
 void AnimationSystem::update(int deltaTime)

@@ -5,7 +5,7 @@
 #include <iostream>
 
 DamageSystem::DamageSystem(ComponentManager& compManager, EventManager& eventManager) :
-	compManager(compManager)
+	System(compManager)
 {
 	eventManager.registerListener<DamageEvent>([this](DamageEvent dEvent) 
 	{

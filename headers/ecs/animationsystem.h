@@ -1,13 +1,10 @@
 #pragma once
 
-// forward declare
-class ComponentManager;
+#include "system.h"
 
-class AnimationSystem
+class AnimationSystem : public System
 {
 public:
 	AnimationSystem(ComponentManager& compManager);
 	void update(int deltaTime);
-private:
-	ComponentManager& compManager;
 };

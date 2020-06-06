@@ -6,7 +6,7 @@
 #include "eventmanager.h"
 
 SpriteSystem::SpriteSystem(ComponentManager& compManager) :
-	compManager(compManager)
+	System(compManager)
 {
 }
 
