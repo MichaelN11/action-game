@@ -10,25 +10,35 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 	System(compManager)
 {
 	eventManager.registerListener<KeyDownEvent>([this](KeyDownEvent& kdEvent)
+	{
+		if (kdEvent.keyPressed == Keybind::up ||
+			kdEvent.keyPressed == Keybind::down ||
+			kdEvent.keyPressed == Keybind::left ||
+			kdEvent.keyPressed == Keybind::right)
 		{
-			if (kdEvent.keyPressed == Keybind::up ||
-				kdEvent.keyPressed == Keybind::down ||
-				kdEvent.keyPressed == Keybind::left ||
-				kdEvent.keyPressed == Keybind::right)
-			{
-				parseMovement(kdEvent.heldKeys);
-			}
-		});
+			parseMovement(kdEvent.heldKeys);
+		}
+	});
 	eventManager.registerListener<KeyUpEvent>([this](KeyUpEvent& kuEvent)
+	{
+		if (kuEvent.keyReleased == Keybind::up ||
+			kuEvent.keyReleased == Keybind::down ||
+			kuEvent.keyReleased == Keybind::left ||
+			kuEvent.keyReleased == Keybind::right)
 		{
-			if (kuEvent.keyReleased == Keybind::up ||
-				kuEvent.keyReleased == Keybind::down ||
-				kuEvent.keyReleased == Keybind::left ||
-				kuEvent.keyReleased == Keybind::right)
-			{
-				parseMovement(kuEvent.heldKeys);
-			}
-		});
+			parseMovement(kuEvent.heldKeys);
+		}
+	});
+	eventManager.registerListener<KeyHeldEvent>([this](KeyHeldEvent khEvent)
+	{
+		if (khEvent.keyHeld == Keybind::up ||
+			khEvent.keyHeld == Keybind::down ||
+			khEvent.keyHeld == Keybind::left ||
+			khEvent.keyHeld == Keybind::right)
+		{
+			parseMovement(khEvent.heldKeys);
+		}
+	});
 }
 
 void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKeys)

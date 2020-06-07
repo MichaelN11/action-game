@@ -86,10 +86,18 @@ struct StateComponent : public Component
 		return bufferedDrawState;
 	}
 
+	ActivityState activityState;
+	DrawState previousDrawState = DrawState::none;
+	int stunTimer = 0;
+	const int maxStunTime = 1000;
+
+	bool invincible = false;
+	int invincibilityTimer = 0;
+	const int maxInvTime = 2000;
+
 private:
 	DrawState drawState;
 	DrawState bufferedDrawState;
-	ActivityState activityState;
 };
 
 struct AnimationFrame

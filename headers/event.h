@@ -22,6 +22,14 @@ struct KeyUpEvent : Event
 	const std::unordered_map<Keybind, bool>& heldKeys;
 };
 
+struct KeyHeldEvent : Event
+{
+	KeyHeldEvent(Keybind k, const std::unordered_map<Keybind, bool>& heldKeys) : keyHeld(k), heldKeys(heldKeys)
+	{}
+	Keybind keyHeld;
+	const std::unordered_map<Keybind, bool>& heldKeys;
+};
+
 struct QuitEvent : Event
 {};
 

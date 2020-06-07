@@ -5,6 +5,6 @@
 class StateSystem : public System
 {
 public:
-	StateSystem(ComponentManager& commpManager);
+	StateSystem(ComponentManager& compManager);
 	void update(int deltaTime);
 };

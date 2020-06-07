@@ -17,11 +17,18 @@ void Input::handleSDLEvent(SDL_Event& sdlEvent)
 {
 	if (sdlEvent.type == SDL_KEYDOWN)
 	{
-		if (sdlEvent.key.repeat == 0)
+		std::unordered_map<SDL_Scancode, Keybind>::iterator it = keybindMap.find(sdlEvent.key.keysym.scancode);
+		if (it != keybindMap.end())
 		{
-			std::unordered_map<SDL_Scancode, Keybind>::iterator it = keybindMap.find(sdlEvent.key.keysym.scancode);
-			if (it != keybindMap.end())
-				keyDownEvent(it->second);
+			Keybind key = it->second;
+			if (sdlEvent.key.repeat == 0)
+			{
+				keyDownEvent(key);
+			}
+			else
+			{
+				keyHeldEvent(key);
+			}
 		}
 	}
 	else if (sdlEvent.type == SDL_KEYUP)
@@ -48,6 +55,12 @@ void Input::keyUpEvent(Keybind key)
 	heldKeys[key] = false;
 	KeyUpEvent kEvent(key, heldKeys);
 	eventManager->fireEvent<KeyUpEvent>(kEvent);
+}
+
+void Input::keyHeldEvent(Keybind key)
+{
+	KeyHeldEvent kEvent(key, heldKeys);
+	eventManager->fireEvent<KeyHeldEvent>(kEvent);
 }
 
 void Input::quitEvent()

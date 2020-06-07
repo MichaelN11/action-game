@@ -223,6 +223,7 @@ std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_ma
 	map[DrawState::walkRight] = std::vector<AnimationFrame>({
 		{ 4, false, true, false },
 		{ 3, false, true, false } });
+	map[DrawState::stunned] = std::vector<AnimationFrame>({ {91, false, false, false} });
 	return map;
 }
 

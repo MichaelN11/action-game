@@ -15,34 +15,52 @@ DamageSystem::DamageSystem(ComponentManager& compManager, EventManager& eventMan
 
 void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target)
 {
-	DamageComponent* sourceDamage = source->getComponent<DamageComponent>();
-	if (sourceDamage)
+	StateComponent* targetState = target->getComponent<StateComponent>();
+	if (targetState && targetState->invincible == false)
 	{
-		HealthComponent* targetHealth = target->getComponent<HealthComponent>();
-		if (targetHealth)
+		DamageComponent* sourceDamage = source->getComponent<DamageComponent>();
+		if (sourceDamage)
 		{
-			bool hostile = false;
-			GroupComponent* targetGroup = target->getComponent<GroupComponent>();
-			if (targetGroup)
+			HealthComponent* targetHealth = target->getComponent<HealthComponent>();
+			if (targetHealth)
 			{
-				for (Group group : sourceDamage->damageGroups)
+				bool hostile = false;
+				GroupComponent* targetGroup = target->getComponent<GroupComponent>();
+				if (targetGroup)
 				{
-					if (group == targetGroup->group)
+					for (Group group : sourceDamage->damageGroups)
 					{
-						hostile = true;
-						break;
+						if (group == targetGroup->group)
+						{
+							hostile = true;
+							break;
+						}
 					}
 				}
-			}
-			else
-			{
-				hostile = true;
-			}
+				else
+				{
+					hostile = true;
+				}
 
-			if (hostile)
-			{
-				int damage = sourceDamage->damage;
-				dealDamage(source, targetHealth, damage);
+				if (hostile)
+				{
+					int damage = sourceDamage->damage;
+					dealDamage(source, targetHealth, damage);
+
+					targetState->activityState = ActivityState::stunned;
+					targetState->stunTimer = targetState->maxStunTime;
+					targetState->previousDrawState = targetState->getBufferedDrawState();
+					targetState->setDrawState(DrawState::stunned);
+					targetState->invincible = true;
+					targetState->invincibilityTimer = targetState->maxInvTime;
+
+					MovementComponent* targetMovement = target->getComponent<MovementComponent>();
+					if (targetMovement)
+					{
+						targetMovement->dx = 0;
+						targetMovement->dy = 0;
+					}
+				}
 			}
 		}
 	}
