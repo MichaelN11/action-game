@@ -6,6 +6,7 @@
 #include "ecs/animationsystem.h"
 #include "ecs/collisionsystem.h"
 #include "ecs/damagesystem.h"
+#include "ecs/statesystem.h"
 
 // forward declare
 class Graphics;
@@ -76,4 +77,5 @@ private:
 	AnimationSystem animationSystem;
 	CollisionSystem collisionSystem;
 	DamageSystem damageSystem;
+	StateSystem stateSystem;
 };

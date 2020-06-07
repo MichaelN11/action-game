@@ -16,7 +16,8 @@ ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	spriteSystem(compManager),
 	animationSystem(compManager),
 	collisionSystem(compManager, eventManager, tileMap),
-	damageSystem(compManager, eventManager)
+	damageSystem(compManager, eventManager),
+	stateSystem(compManager)
 {
 
 }
@@ -30,6 +31,7 @@ void ECS::update(int deltaTime, const Rectangle<float>& view)
 {
 	posUpdateSystem.positionUpdate(deltaTime, view, eventManager);
 
+	stateSystem.update(deltaTime);
 	animationSystem.update(deltaTime);
 
 	afterUpdate();

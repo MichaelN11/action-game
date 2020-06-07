@@ -8,14 +8,14 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 		StateComponent* state = entity->getComponent<StateComponent>();
 		if (state)
 		{
-			bool standing = (state->bufferedDrawState == DrawState::standDown ||
-				state->bufferedDrawState == DrawState::standLeft ||
-				state->bufferedDrawState == DrawState::standUp ||
-				state->bufferedDrawState == DrawState::standRight);
+			bool standing = (state->getBufferedDrawState() == DrawState::standDown ||
+				state->getBufferedDrawState() == DrawState::standLeft ||
+				state->getBufferedDrawState() == DrawState::standUp ||
+				state->getBufferedDrawState() == DrawState::standRight);
 
 			if (yMultiplier == 0 && xMultiplier == 0)
 			{
-				switch (state->drawState)
+				switch (state->getDrawState())
 				{
 				case DrawState::walkRight:
 					state->setDrawState(DrawState::standRight);
@@ -35,30 +35,34 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 			{
 				if (xMultiplier > 0)
 				{
-					state->setBufferedDrawState(DrawState::walkRight);
 					if (standing)
-						state->drawState = DrawState::walkRight;
+						state->setDrawState(DrawState::walkRight);
+					else
+						state->setBufferedDrawState(DrawState::walkRight);
 				}
 				else if (xMultiplier < 0)
 				{
-					state->setBufferedDrawState(DrawState::walkLeft);
 					if (standing)
-						state->drawState = DrawState::walkLeft;
+						state->setDrawState(DrawState::walkLeft);
+					else
+						state->setBufferedDrawState(DrawState::walkLeft);
 				}
 			}
 			else if (xMultiplier == 0)
 			{
 				if (yMultiplier > 0)
 				{
-					state->setBufferedDrawState(DrawState::walkDown);
 					if (standing)
-						state->drawState = DrawState::walkDown;
+						state->setDrawState(DrawState::walkDown);
+					else
+						state->setBufferedDrawState(DrawState::walkDown);
 				}
 				else if (yMultiplier < 0)
 				{
-					state->setBufferedDrawState(DrawState::walkUp);
 					if (standing)
-						state->drawState = DrawState::walkUp;
+						state->setDrawState(DrawState::walkUp);
+					else
+						state->setBufferedDrawState(DrawState::walkUp);
 				}
 			}
 		}

@@ -16,24 +16,11 @@ void AnimationSystem::update(int deltaTime)
 			auto state = entity->getComponent<StateComponent>();
 			if (state)
 			{
-				// small buffer when changing sprites, useful for things like diagonal movement
-				if (state->bufferedDrawState != state->drawState)
-				{
-					if (state->drawBuffer >= state->drawBufferMax)
-					{
-						state->drawState = state->bufferedDrawState;
-						state->drawBuffer = 0;
-					}
-					else
-					{
-						state->drawBuffer += deltaTime;
-					}
-				}
 				// if state changed, set the sprite to frame 0 of the animation
-				if (animation->prevState != state->drawState)
+				if (animation->prevState != state->getDrawState())
 				{
 					animation->frameNum = 0;
-					animation->prevState = state->drawState;
+					animation->prevState = state->getDrawState();
 					animation->timeElapsed = animation->timeToUpdate;
 				}
 			}

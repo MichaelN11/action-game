@@ -58,12 +58,13 @@ struct PlayerComponent : public Component
 
 struct StateComponent : public Component
 {
-	StateComponent(int entityId, DrawState drawState, int drawBuffer) : Component(entityId), drawState(drawState), bufferedDrawState(drawState), drawBufferMax(drawBuffer)
+	StateComponent(int entityId, DrawState draw, int drawBuffer, ActivityState activity = ActivityState::alive) : 
+		Component(entityId), drawState(draw), bufferedDrawState(drawState), drawBufferMax(drawBuffer), activityState(activity)
 	{}
-	DrawState drawState;
-	DrawState bufferedDrawState;
-	int drawBuffer = 0;
+
 	const int drawBufferMax;
+	int drawBuffer = 0;
+
 	void setDrawState(DrawState dState)
 	{
 		drawState = dState;
@@ -74,6 +75,21 @@ struct StateComponent : public Component
 		bufferedDrawState = dState;
 		drawBuffer = 0;
 	}
+
+	DrawState getDrawState() const
+	{
+		return drawState;
+	}
+
+	DrawState getBufferedDrawState() const
+	{
+		return bufferedDrawState;
+	}
+
+private:
+	DrawState drawState;
+	DrawState bufferedDrawState;
+	ActivityState activityState;
 };
 
 struct AnimationFrame
@@ -128,5 +144,12 @@ struct GroupComponent : public Component
 	std::vector<Group> hostileGroups;
 };
 
+//struct StunComponent : public Component
+//{
+//	StunComponent(int entityId, DrawState previousDrawState, int recoveryTimer) : Component(entityId), previousDrawState(previousDrawState), recoveryTimer(recoveryTimer)
+//	{}
+//	DrawState previousDrawState = DrawState::none;
+//	int recoveryTimer = 0;
+//};
 
 
