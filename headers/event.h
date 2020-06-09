@@ -43,7 +43,11 @@ struct MoveEvent : Event
 
 struct DamageEvent : Event
 {
-	DamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target) : source(source), target(target) {}
+	DamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target, float xDirection, float yDirection) : 
+		source(source), target(target), xDirection(xDirection), yDirection(yDirection) 
+	{}
 	ComponentManager::EntityComponents* source;
 	ComponentManager::EntityComponents* target;
+	float xDirection;
+	float yDirection;
 };

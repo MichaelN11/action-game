@@ -9,6 +9,6 @@ class DamageSystem : public System
 {
 public:
 	DamageSystem(ComponentManager& compManager, EventManager& eventManager);
-	void handleDamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target);
+	void handleDamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target, float xDirection, float yDirection);
 	void dealDamage(ComponentManager::EntityComponents* source, HealthComponent* health, int damage);
 };

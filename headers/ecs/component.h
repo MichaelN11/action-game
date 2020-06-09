@@ -48,6 +48,8 @@ struct MovementComponent : public Component
 	MovementComponent(int entityId, float dx, float dy, float moveSpeed) : Component(entityId), dx(dx), dy(dy), moveSpeed(moveSpeed) {}
 	float dx;
 	float dy;
+	float xAcceleration = 0;
+	float yAcceleration = 0;
 	float moveSpeed;
 };
 
@@ -142,6 +144,7 @@ struct DamageComponent : public Component
 	{}
 	int damage;
 	std::vector<Group> damageGroups;
+	float knockback = 0.2f;
 };
 
 struct GroupComponent : public Component

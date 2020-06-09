@@ -77,10 +77,10 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 
 				if (boundingBox.isColliding(otherBox))
 				{
+					float xMove, yMove;
+					boundingBox.getCollisionDirection(otherBox, xMove, yMove);
 					if (collisionComp->solid && other->solid)
 					{
-						float xMove, yMove;
-						boundingBox.getCollisionDirection(otherBox, xMove, yMove);
 						if (xMove == 0 || yMove == 0)
 						{
 							positionComp->x += xMove;
@@ -100,10 +100,12 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 					if (collisionComp->interactable && other->interactable)
 					{
 						// damage events
+						// negative xmove and ymove to knockback other away from entity
 						if (entityComponents->getComponent<DamageComponent>())
-							eventManager.fireEvent<DamageEvent>(DamageEvent(entityComponents, otherEntity));
+							eventManager.fireEvent<DamageEvent>(DamageEvent(entityComponents, otherEntity, -xMove, -yMove));
+						// positive xmove and ymove to knockback entity away from other
 						if (otherEntity->getComponent<DamageComponent>())
-							eventManager.fireEvent<DamageEvent>(DamageEvent(otherEntity, entityComponents));
+							eventManager.fireEvent<DamageEvent>(DamageEvent(otherEntity, entityComponents, xMove, yMove));
 					}
 				}
 

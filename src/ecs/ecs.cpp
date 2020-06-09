@@ -53,6 +53,8 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 {
 //	std::cout << "Entity # " << entityId << " created." << std::endl;
 
+	compManager.addComponent(StateComponent(entityId, DrawState::standDown, 100));
+
 	if (data.spritePath != "")
 	{
 		compManager.addComponent(SpriteComponent(entityId, data.spritePath, data.tileNum, data.spriteWidth, data.spriteHeight, data.spriteLayer));
@@ -67,7 +69,6 @@ void ECS::createEntityFromData(ComponentManager& compManager, int entityId, cons
 	}
 	if (data.animationMap)
 	{
-		compManager.addComponent(StateComponent(entityId, DrawState::standDown, 100));
 		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap));
 	}
 	if (data.boundingBox.getW() > 0)
@@ -159,7 +160,8 @@ const EntityData ECS::PLAYER =
 	// damage
 	0,
 	// damage group
-	{ },
+	//{ },
+	{ Group::enemy },
 	// group
 	Group::player,
 	// hostile groups
