@@ -57,42 +57,18 @@ void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKe
 	if (rightIt != heldKeys.end())
 		right = rightIt->second;
 
-	if (up && left && !down && !right)
-	{
-		updateMovement(-DIAGONAL_SPEED, -DIAGONAL_SPEED);
-	}
-	else if (up && right && !down && !left)
-	{
-		updateMovement(DIAGONAL_SPEED, -DIAGONAL_SPEED);
-	}
-	else if (down && right && !up && !left)
-	{
-		updateMovement(DIAGONAL_SPEED, DIAGONAL_SPEED);
-	}
-	else if (down && left && !up && !right)
-	{
-		updateMovement(-DIAGONAL_SPEED, DIAGONAL_SPEED);
-	}
-	else if (up && !down)
-	{
-		updateMovement(0, -1);
-	}
-	else if (right && !left)
-	{
-		updateMovement(1, 0);
-	}
-	else if (down && !up)
-	{
-		updateMovement(0, 1);
-	}
-	else if (left && !right)
-	{
-		updateMovement(-1, 0);
-	}
-	else
-	{
-		updateMovement(0, 0);
-	}
+	float x = 0, y = 0;
+
+	if (up)
+		y += -1.f;
+	if (down)
+		y += 1.f;
+	if (left)
+		x += -1.f;
+	if (right)
+		x += 1.f;
+
+	updateMovement(x, y);
 }
 
 void PlayerSystem::updateMovement(float xDirection, float yDirection)

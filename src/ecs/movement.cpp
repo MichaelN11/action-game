@@ -76,8 +76,15 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 						state->setDrawState(DrawState::walkUp);
 				}
 
-				movement->dx = movement->moveSpeed * xMultiplier;
-				movement->dy = movement->moveSpeed * yMultiplier;
+				float moveSpeed = movement->moveSpeed;
+
+				if (xMultiplier != 0 && yMultiplier != 0)
+				{
+					moveSpeed *= DIAGONAL_SPEED;
+				}
+
+				movement->dx = moveSpeed * xMultiplier;
+				movement->dy = moveSpeed * yMultiplier;
 			}
 		}
 		// if no state component, then it just moves
