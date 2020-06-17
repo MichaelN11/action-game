@@ -1,5 +1,6 @@
 #include "ecs/damagesystem.h"
 #include "eventmanager.h"
+#include "ecs/movement.h"
 #include <cmath>
 
 // TEMPORARY DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,43 +49,13 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 					int damage = sourceDamage->damage;
 					dealDamage(source, targetHealth, damage);
 
-					targetState->activityState = ActivityState::stunned;
-					targetState->stunTimer = targetState->maxStunTime;
-					targetState->previousDrawState = targetState->getBufferedDrawState();
-					targetState->setDrawState(DrawState::stunned);
+					float knockbackSpeed = sourceDamage->knockback;
+					float knockbackDeceleration = sourceDamage->knockbackDeceleration;
+
+					movement::knockback(target, xDirection, yDirection, knockbackSpeed, knockbackDeceleration);
+
 					targetState->invincible = true;
-					targetState->invincibilityTimer = targetState->maxInvTime;
-
-					MovementComponent* targetMovement = target->getComponent<MovementComponent>();
-					if (targetMovement)
-					{
-						const float diagonalSpeed = 0.7071f;
-						const float deceleration = 0.0004f;
-
-						float xSpeed = sourceDamage->knockback;
-						float ySpeed = sourceDamage->knockback;
-						if (xDirection != 0 && yDirection != 0)
-						{
-							xSpeed *= diagonalSpeed;
-							ySpeed *= diagonalSpeed;
-						}
-
-						targetMovement->dx = 0;
-						targetMovement->dy = 0;
-
-						if (xDirection != 0)
-						{
-							targetMovement->dx = copysign(xSpeed, xDirection);
-							targetMovement->xAcceleration = copysign(deceleration, -xDirection);
-						}
-						if (yDirection != 0)
-						{
-							targetMovement->dy = copysign(ySpeed, yDirection);
-							targetMovement->yAcceleration = copysign(deceleration, -yDirection);
-						}
-
-						std::cout << "dx: " << targetMovement->dx << "   dy: " << targetMovement->dy << "   xAcceleration: " << targetMovement->xAcceleration << "   yAcceleration: " << targetMovement->yAcceleration << std::endl;
-					}
+					targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);
 				}
 			}
 		}

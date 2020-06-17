@@ -68,6 +68,13 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 							state->setBufferedDrawState(DrawState::walkUp);
 					}
 				}
+				else if (standing)
+				{
+					if (yMultiplier > 0)
+						state->setDrawState(DrawState::walkDown);
+					else
+						state->setDrawState(DrawState::walkUp);
+				}
 
 				movement->dx = movement->moveSpeed * xMultiplier;
 				movement->dy = movement->moveSpeed * yMultiplier;
@@ -79,5 +86,42 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 			movement->dx = movement->moveSpeed * xMultiplier;
 			movement->dy = movement->moveSpeed * yMultiplier;
 		}
+	}
+}
+
+void movement::knockback(ComponentManager::EntityComponents* entity, float xDirection, float yDirection, float speed, float deceleration)
+{
+	MovementComponent* targetMovement = entity->getComponent<MovementComponent>();
+	if (targetMovement)
+	{
+		StateComponent* targetState = entity->getComponent<StateComponent>();
+		targetState->activityState = ActivityState::stunned;
+		targetState->stunTimer = (int)(speed / deceleration);
+		targetState->previousDrawState = targetState->getBufferedDrawState();
+		targetState->setDrawState(DrawState::stunned);
+
+		float xSpeed = speed;
+		float ySpeed = speed;
+		if (xDirection != 0 && yDirection != 0)
+		{
+			xSpeed *= movement::DIAGONAL_SPEED;
+			ySpeed *= movement::DIAGONAL_SPEED;
+		}
+
+		targetMovement->dx = 0;
+		targetMovement->dy = 0;
+
+		if (xDirection != 0)
+		{
+			targetMovement->dx = copysign(xSpeed, xDirection);
+			targetMovement->xAcceleration = copysign(deceleration, -xDirection);
+		}
+		if (yDirection != 0)
+		{
+			targetMovement->dy = copysign(ySpeed, yDirection);
+			targetMovement->yAcceleration = copysign(deceleration, -yDirection);
+		}
+
+		//std::cout << "dx: " << targetMovement->dx << "   dy: " << targetMovement->dy << "   xAcceleration: " << targetMovement->xAcceleration << "   yAcceleration: " << targetMovement->yAcceleration << std::endl;
 	}
 }

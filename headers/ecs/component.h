@@ -91,11 +91,11 @@ struct StateComponent : public Component
 	ActivityState activityState;
 	DrawState previousDrawState = DrawState::none;
 	int stunTimer = 0;
-	const int maxStunTime = 1000;
 
 	bool invincible = false;
 	int invincibilityTimer = 0;
-	const int maxInvTime = 2000;
+	// how long entity stays invincible as a multiplier compared to normal
+	const float invTimeFactor = 2.0f;
 
 private:
 	DrawState drawState;
@@ -145,6 +145,7 @@ struct DamageComponent : public Component
 	int damage;
 	std::vector<Group> damageGroups;
 	float knockback = 0.2f;
+	float knockbackDeceleration = 0.0004f;
 };
 
 struct GroupComponent : public Component
