@@ -1,6 +1,7 @@
 #include "ecs/statesystem.h"
+#include "eventmanager.h"
 
-StateSystem::StateSystem(ComponentManager& compManager) : System(compManager)
+StateSystem::StateSystem(ComponentManager& compManager, EventManager& eventManager) : System(compManager), eventManager(eventManager)
 {}
 
 void StateSystem::update(int deltaTime)
@@ -60,6 +61,13 @@ void StateSystem::update(int deltaTime)
 		{
 			state->invincible = false;
 			state->invincibilityTimer = 0;
+
+			CollisionComponent* collision = compManager.getComponent<CollisionComponent>(state->entityId);
+			if (collision)
+			{
+				collision->collideWithEntities = true;
+				eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(collision->entityId));
+			}
 		}
 	}
 }

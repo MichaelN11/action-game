@@ -17,7 +17,7 @@ ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	animationSystem(compManager),
 	collisionSystem(compManager, eventManager, tileMap),
 	damageSystem(compManager, eventManager),
-	stateSystem(compManager)
+	stateSystem(compManager, eventManager)
 {
 
 }

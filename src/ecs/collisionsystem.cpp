@@ -17,6 +17,11 @@ CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& ev
 	{
 		checkCollisions(mEvent.entityId);
 	});
+
+	eventManager.registerListener<CollisionCheckEvent>([this](CollisionCheckEvent& mEvent)
+	{
+		checkCollisions(mEvent.entityId);
+	});
 }
 
 void CollisionSystem::checkCollisions(int entityId)
@@ -33,7 +38,10 @@ void CollisionSystem::checkCollisions(int entityId)
 				checkTileCollisions(collision, position);
 			}
 
-			checkEntityCollisions(collision, position, entity);
+			if (collision->collideWithEntities)
+			{
+				checkEntityCollisions(collision, position, entity);
+			}
 		}
 	}
 }
@@ -64,7 +72,7 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 		if (other->entityId != collisionComp->entityId)
 		{
 			auto otherEntity = compManager.getEntityComponents(other->entityId);
-			if (otherEntity->getComponent<InactiveComponent>())
+			if (otherEntity->getComponent<InactiveComponent>() || !(other->collideWithEntities))
 			{
 				it = collisionList.erase(it);
 			}

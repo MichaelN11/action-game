@@ -56,6 +56,11 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 
 					targetState->invincible = true;
 					targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);
+					CollisionComponent* collision = target->getComponent<CollisionComponent>();
+					if (collision)
+					{
+						collision->collideWithEntities = false;
+					}
 				}
 			}
 		}

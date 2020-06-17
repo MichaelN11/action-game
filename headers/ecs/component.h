@@ -95,7 +95,7 @@ struct StateComponent : public Component
 	bool invincible = false;
 	int invincibilityTimer = 0;
 	// how long entity stays invincible as a multiplier compared to normal
-	const float invTimeFactor = 2.0f;
+	const float invTimeFactor = 4.0f;
 
 private:
 	DrawState drawState;
@@ -127,6 +127,7 @@ struct CollisionComponent : public Component
 	CollisionComponent(int entityId, Rectangle<float> boundingBox, bool solid, bool interactable) : Component(entityId), boundingBox(boundingBox), solid(solid), interactable(interactable)
 	{}
 	bool solid = false;
+	bool collideWithEntities = true;
 	bool interactable = false;
 	Rectangle<float> boundingBox;
 };

@@ -51,3 +51,9 @@ struct DamageEvent : Event
 	float xDirection;
 	float yDirection;
 };
+
+struct CollisionCheckEvent : Event
+{
+	CollisionCheckEvent(int entityId) : entityId(entityId){}
+	int entityId;
+};
