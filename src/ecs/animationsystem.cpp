@@ -23,6 +23,26 @@ void AnimationSystem::update(int deltaTime)
 					animation->prevState = state->getDrawState();
 					animation->timeElapsed = animation->timeToUpdate;
 				}
+
+				if (state->flashing)
+				{
+					animation->flashing = true;
+				}
+				else if (animation->flashing = true)
+				{
+					animation->flashTimer = 0;
+					sprite->visible = true;
+				}
+
+				if (animation->flashing)
+				{
+					animation->flashTimer += deltaTime;
+					if (animation->flashTimer > animation->flashSpeed)
+					{
+						animation->flashTimer -= animation->flashSpeed;
+						sprite->visible = !sprite->visible;
+					}
+				}
 			}
 			auto it = animation->animationMap->find(animation->prevState);
 			if (it != animation->animationMap->end())

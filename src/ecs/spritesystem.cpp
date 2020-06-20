@@ -16,17 +16,20 @@ void SpriteSystem::drawSprites(Graphics& graphics, const Rectangle<float>& view)
 	for (auto layerSpritePair : spriteCompMap)
 	{
 		SpriteComponent* sprite = layerSpritePair.second.get();
-		auto entity = compManager.getEntityComponents(sprite->entityId);
-		InactiveComponent* inactive = entity->getComponent<InactiveComponent>();
-		if (!inactive)
+		if (sprite->visible)
 		{
-			PositionComponent* position = entity->getComponent<PositionComponent>();
-			if (position)
+			auto entity = compManager.getEntityComponents(sprite->entityId);
+			InactiveComponent* inactive = entity->getComponent<InactiveComponent>();
+			if (!inactive)
 			{
-				int destX = (int)std::round(position->x - view.getX());
-				int destY = (int)std::round(position->y - view.getY());
-				Rectangle<int> rect(destX, destY, sprite->width, sprite->height);
-				graphics.drawImage(sprite->filePath, sprite->tileNum, rect, sprite->flipDiagonal, sprite->flipHorizontal, sprite->flipVertical, true);
+				PositionComponent* position = entity->getComponent<PositionComponent>();
+				if (position)
+				{
+					int destX = (int)std::round(position->x - view.getX());
+					int destY = (int)std::round(position->y - view.getY());
+					Rectangle<int> rect(destX, destY, sprite->width, sprite->height);
+					graphics.drawImage(sprite->filePath, sprite->tileNum, rect, sprite->flipDiagonal, sprite->flipHorizontal, sprite->flipVertical, true);
+				}
 			}
 		}
 	}

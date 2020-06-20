@@ -41,6 +41,7 @@ struct SpriteComponent : public Component
 	bool flipVertical = false;
 	bool flipHorizontal = false;
 	bool flipDiagonal = false;
+	bool visible = true;
 };
 
 struct MovementComponent : public Component
@@ -94,6 +95,9 @@ struct StateComponent : public Component
 
 	bool invincible = false;
 	int invincibilityTimer = 0;
+
+	bool flashing = false;
+
 	// how long entity stays invincible as a multiplier compared to normal
 	const float invTimeFactor = 4.0f;
 
@@ -120,6 +124,10 @@ struct AnimationComponent : public Component
 	int frameNum = 0;
 	int timeToUpdate;
 	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
+
+	bool flashing = false;
+	int flashTimer = 0;
+	int flashSpeed = 100;
 };
 
 struct CollisionComponent : public Component

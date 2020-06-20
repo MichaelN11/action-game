@@ -61,6 +61,7 @@ void StateSystem::update(int deltaTime)
 		{
 			state->invincible = false;
 			state->invincibilityTimer = 0;
+			state->flashing = false;
 
 			CollisionComponent* collision = compManager.getComponent<CollisionComponent>(state->entityId);
 			if (collision)
