@@ -47,20 +47,24 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 				if (hostile)
 				{
 					int damage = sourceDamage->damage;
-					dealDamage(source, targetHealth, damage);
+					dealDamage(target, targetHealth, targetState, damage);
 
-					float knockbackSpeed = sourceDamage->knockback;
-					float knockbackDeceleration = sourceDamage->knockbackDeceleration;
-
-					movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);
-
-					targetState->invincible = true;
-					targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);
-					targetState->flashing = true;
-					CollisionComponent* collision = target->getComponent<CollisionComponent>();
-					if (collision)
+					if (targetState->activityState != ActivityState::dead)
 					{
-						collision->collideWithEntities = false;
+
+						float knockbackSpeed = sourceDamage->knockback;
+						float knockbackDeceleration = sourceDamage->knockbackDeceleration;
+
+						movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);
+
+						targetState->invincible = true;
+						targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);
+						targetState->flashing = true;
+						CollisionComponent* collision = target->getComponent<CollisionComponent>();
+						if (collision)
+						{
+							collision->collideWithEntities = false;
+						}
 					}
 				}
 			}
@@ -68,11 +72,32 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 	}
 }
 
-void DamageSystem::dealDamage(ComponentManager::EntityComponents* source, HealthComponent* health, int damage)
+void DamageSystem::dealDamage(ComponentManager::EntityComponents* target, HealthComponent* health, StateComponent* state, int damage)
 {
-	if (source && health)
+	if (target && health && state)
 	{
 		health->health -= damage;
 		std::cout << "Entity " << health->entityId << " took " << damage << " damage! Health remaining: " << health->health << std::endl;
+
+		//dead
+		if (health->health <= 0)
+		{
+			state->setDrawState(DrawState::dead);
+			state->activityState = ActivityState::dead;
+			CollisionComponent* collision = target->getComponent<CollisionComponent>();
+			if (collision)
+			{
+				collision->solid = false;
+				collision->interactable = false;
+			}
+			MovementComponent* movement = target->getComponent<MovementComponent>();
+			if (movement)
+			{
+				movement->dx = 0;
+				movement->dy = 0;
+				movement->xAcceleration = 0;
+				movement->yAcceleration = 0;
+			}
+		}
 	}
 }

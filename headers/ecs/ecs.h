@@ -15,8 +15,8 @@ class TileMap;
 
 struct PlayerAnim
 {
-	static std::unordered_map<DrawState, std::vector<AnimationFrame>> create_map();
-	static std::unordered_map<DrawState, std::vector<AnimationFrame>> map;
+	static std::unordered_map<DrawState, Animation> create_map();
+	static std::unordered_map<DrawState, Animation> map;
 };
 
 struct EntityData
@@ -28,7 +28,7 @@ struct EntityData
 	int spriteLayer = -1;
 	float moveSpeed = -1.f;
 	bool player = false;
-	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
+	std::unordered_map<DrawState, Animation>* animationMap;
 	int animationTimeToUpdate = -1;
 	Rectangle<float> boundingBox;
 	bool solid = false;

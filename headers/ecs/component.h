@@ -98,6 +98,9 @@ struct StateComponent : public Component
 
 	bool flashing = false;
 
+	int timeToDie = 5000;
+	int deathTimer = 0;
+
 	// how long entity stays invincible as a multiplier compared to normal
 	const float invTimeFactor = 4.0f;
 
@@ -114,16 +117,22 @@ struct AnimationFrame
 	bool flipVertical;
 };
 
+struct Animation
+{
+	std::vector<AnimationFrame> frameList;
+	bool loop;
+};
+
 struct AnimationComponent : public Component
 {
-	AnimationComponent(int entityId, int timeToUpdate, std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap) :
+	AnimationComponent(int entityId, int timeToUpdate, std::unordered_map<DrawState, Animation>* animationMap) :
 		Component(entityId), timeToUpdate(timeToUpdate), animationMap(animationMap)
 	{}
 	DrawState prevState = DrawState::standDown;
 	int timeElapsed = 0;
 	int frameNum = 0;
 	int timeToUpdate;
-	std::unordered_map<DrawState, std::vector<AnimationFrame>>* animationMap;
+	std::unordered_map<DrawState, Animation>* animationMap;
 
 	bool flashing = false;
 	int flashTimer = 0;

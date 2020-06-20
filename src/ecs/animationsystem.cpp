@@ -28,7 +28,7 @@ void AnimationSystem::update(int deltaTime)
 				{
 					animation->flashing = true;
 				}
-				else if (animation->flashing = true)
+				else if (animation->flashing)
 				{
 					animation->flashTimer = 0;
 					sprite->visible = true;
@@ -47,7 +47,8 @@ void AnimationSystem::update(int deltaTime)
 			auto it = animation->animationMap->find(animation->prevState);
 			if (it != animation->animationMap->end())
 			{
-				auto& frameList = it->second;
+				Animation& frameAnimation = it->second;
+				auto& frameList = frameAnimation.frameList;
 				if (animation->frameNum < (int)frameList.size())
 				{
 					// animation logic
@@ -63,7 +64,8 @@ void AnimationSystem::update(int deltaTime)
 
 						if (animation->frameNum + 1 >= (int)frameList.size())
 						{
-							animation->frameNum = 0;
+							if (frameAnimation.loop)
+								animation->frameNum = 0;
 						}
 						else
 						{

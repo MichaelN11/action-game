@@ -31,7 +31,7 @@ void ECS::update(int deltaTime, const Rectangle<float>& view)
 {
 	posUpdateSystem.positionUpdate(deltaTime, view, eventManager);
 
-	stateSystem.update(deltaTime);
+	stateSystem.update(deltaTime, *this);
 	animationSystem.update(deltaTime);
 
 	afterUpdate();
@@ -45,8 +45,13 @@ void ECS::afterUpdate()
 std::pair<float, float> ECS::getPlayerPosition()
 {
 	auto playerList = compManager.getComponentList<PlayerComponent>();
-	PositionComponent* playerPos = compManager.getComponent<PositionComponent>(playerList.at(0)->entityId);
-	return std::make_pair(playerPos->x, playerPos->y);
+	if (playerList.size() > 0)
+	{
+		PositionComponent* playerPos = compManager.getComponent<PositionComponent>(playerList.at(0)->entityId);
+		return std::make_pair(playerPos->x, playerPos->y);
+	}
+	else 
+		return std::make_pair(0.f, 0.f);
 }
 
 void ECS::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
@@ -156,7 +161,7 @@ const EntityData ECS::PLAYER =
 	// interactable
 	true,
 	// health
-	100,
+	20,
 	// damage
 	0,
 	// damage group
@@ -206,27 +211,32 @@ const EntityData ECS::DUMMY =
 	{ Group::player }
 };
 
-std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::create_map()
+std::unordered_map<DrawState, Animation> PlayerAnim::create_map()
 {
-	std::unordered_map<DrawState, std::vector<AnimationFrame>> map;
-	map[DrawState::standDown] = std::vector<AnimationFrame>({ { 1, false, false, false } });
-	map[DrawState::standUp] = std::vector<AnimationFrame>({ { 2, false, false, false } });
-	map[DrawState::standLeft] = std::vector<AnimationFrame>({ { 3, false, false, false } });
-	map[DrawState::standRight] = std::vector<AnimationFrame>({ { 3, false, true, false } });
-	map[DrawState::walkDown] = std::vector<AnimationFrame>({ 
+	std::unordered_map<DrawState, Animation> map;
+	map[DrawState::standDown] = Animation{ std::vector<AnimationFrame>({ { 1, false, false, false } }), true };
+	map[DrawState::standUp] = Animation{ std::vector<AnimationFrame>({ { 2, false, false, false } }), true };
+	map[DrawState::standLeft] = Animation{ std::vector<AnimationFrame>({ { 3, false, false, false } }), true };
+	map[DrawState::standRight] = Animation{ std::vector<AnimationFrame>({ { 3, false, true, false } }), true };
+	map[DrawState::walkDown] = Animation{ std::vector<AnimationFrame>({
 		{ 1, false, true, false },
-		{ 1, false, false, false } });
-	map[DrawState::walkUp] = std::vector<AnimationFrame>({
+		{ 1, false, false, false } }), true };
+	map[DrawState::walkUp] = Animation{ std::vector<AnimationFrame>({
 		{ 2, false, true, false },
-		{ 2, false, false, false } });
-	map[DrawState::walkLeft] = std::vector<AnimationFrame>({
+		{ 2, false, false, false } }), true };
+	map[DrawState::walkLeft] = Animation{ std::vector<AnimationFrame>({
 		{ 4, false, false, false },
-		{ 3, false, false, false } });
-	map[DrawState::walkRight] = std::vector<AnimationFrame>({
+		{ 3, false, false, false } }), true };
+	map[DrawState::walkRight] = Animation{ std::vector<AnimationFrame>({
 		{ 4, false, true, false },
-		{ 3, false, true, false } });
-	map[DrawState::stunned] = std::vector<AnimationFrame>({ {91, false, false, false} });
+		{ 3, false, true, false } }), true };
+	map[DrawState::stunned] = Animation{ std::vector<AnimationFrame>({ {91, false, false, false} }), true };
+	map[DrawState::dead] = Animation{ std::vector<AnimationFrame>({
+		{ 92, false, false, false },
+		{ 93, false, false, false },
+		{ 94, false, false, false },
+		{ 95, false, false, false } }), false };
 	return map;
 }
 
-std::unordered_map<DrawState, std::vector<AnimationFrame>> PlayerAnim::map = PlayerAnim::create_map();
+std::unordered_map<DrawState, Animation> PlayerAnim::map = PlayerAnim::create_map();

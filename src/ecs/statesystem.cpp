@@ -1,10 +1,11 @@
 #include "ecs/statesystem.h"
 #include "eventmanager.h"
+#include "ecs/ecs.h"
 
 StateSystem::StateSystem(ComponentManager& compManager, EventManager& eventManager) : System(compManager), eventManager(eventManager)
 {}
 
-void StateSystem::update(int deltaTime)
+void StateSystem::update(int deltaTime, ECS& ecs)
 {
 	auto stateList = compManager.getComponentList<StateComponent>();
 	for (auto state : stateList)
@@ -68,6 +69,15 @@ void StateSystem::update(int deltaTime)
 			{
 				collision->collideWithEntities = true;
 				eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(collision->entityId));
+			}
+		}
+
+		if (state->activityState == ActivityState::dead)
+		{
+			state->deathTimer += deltaTime;
+			if (state->deathTimer >= state->timeToDie)
+			{
+				ecs.destroyEntity(state->entityId);
 			}
 		}
 	}
