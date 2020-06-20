@@ -85,6 +85,25 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 
 				if (boundingBox.isColliding(otherBox))
 				{
+					// collision events
+					if (collisionComp->interactable && other->interactable)
+					{
+						// damage events
+						// negative angle to knockback other away from entity
+						if (entityComponents->getComponent<DamageComponent>())
+						{
+							float collisionAngle = otherBox.getCollisionAngle(boundingBox);
+							eventManager.fireEvent<DamageEvent>(DamageEvent(entityComponents, otherEntity, collisionAngle));
+						}
+						// positive xmove and ymove to knockback entity away from other
+						if (otherEntity->getComponent<DamageComponent>())
+						{
+							float collisionAngle = boundingBox.getCollisionAngle(otherBox);
+							eventManager.fireEvent<DamageEvent>(DamageEvent(otherEntity, entityComponents, collisionAngle));
+						}
+					}
+
+					// solid entity collisions
 					float xMove, yMove;
 					boundingBox.getCollisionDirection(otherBox, xMove, yMove);
 					if (collisionComp->solid && other->solid)
@@ -103,17 +122,6 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 							xMoveStored = xMove;
 							yMoveStored = yMove;
 						}
-					}
-
-					if (collisionComp->interactable && other->interactable)
-					{
-						// damage events
-						// negative xmove and ymove to knockback other away from entity
-						if (entityComponents->getComponent<DamageComponent>())
-							eventManager.fireEvent<DamageEvent>(DamageEvent(entityComponents, otherEntity, -xMove, -yMove));
-						// positive xmove and ymove to knockback entity away from other
-						if (otherEntity->getComponent<DamageComponent>())
-							eventManager.fireEvent<DamageEvent>(DamageEvent(otherEntity, entityComponents, xMove, yMove));
 					}
 				}
 

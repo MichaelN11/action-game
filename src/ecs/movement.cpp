@@ -96,7 +96,7 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 	}
 }
 
-void movement::knockback(ComponentManager::EntityComponents* entity, float xDirection, float yDirection, float speed, float deceleration)
+void movement::knockback(ComponentManager::EntityComponents* entity, float angle, float speed, float deceleration)
 {
 	MovementComponent* targetMovement = entity->getComponent<MovementComponent>();
 	if (targetMovement)
@@ -107,27 +107,22 @@ void movement::knockback(ComponentManager::EntityComponents* entity, float xDire
 		targetState->previousDrawState = targetState->getBufferedDrawState();
 		targetState->setDrawState(DrawState::stunned);
 
-		float xSpeed = speed;
-		float ySpeed = speed;
-		if (xDirection != 0 && yDirection != 0)
-		{
-			xSpeed *= movement::DIAGONAL_SPEED;
-			ySpeed *= movement::DIAGONAL_SPEED;
-		}
+		//std::cout << "Angle: " << angle << std::endl;
+
+		float xAngle = cos(angle);
+		float yAngle = sin(angle);
 
 		targetMovement->dx = 0;
 		targetMovement->dy = 0;
 
-		if (xDirection != 0)
-		{
-			targetMovement->dx = copysign(xSpeed, xDirection);
-			targetMovement->xAcceleration = copysign(deceleration, -xDirection);
-		}
-		if (yDirection != 0)
-		{
-			targetMovement->dy = copysign(ySpeed, yDirection);
-			targetMovement->yAcceleration = copysign(deceleration, -yDirection);
-		}
+		targetMovement->dx = speed * xAngle;
+		// multiply by negative 1 because programming y is opposite sign as trig y
+		targetMovement->dy = (speed * yAngle) * -1;
+
+		// deceleration in opposite direction to movement
+		targetMovement->xAcceleration = deceleration * xAngle * -1;
+		targetMovement->yAcceleration = deceleration * yAngle;
+
 
 		//std::cout << "dx: " << targetMovement->dx << "   dy: " << targetMovement->dy << "   xAcceleration: " << targetMovement->xAcceleration << "   yAcceleration: " << targetMovement->yAcceleration << std::endl;
 	}

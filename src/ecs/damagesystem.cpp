@@ -11,11 +11,11 @@ DamageSystem::DamageSystem(ComponentManager& compManager, EventManager& eventMan
 {
 	eventManager.registerListener<DamageEvent>([this](DamageEvent dEvent) 
 	{
-		handleDamageEvent(dEvent.source, dEvent.target, dEvent.xDirection, dEvent.yDirection);
+		handleDamageEvent(dEvent.source, dEvent.target, dEvent.collisionAngle);
 	});
 }
 
-void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target, float xDirection, float yDirection)
+void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source, ComponentManager::EntityComponents* target, float collisionAngle)
 {
 	StateComponent* targetState = target->getComponent<StateComponent>();
 	if (targetState && targetState->invincible == false)
@@ -52,7 +52,7 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 					float knockbackSpeed = sourceDamage->knockback;
 					float knockbackDeceleration = sourceDamage->knockbackDeceleration;
 
-					movement::knockback(target, xDirection, yDirection, knockbackSpeed, knockbackDeceleration);
+					movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);
 
 					targetState->invincible = true;
 					targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);

@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+const float PI = (float)(2 * acos(0.0));
+
 template<typename T>
 class Rectangle
 {
@@ -44,6 +46,89 @@ public:
 
 		xDirection = xDir;
 		yDirection = yDir;
+	}
+
+	float getCollisionAngle(const Rectangle& other)
+	{
+		float angle = 0;
+		T xDir, yDir;
+		getCollisionDirection(other, xDir, yDir);
+		// diagonal collision
+		if (xDir != 0 && yDir != 0)
+		{
+			angle = PI / 4;
+			if (xDir < 0)
+			{
+				angle += PI / 2;
+			}
+			if (yDir < 0)
+			{
+				angle *= -1;
+			}
+		}
+		// vertical collision
+		else if (yDir != 0)
+		{
+			// compare left sides and right sides, find the max distance this rectangle extends past other
+			T leftGap = other.getX() - getX();
+			T rightGap = getX2() - other.getX2();
+			T maxGap = (leftGap > rightGap) ? leftGap : rightGap;
+			// if this rectangle is inside both edges of other, collision angle is 90 degrees
+			if (maxGap <= 0)
+			{
+				angle = PI / 2;
+			}
+			// get the ratio of the max gap between edges and convert it to an angle
+			else
+			{
+				float gapWidthRatio = maxGap / getW();
+				angle = (1 - gapWidthRatio) * (PI / 2);
+				// angle is to the left
+				if (leftGap > rightGap)
+				{
+					angle = PI - angle;
+				}
+			}
+			// angle is downward
+			if (yDir > 0)
+			{
+				angle *= -1;
+			}
+		}
+		// horizontal collision
+		else if (xDir != 0)
+		{
+			T downGap = getY2() - other.getY2();
+			T upGap = other.getY() - getY();
+			T maxGap = (downGap > upGap) ? downGap : upGap;
+			if (maxGap <= 0)
+			{
+				angle = 0;
+			}
+			else
+			{
+				float gapHeightRatio = maxGap / getH();
+				angle = gapHeightRatio * (PI / 2);
+				if (downGap > upGap)
+				{
+					angle *= -1;
+				}
+			}
+			if (xDir < 0)
+			{
+				// use negative angles for downward angles
+				if (angle > 0)
+				{
+					angle = PI - angle;
+				}
+				else
+				{
+					angle = -PI - angle;
+				}
+			}
+		}
+		
+		return angle;
 	}
 
 	void scalePositionAndSize(float scale)
