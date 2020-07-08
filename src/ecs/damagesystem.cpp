@@ -1,4 +1,5 @@
 #include "ecs/damagesystem.h"
+#include "ecs/statesystem.h"
 #include "eventmanager.h"
 #include "ecs/movement.h"
 #include <cmath>
@@ -49,23 +50,10 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 					int damage = sourceDamage->damage;
 					dealDamage(target, targetHealth, targetState, damage);
 
-					if (targetState->activityState != ActivityState::dead)
-					{
-
-						float knockbackSpeed = sourceDamage->knockback;
-						float knockbackDeceleration = sourceDamage->knockbackDeceleration;
-
-						movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);
-
-						targetState->invincible = true;
-						targetState->invincibilityTimer = (int)((knockbackSpeed / knockbackDeceleration) * targetState->invTimeFactor);
-						targetState->flashing = true;
-						CollisionComponent* collision = target->getComponent<CollisionComponent>();
-						if (collision)
-						{
-							collision->collideWithEntities = false;
-						}
-					}
+					float knockbackSpeed = sourceDamage->knockback;
+					float knockbackDeceleration = sourceDamage->knockbackDeceleration;
+					movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);
+					StateSystem::setInvincible(target, targetState, knockbackSpeed / knockbackDeceleration);
 				}
 			}
 		}
@@ -82,22 +70,7 @@ void DamageSystem::dealDamage(ComponentManager::EntityComponents* target, Health
 		//dead
 		if (health->health <= 0)
 		{
-			state->setDrawState(DrawState::dead);
-			state->activityState = ActivityState::dead;
-			CollisionComponent* collision = target->getComponent<CollisionComponent>();
-			if (collision)
-			{
-				collision->solid = false;
-				collision->interactable = false;
-			}
-			MovementComponent* movement = target->getComponent<MovementComponent>();
-			if (movement)
-			{
-				movement->dx = 0;
-				movement->dy = 0;
-				movement->xAcceleration = 0;
-				movement->yAcceleration = 0;
-			}
+			StateSystem::entityDeath(target, state);
 		}
 	}
 }

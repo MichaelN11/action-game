@@ -1,4 +1,5 @@
 #include "ecs/movement.h"
+#include "ecs/statesystem.h"
 
 void movement::standardMove(ComponentManager::EntityComponents* entity, float xMultiplier, float yMultiplier)
 {
@@ -101,11 +102,7 @@ void movement::knockback(ComponentManager::EntityComponents* entity, float angle
 	MovementComponent* targetMovement = entity->getComponent<MovementComponent>();
 	if (targetMovement)
 	{
-		StateComponent* targetState = entity->getComponent<StateComponent>();
-		targetState->activityState = ActivityState::stunned;
-		targetState->stunTimer = (int)(speed / deceleration);
-		targetState->previousDrawState = targetState->getBufferedDrawState();
-		targetState->setDrawState(DrawState::stunned);
+		StateSystem::setStunned(entity, speed / deceleration);
 
 		//std::cout << "Angle: " << angle << std::endl;
 

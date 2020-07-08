@@ -5,6 +5,67 @@
 StateSystem::StateSystem(ComponentManager& compManager, EventManager& eventManager) : System(compManager), eventManager(eventManager)
 {}
 
+void StateSystem::setInvincible(ComponentManager::EntityComponents* entity, StateComponent* state, float baseTime)
+{
+	if (state->activityState != ActivityState::dead)
+	{
+		state->invincible = true;
+		state->invincibilityTimer = (int)(baseTime * state->invTimeFactor);
+		state->flashing = true;
+		CollisionComponent* collision = entity->getComponent<CollisionComponent>();
+		if (collision)
+		{
+			collision->collideWithEntities = false;
+		}
+	}
+}
+
+void StateSystem::setStunned(ComponentManager::EntityComponents* entity, float baseTime)
+{
+	StateComponent* targetState = entity->getComponent<StateComponent>();
+	if (targetState->activityState != ActivityState::dead)
+	{
+		targetState->activityState = ActivityState::stunned;
+		targetState->stunTimer = (int)(baseTime);
+		targetState->previousDrawState = targetState->getBufferedDrawState();
+		targetState->setDrawState(DrawState::stunned);
+	}
+}
+
+void StateSystem::entityDeath(ComponentManager::EntityComponents* entity, StateComponent* state)
+{
+	state->setDrawState(DrawState::dead);
+	state->activityState = ActivityState::dead;
+	CollisionComponent* collision = entity->getComponent<CollisionComponent>();
+	if (collision)
+	{
+		collision->solid = false;
+		collision->interactable = false;
+	}
+	MovementComponent* movement = entity->getComponent<MovementComponent>();
+	if (movement)
+	{
+		// if dead entity is moving and not decelerating, decelerate it to 0 within a second
+		if (movement->dx > 0 && movement->xAcceleration >= 0)
+		{
+			movement->xAcceleration = (movement->dx / 1000) * -1;
+		}
+		else if (movement->dx < 0 && movement->xAcceleration <= 0)
+		{
+			movement->xAcceleration = (movement->dx / 1000) * -1;
+		}
+
+		if (movement->dy > 0 && movement->yAcceleration >= 0)
+		{
+			movement->yAcceleration = (movement->dy / 1000) * -1;
+		}
+		else if (movement->dy < 0 && movement->yAcceleration <= 0)
+		{
+			movement->yAcceleration = (movement->dy / 1000) * -1;
+		}
+	}
+}
+
 void StateSystem::update(int deltaTime, ECS& ecs)
 {
 	auto stateList = compManager.getComponentList<StateComponent>();
