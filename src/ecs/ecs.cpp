@@ -10,6 +10,7 @@
 //#include <iostream>
 
 ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
+	entityManager(compManager),
 	eventManager(eventManager),
 	playerSystem(compManager, eventManager),
 	posUpdateSystem(compManager),
@@ -22,6 +23,11 @@ ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 
 }
 
+EntityManager& ECS::getEntityManager()
+{
+	return entityManager;
+}
+
 void ECS::draw(Graphics& graphics, const Rectangle<float>& view)
 {
 	spriteSystem.drawSprites(graphics, view);
@@ -31,7 +37,7 @@ void ECS::update(int deltaTime, const Rectangle<float>& view)
 {
 	posUpdateSystem.positionUpdate(deltaTime, view, eventManager);
 
-	stateSystem.update(deltaTime, *this);
+	stateSystem.update(deltaTime, entityManager);
 	animationSystem.update(deltaTime);
 
 	afterUpdate();
@@ -52,84 +58,6 @@ std::pair<float, float> ECS::getPlayerPosition()
 	}
 	else 
 		return std::make_pair(0.f, 0.f);
-}
-
-void ECS::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
-{
-//	std::cout << "Entity # " << entityId << " created." << std::endl;
-
-	compManager.addComponent(StateComponent(entityId, DrawState::standDown, 100));
-
-	if (data.spritePath != "")
-	{
-		compManager.addComponent(SpriteComponent(entityId, data.spritePath, data.tileNum, data.spriteWidth, data.spriteHeight, data.spriteLayer));
-	}
-	if (data.moveSpeed >= 0)
-	{
-		compManager.addComponent(MovementComponent(entityId, 0.f, 0.f, data.moveSpeed));
-	}
-	if (data.player)
-	{
-		compManager.addComponent(PlayerComponent(entityId));
-	}
-	if (data.animationMap)
-	{
-		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap));
-	}
-	if (data.boundingBox.getW() > 0)
-	{
-		Rectangle<float> bBox = data.boundingBox;
-		bBox.scalePositionAndSize(config::SPRITE_SCALE);
-		compManager.addComponent(CollisionComponent(entityId, bBox, data.solid, data.interactable));
-	}
-	if (data.health > 0)
-	{
-		compManager.addComponent(HealthComponent(entityId, data.health));
-	}
-	if (data.damage > 0)
-	{
-		compManager.addComponent(DamageComponent(entityId, data.damage, data.damageGroups));
-	}
-	if (data.group != Group::none)
-	{
-		compManager.addComponent(GroupComponent(entityId, data.group, data.hostileGroups));
-	}
-}
-
-void ECS::createEntity(const EntityData& data)
-{
-	int entityId = getNextEntityId();
-	createEntityFromData(compManager, entityId, data);
-}
-
-void ECS::createEntity(float x, float y, const EntityData& data)
-{
-	int entityId = getNextEntityId();
-	PositionComponent position(entityId, x * config::SPRITE_SCALE, y * config::SPRITE_SCALE);
-	compManager.addComponent(position);
-	createEntityFromData(compManager, entityId, data);
-}
-
-void ECS::destroyEntity(int entityId)
-{
-	compManager.removeAllComponents(entityId);
-	unusedEntityIds.push_back(entityId);
-
-//	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
-}
-
-int ECS::getNextEntityId()
-{
-	if (unusedEntityIds.size() > 0)
-	{
-		int unusedId = unusedEntityIds.at(unusedEntityIds.size() - 1);
-		unusedEntityIds.pop_back();
-		return unusedId;
-	}
-	else
-	{
-		return nextEntityId++;
-	}
 }
 
 // sprite sheets need to be explicitly loaded with graphics class before they can be used

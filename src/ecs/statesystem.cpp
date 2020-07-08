@@ -1,6 +1,6 @@
 #include "ecs/statesystem.h"
 #include "eventmanager.h"
-#include "ecs/ecs.h"
+#include "ecs/entitymanager.h"
 
 StateSystem::StateSystem(ComponentManager& compManager, EventManager& eventManager) : System(compManager), eventManager(eventManager)
 {}
@@ -66,7 +66,7 @@ void StateSystem::entityDeath(ComponentManager::EntityComponents* entity, StateC
 	}
 }
 
-void StateSystem::update(int deltaTime, ECS& ecs)
+void StateSystem::update(int deltaTime, EntityManager& ecs)
 {
 	auto stateList = compManager.getComponentList<StateComponent>();
 	for (auto state : stateList)

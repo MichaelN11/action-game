@@ -7,6 +7,7 @@
 #include "ecs/collisionsystem.h"
 #include "ecs/damagesystem.h"
 #include "ecs/statesystem.h"
+#include "ecs/entitymanager.h"
 
 // forward declare
 class Graphics;
@@ -19,27 +20,6 @@ struct PlayerAnim
 	static std::unordered_map<DrawState, Animation> map;
 };
 
-struct EntityData
-{
-	std::string spritePath = "";
-	int tileNum = -1;
-	int spriteWidth = -1;
-	int spriteHeight = -1;
-	int spriteLayer = -1;
-	float moveSpeed = -1.f;
-	bool player = false;
-	std::unordered_map<DrawState, Animation>* animationMap;
-	int animationTimeToUpdate = -1;
-	Rectangle<float> boundingBox;
-	bool solid = false;
-	bool interactable = false;
-	int health = -1;
-	int damage = -1;
-	std::vector<Group> damageGroups;
-	Group group;
-	std::vector<Group> hostileGroups;
-};
-
 class ECS
 {
 public:
@@ -47,10 +27,7 @@ public:
 	void draw(Graphics& graphics, const Rectangle<float>& view);
 	void update(int deltaTime, const Rectangle<float>& view);
 	void afterUpdate();
-	
-	void createEntity(const EntityData& data);
-	void createEntity(float x, float y, const EntityData& data);
-	void destroyEntity(int entityId);
+	EntityManager& getEntityManager();
 
 	std::pair<float, float> getPlayerPosition();
 
@@ -63,14 +40,9 @@ public:
 	static const EntityData PLAYER;
 	static const EntityData DUMMY;
 private:
-	int nextEntityId = 0;
-	std::vector<int> unusedEntityIds;
-
-	int getNextEntityId();
-	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data);
-
 	EventManager& eventManager;
 	ComponentManager compManager;
+	EntityManager entityManager;
 	PlayerSystem playerSystem;
 	PositionUpdateSystem posUpdateSystem;
 	SpriteSystem spriteSystem;
