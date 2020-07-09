@@ -12,7 +12,7 @@
 ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
 	entityManager(compManager),
 	eventManager(eventManager),
-	playerSystem(compManager, eventManager),
+	playerSystem(compManager, eventManager, entityManager),
 	posUpdateSystem(compManager),
 	spriteSystem(compManager),
 	animationSystem(compManager),
@@ -98,7 +98,9 @@ const EntityData ECS::PLAYER =
 	// group
 	Group::player,
 	// hostile groups
-	{ Group::enemy }
+	{ Group::enemy },
+	// lifetime
+	-1
 };
 
 const EntityData ECS::DUMMY =
@@ -136,7 +138,9 @@ const EntityData ECS::DUMMY =
 	// group
 	Group::enemy,
 	// hostile groups
-	{ Group::player }
+	{ Group::player },
+	// lifetime
+	-1
 };
 
 std::unordered_map<DrawState, Animation> PlayerAnim::create_map()

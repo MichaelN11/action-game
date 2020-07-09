@@ -1,6 +1,6 @@
 #pragma once
 
-enum class Keybind { escape, left, right, up, down };
+enum class Keybind { escape, left, right, up, down, attack };
 
 enum class DrawState { none, standLeft, standRight, standUp, standDown, walkLeft, walkRight, walkUp, walkDown, stunned, dead };
 

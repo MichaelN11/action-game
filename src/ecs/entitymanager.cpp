@@ -2,21 +2,32 @@
 #include "ecs/componentmanager.h"
 #include "config.h"
 
-EntityManager::EntityManager(ComponentManager& compManager) : compManager(compManager)
-{}
+// REMOVE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#include <iostream>
 
-void EntityManager::createEntity(const EntityData& data)
+EntityManager::EntityManager(ComponentManager& compManager) : compManager(compManager)
 {
-	int entityId = getNextEntityId();
-	createEntityFromData(compManager, entityId, data);
+	std::cout << "only see this once!" << std::endl;
 }
 
-void EntityManager::createEntity(float x, float y, const EntityData& data)
+int EntityManager::createEntity(const EntityData& data)
 {
 	int entityId = getNextEntityId();
-	PositionComponent position(entityId, x * config::SPRITE_SCALE, y * config::SPRITE_SCALE);
+	createEntityFromData(compManager, entityId, data);
+
+	return entityId;
+}
+
+int EntityManager::createEntity(float x, float y, const EntityData& data)
+{
+	int entityId = getNextEntityId();
+	PositionComponent position(entityId, x, y);
 	compManager.addComponent(position);
 	createEntityFromData(compManager, entityId, data);
+
+	std::cout << "at position: X: " << x << "   Y: " << y << std::endl;
+
+	return entityId;
 }
 
 void EntityManager::destroyEntity(int entityId)
@@ -24,7 +35,7 @@ void EntityManager::destroyEntity(int entityId)
 	compManager.removeAllComponents(entityId);
 	unusedEntityIds.push_back(entityId);
 
-	//	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
+	std::cout << "Entity # " << entityId << " destroyed." << std::endl;
 }
 
 int EntityManager::getNextEntityId()
@@ -39,13 +50,15 @@ int EntityManager::getNextEntityId()
 	{
 		return nextEntityId++;
 	}
+
+	return nextEntityId++;
 }
 
 void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
 {
-	//	std::cout << "Entity # " << entityId << " created." << std::endl;
+	std::cout << "Entity # " << entityId << " created." << std::endl;
 
-	compManager.addComponent(StateComponent(entityId, DrawState::standDown, 100));
+	StateComponent stateComponent(entityId, DrawState::standDown, 100);
 
 	if (data.spritePath != "")
 	{
@@ -81,4 +94,10 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	{
 		compManager.addComponent(GroupComponent(entityId, data.group, data.hostileGroups));
 	}
+	if (data.lifetime > 0)
+	{
+		stateComponent.lifetime = data.lifetime;
+	}
+
+	compManager.addComponent(stateComponent);
 }

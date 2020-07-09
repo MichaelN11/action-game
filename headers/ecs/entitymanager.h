@@ -27,14 +27,18 @@ struct EntityData
 	std::vector<Group> damageGroups;
 	Group group;
 	std::vector<Group> hostileGroups;
+	int lifetime = -1;
 };
 
 class EntityManager
 {
 public:
 	EntityManager(ComponentManager& compManager);
-	void createEntity(const EntityData& data);
-	void createEntity(float x, float y, const EntityData& data);
+	
+	// returns entity id
+	int createEntity(const EntityData& data);
+	int createEntity(float x, float y, const EntityData& data);
+
 	void destroyEntity(int entityId);
 private:
 	ComponentManager& compManager;

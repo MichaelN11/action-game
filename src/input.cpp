@@ -11,6 +11,7 @@ Input::Input(EventManager& eventManager) :
 	keybindMap.emplace(SDL_SCANCODE_DOWN, Keybind::down);
 	keybindMap.emplace(SDL_SCANCODE_LEFT, Keybind::left);
 	keybindMap.emplace(SDL_SCANCODE_RIGHT, Keybind::right);
+	keybindMap.emplace(SDL_SCANCODE_Z, Keybind::attack);
 }
 
 void Input::handleSDLEvent(SDL_Event& sdlEvent)

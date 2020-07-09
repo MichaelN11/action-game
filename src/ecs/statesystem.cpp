@@ -133,12 +133,23 @@ void StateSystem::update(int deltaTime, EntityManager& ecs)
 			}
 		}
 
+		// removes dead entities after timer is up
 		if (state->activityState == ActivityState::dead)
 		{
 			state->deathTimer += deltaTime;
 			if (state->deathTimer >= state->timeToDie)
 			{
 				ecs.destroyEntity(state->entityId);
+			}
+		}
+
+		// entity dies after lifetime is over
+		if (state->activityState != ActivityState::dead && state->lifetime > 0)
+		{
+			state->lifeTimer += deltaTime;
+			if (state->lifeTimer >= state->lifetime)
+			{
+				entityDeath(compManager.getEntityComponents(state->entityId), state.get());
 			}
 		}
 	}

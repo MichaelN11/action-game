@@ -3,11 +3,16 @@
 #include "eventmanager.h"
 #include "ecs/movement.h"
 
+// DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#include <iostream>
+
 const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
 
-PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventManager) :
-	System(compManager)
+PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventManager, EntityManager& entityManager) :
+	System(compManager),
+	entityManager(entityManager),
+	eventManager(eventManager)
 {
 	eventManager.registerListener<KeyDownEvent>([this](KeyDownEvent& kdEvent)
 	{
@@ -17,6 +22,10 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 			kdEvent.keyPressed == Keybind::right)
 		{
 			parseMovement(kdEvent.heldKeys);
+		}
+		else if (kdEvent.keyPressed == Keybind::attack)
+		{
+			attack();
 		}
 	});
 	eventManager.registerListener<KeyUpEvent>([this](KeyUpEvent& kuEvent)
@@ -39,6 +48,45 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 			parseMovement(khEvent.heldKeys);
 		}
 	});
+}
+
+void PlayerSystem::attack()
+{
+	auto playerList = compManager.getComponentList<PlayerComponent>();
+	for (auto player : playerList)
+	{
+		ComponentManager::EntityComponents* entity = compManager.getEntityComponents(player->entityId);
+		PositionComponent* position = entity->getComponent<PositionComponent>();
+		StateComponent* state = entity->getComponent<StateComponent>();
+		if (position && state)
+		{
+			float x = position->x;
+			float y = position->y;
+
+			std::cout << "player   x: " << x << "   y: " << y << std::endl;
+
+			if (state->getBufferedDrawState() == DrawState::standDown || state->getBufferedDrawState() == DrawState::walkDown)
+			{
+				// change this later
+				y += 32.f;
+			}
+			else if (state->getBufferedDrawState() == DrawState::standUp || state->getBufferedDrawState() == DrawState::walkUp)
+			{
+				y -= 32.f;
+			}
+			else if (state->getBufferedDrawState() == DrawState::standLeft || state->getBufferedDrawState() == DrawState::walkLeft)
+			{
+				x -= 32.f;
+			}
+			else if (state->getBufferedDrawState() == DrawState::standRight || state->getBufferedDrawState() == DrawState::walkRight)
+			{
+				x += 32.f;
+			}
+
+			int attackId = entityManager.createEntity(x, y, SWORD);
+			eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
+		}
+	}
 }
 
 void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKeys)
@@ -83,3 +131,43 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 		}
 	}
 }
+
+const EntityData PlayerSystem::SWORD =
+{
+	// sprite file name path
+	"content/tilesheets/attack.png",
+	// tile number on spritesheet
+	2,
+	// sprite width
+	16,
+	// sprite height
+	16,
+	// sprite layer
+	1,
+	// move speed
+	0.f,
+	// is player
+	false,
+	// animation map
+	nullptr,
+	// animation time to update
+	-1,
+	// bounding box
+	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
+	// solid
+	false,
+	// interactable
+	true,
+	// health
+	-1,
+	// damage
+	10,
+	// damage group
+	{ Group::enemy },
+	// group
+	Group::player,
+	// hostile groups
+	{ Group::enemy },
+	// lifetime
+	1000
+};

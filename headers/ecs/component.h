@@ -100,8 +100,13 @@ struct StateComponent : public Component
 
 	bool flashing = false;
 
+	// how long entity sticks around after death
 	int timeToDie = 5000;
 	int deathTimer = 0;
+
+	// if lifetime > 0, entity dies after lifetime milliseconds
+	int lifetime = -1;
+	int lifeTimer = 0;
 
 	// how long entity stays invincible as a multiplier compared to normal
 	const float invTimeFactor = 4.0f;
@@ -183,5 +188,7 @@ struct GroupComponent : public Component
 //	DrawState previousDrawState = DrawState::none;
 //	int recoveryTimer = 0;
 //};
+
+
 
 
