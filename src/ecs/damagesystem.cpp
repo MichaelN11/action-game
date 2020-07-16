@@ -50,6 +50,16 @@ void DamageSystem::handleDamageEvent(ComponentManager::EntityComponents* source,
 					int damage = sourceDamage->damage;
 					dealDamage(target, targetHealth, targetState, damage);
 
+					// Force knockback to occur in direction of the damage, add PI to reverse angle if its wrong direction
+					Direction dir = sourceDamage->direction;
+					if ((dir == Direction::up && collisionAngle < 0) ||
+						(dir == Direction::down && collisionAngle > 0) ||
+						(dir == Direction::left && (collisionAngle < PI / 2 && collisionAngle > -PI / 2)) ||
+						(dir == Direction::right && (collisionAngle > PI / 2 || collisionAngle < -PI / 2)))
+					{
+						collisionAngle += PI;
+					}
+
 					float knockbackSpeed = sourceDamage->knockback;
 					float knockbackDeceleration = sourceDamage->knockbackDeceleration;
 					movement::knockback(target, collisionAngle, knockbackSpeed, knockbackDeceleration);

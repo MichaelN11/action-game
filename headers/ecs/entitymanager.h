@@ -39,7 +39,7 @@ public:
 	// returns entity id
 	int createEntity(const EntityData& data);
 	int createEntity(float x, float y, const EntityData& data);
-	int createEntity(float x, float y, const EntityData& data, DrawState drawState);
+	int createEntity(float x, float y, const EntityData& data, DrawState drawState, Direction direction);
 
 	void destroyEntity(int entityId);
 private:
@@ -49,5 +49,5 @@ private:
 	std::vector<int> unusedEntityIds;
 
 	int getNextEntityId();
-	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState);
+	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState, Direction direction);
 };

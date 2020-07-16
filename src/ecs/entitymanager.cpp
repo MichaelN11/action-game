@@ -13,23 +13,23 @@ EntityManager::EntityManager(ComponentManager& compManager) : compManager(compMa
 int EntityManager::createEntity(const EntityData& data)
 {
 	int entityId = getNextEntityId();
-	createEntityFromData(compManager, entityId, data, DrawState::standDown);
+	createEntityFromData(compManager, entityId, data, DrawState::standDown, Direction::none);
 
 	return entityId;
 }
 
 int EntityManager::createEntity(float x, float y, const EntityData& data)
 {
-	return createEntity(x, y, data, DrawState::standDown);
+	return createEntity(x, y, data, DrawState::standDown, Direction::none);
 }
 
 
-int EntityManager::createEntity(float x, float y, const EntityData& data, DrawState drawState)
+int EntityManager::createEntity(float x, float y, const EntityData& data, DrawState drawState, Direction direction)
 {
 	int entityId = getNextEntityId();
 	PositionComponent position(entityId, x, y);
 	compManager.addComponent(position);
-	createEntityFromData(compManager, entityId, data, drawState);
+	createEntityFromData(compManager, entityId, data, drawState, direction);
 
 	std::cout << "at position: X: " << x << "   Y: " << y << std::endl;
 
@@ -60,7 +60,7 @@ int EntityManager::getNextEntityId()
 	return nextEntityId++;
 }
 
-void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState)
+void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState, Direction direction)
 {
 	std::cout << "Entity # " << entityId << " created." << std::endl;
 
@@ -96,7 +96,7 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	}
 	if (data.damage > 0)
 	{
-		compManager.addComponent(DamageComponent(entityId, data.damage, data.damageGroups));
+		compManager.addComponent(DamageComponent(entityId, data.damage, data.damageGroups, direction));
 	}
 	if (data.group != Group::none)
 	{

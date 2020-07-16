@@ -173,7 +173,8 @@ struct AnimationComponent : public Component
 
 struct CollisionComponent : public Component
 {
-	CollisionComponent(int entityId, Rectangle<float> boundingBox, bool solid, bool interactable) : Component(entityId), boundingBox(boundingBox), solid(solid), interactable(interactable)
+	CollisionComponent(int entityId, Rectangle<float> boundingBox, bool solid, bool interactable) 
+		: Component(entityId), boundingBox(boundingBox), solid(solid), interactable(interactable)
 	{}
 	bool solid = false;
 	bool collideWithEntities = true;
@@ -190,12 +191,14 @@ struct HealthComponent : public Component
 
 struct DamageComponent : public Component
 {
-	DamageComponent(int entityId, int damage, std::vector<Group> damageGroups) : Component(entityId), damage(damage), damageGroups(damageGroups)
+	DamageComponent(int entityId, int damage, std::vector<Group> damageGroups, Direction direction = Direction::none) 
+		: Component(entityId), damage(damage), damageGroups(damageGroups), direction(direction)
 	{}
 	int damage;
 	std::vector<Group> damageGroups;
 	float knockback = 0.2f;
 	float knockbackDeceleration = 0.0004f;
+	Direction direction;
 };
 
 struct GroupComponent : public Component

@@ -67,30 +67,35 @@ void PlayerSystem::attack()
 			std::cout << "player   x: " << x << "   y: " << y << std::endl;
 
 			DrawState attackState = DrawState::none;
+			Direction dir = Direction::none;
 
 			if (state->getBufferedDrawState() == DrawState::standDown || state->getBufferedDrawState() == DrawState::walkDown)
 			{
 				// change this later
 				y += 32.f;
 				attackState = DrawState::attackDown;
+				dir = Direction::down;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standUp || state->getBufferedDrawState() == DrawState::walkUp)
 			{
 				y -= 32.f;
 				attackState = DrawState::attackUp;
+				dir = Direction::up;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standLeft || state->getBufferedDrawState() == DrawState::walkLeft)
 			{
 				x -= 32.f;
 				attackState = DrawState::attackLeft;
+				dir = Direction::left;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standRight || state->getBufferedDrawState() == DrawState::walkRight)
 			{
 				x += 32.f;
 				attackState = DrawState::attackRight;
+				dir = Direction::right;
 			}
 
-			int attackId = entityManager.createEntity(x, y, SWORD, attackState);
+			int attackId = entityManager.createEntity(x, y, SWORD, attackState, dir);
 			eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
 
 			MovementComponent* movement = entity->getComponent<MovementComponent>();
