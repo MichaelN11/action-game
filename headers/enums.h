@@ -2,7 +2,7 @@
 
 enum class Keybind { escape, left, right, up, down, attack };
 
-enum class DrawState { none, standLeft, standRight, standUp, standDown, walkLeft, walkRight, walkUp, walkDown, stunned, dead };
+enum class DrawState { none, standLeft, standRight, standUp, standDown, walkLeft, walkRight, walkUp, walkDown, attackLeft, attackRight, attackUp, attackDown, stunned, dead };
 
 enum class ActivityState { alive, stunned, dead };
 

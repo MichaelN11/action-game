@@ -71,6 +71,8 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	if (data.player)
 	{
 		compManager.addComponent(PlayerComponent(entityId));
+		stateComponent.timeToDie = 5000;
+		stateComponent.invTimeFactor = 4.0f;
 	}
 	if (data.animationMap)
 	{

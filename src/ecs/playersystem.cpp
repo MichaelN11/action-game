@@ -2,6 +2,7 @@
 #include "ecs/componentmanager.h"
 #include "eventmanager.h"
 #include "ecs/movement.h"
+#include "ecs/statesystem.h"
 
 // DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #include <iostream>
@@ -65,26 +66,42 @@ void PlayerSystem::attack()
 
 			std::cout << "player   x: " << x << "   y: " << y << std::endl;
 
+			DrawState attackState = DrawState::none;
+
 			if (state->getBufferedDrawState() == DrawState::standDown || state->getBufferedDrawState() == DrawState::walkDown)
 			{
 				// change this later
 				y += 32.f;
+				attackState = DrawState::attackDown;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standUp || state->getBufferedDrawState() == DrawState::walkUp)
 			{
 				y -= 32.f;
+				attackState = DrawState::attackUp;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standLeft || state->getBufferedDrawState() == DrawState::walkLeft)
 			{
 				x -= 32.f;
+				attackState = DrawState::attackLeft;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standRight || state->getBufferedDrawState() == DrawState::walkRight)
 			{
 				x += 32.f;
+				attackState = DrawState::attackRight;
 			}
 
 			int attackId = entityManager.createEntity(x, y, SWORD);
 			eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
+
+			MovementComponent* movement = entity->getComponent<MovementComponent>();
+			if (movement)
+			{
+				movement->dx = 0;
+				movement->dy = 0;
+				movement->xAcceleration = 0;
+				movement->yAcceleration = 0;
+			}
+			StateSystem::setStunned(entity, 500, attackState);
 		}
 	}
 }
@@ -169,5 +186,5 @@ const EntityData PlayerSystem::SWORD =
 	// hostile groups
 	{ Group::enemy },
 	// lifetime
-	1000
+	500
 };

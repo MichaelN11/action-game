@@ -168,6 +168,10 @@ std::unordered_map<DrawState, Animation> PlayerAnim::create_map()
 		{ 93, false, false, false },
 		{ 94, false, false, false },
 		{ 95, false, false, false } }), false };
+	map[DrawState::attackDown] = Animation{ std::vector<AnimationFrame>({ { 112, false, false, false } }), true };
+	map[DrawState::attackUp] = Animation{ std::vector<AnimationFrame>({ { 110, false, false, false } }), true };
+	map[DrawState::attackLeft] = Animation{ std::vector<AnimationFrame>({ { 113, false, false, false } }), true };
+	map[DrawState::attackRight] = Animation{ std::vector<AnimationFrame>({ { 113, false, true, false } }), true };
 	return map;
 }
 

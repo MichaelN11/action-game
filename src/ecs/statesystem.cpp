@@ -7,7 +7,7 @@ StateSystem::StateSystem(ComponentManager& compManager, EventManager& eventManag
 
 void StateSystem::setInvincible(ComponentManager::EntityComponents* entity, StateComponent* state, float baseTime)
 {
-	if (state->activityState != ActivityState::dead)
+	if (state->activityState != ActivityState::dead && state->invTimeFactor > 0.f)
 	{
 		state->invincible = true;
 		state->invincibilityTimer = (int)(baseTime * state->invTimeFactor);
@@ -22,13 +22,18 @@ void StateSystem::setInvincible(ComponentManager::EntityComponents* entity, Stat
 
 void StateSystem::setStunned(ComponentManager::EntityComponents* entity, float baseTime)
 {
+	setStunned(entity, baseTime, DrawState::stunned);
+}
+
+void StateSystem::setStunned(ComponentManager::EntityComponents* entity, float baseTime, DrawState drawState)
+{
 	StateComponent* targetState = entity->getComponent<StateComponent>();
 	if (targetState->activityState != ActivityState::dead)
 	{
 		targetState->activityState = ActivityState::stunned;
 		targetState->stunTimer = (int)(baseTime);
 		targetState->previousDrawState = targetState->getBufferedDrawState();
-		targetState->setDrawState(DrawState::stunned);
+		targetState->setDrawState(drawState);
 	}
 }
 
@@ -84,7 +89,7 @@ void StateSystem::update(int deltaTime, EntityManager& ecs)
 			}
 		}
 
-		// recover from hitstun
+		// recover from stun
 		if (state->stunTimer > 0)
 		{
 			state->stunTimer -= deltaTime;

@@ -12,6 +12,7 @@ public:
 	void update(int deltaTime, EntityManager& ecs);
 	static void setInvincible(ComponentManager::EntityComponents* entity, StateComponent* state, float baseTime);
 	static void setStunned(ComponentManager::EntityComponents* entity, float baseTime);
+	static void setStunned(ComponentManager::EntityComponents* entity, float baseTime, DrawState drawState);
 	static void entityDeath(ComponentManager::EntityComponents* entity, StateComponent* state);
 private:
 	EventManager& eventManager;
