@@ -61,6 +61,8 @@ void AnimationSystem::update(int deltaTime)
 						sprite->flipHorizontal = frame.flipHorizontal;
 						sprite->flipVertical = frame.flipVertical;
 						sprite->flipDiagonal = frame.flipDiagonal;
+						sprite->xOffset = frame.xOffset;
+						sprite->yOffset = frame.yOffset;
 
 						if (animation->frameNum + 1 >= (int)frameList.size())
 						{

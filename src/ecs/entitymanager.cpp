@@ -13,17 +13,23 @@ EntityManager::EntityManager(ComponentManager& compManager) : compManager(compMa
 int EntityManager::createEntity(const EntityData& data)
 {
 	int entityId = getNextEntityId();
-	createEntityFromData(compManager, entityId, data);
+	createEntityFromData(compManager, entityId, data, DrawState::standDown);
 
 	return entityId;
 }
 
 int EntityManager::createEntity(float x, float y, const EntityData& data)
 {
+	return createEntity(x, y, data, DrawState::standDown);
+}
+
+
+int EntityManager::createEntity(float x, float y, const EntityData& data, DrawState drawState)
+{
 	int entityId = getNextEntityId();
 	PositionComponent position(entityId, x, y);
 	compManager.addComponent(position);
-	createEntityFromData(compManager, entityId, data);
+	createEntityFromData(compManager, entityId, data, drawState);
 
 	std::cout << "at position: X: " << x << "   Y: " << y << std::endl;
 
@@ -54,11 +60,11 @@ int EntityManager::getNextEntityId()
 	return nextEntityId++;
 }
 
-void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data)
+void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState)
 {
 	std::cout << "Entity # " << entityId << " created." << std::endl;
 
-	StateComponent stateComponent(entityId, DrawState::standDown, 100);
+	StateComponent stateComponent(entityId, drawState, 100);
 
 	if (data.spritePath != "")
 	{
@@ -76,7 +82,7 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	}
 	if (data.animationMap)
 	{
-		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap));
+		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap.get()));
 	}
 	if (data.boundingBox.getW() > 0)
 	{

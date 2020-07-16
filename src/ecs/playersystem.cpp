@@ -59,7 +59,7 @@ void PlayerSystem::attack()
 		ComponentManager::EntityComponents* entity = compManager.getEntityComponents(player->entityId);
 		PositionComponent* position = entity->getComponent<PositionComponent>();
 		StateComponent* state = entity->getComponent<StateComponent>();
-		if (position && state)
+		if (position && state && state->activityState == ActivityState::alive)
 		{
 			float x = position->x;
 			float y = position->y;
@@ -90,7 +90,7 @@ void PlayerSystem::attack()
 				attackState = DrawState::attackRight;
 			}
 
-			int attackId = entityManager.createEntity(x, y, SWORD);
+			int attackId = entityManager.createEntity(x, y, SWORD, attackState);
 			eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
 
 			MovementComponent* movement = entity->getComponent<MovementComponent>();
@@ -101,7 +101,7 @@ void PlayerSystem::attack()
 				movement->xAcceleration = 0;
 				movement->yAcceleration = 0;
 			}
-			StateSystem::setStunned(entity, 500, attackState);
+			StateSystem::setStunned(entity, 1000, attackState);
 		}
 	}
 }
@@ -149,6 +149,30 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 	}
 }
 
+// booleans = diagonal, horizontal, vertical flips
+std::unordered_map<DrawState, Animation> createSwordAnims()
+{
+	float offset = 8.f;
+	std::unordered_map<DrawState, Animation> map;
+	map[DrawState::attackDown] = Animation(std::vector<AnimationFrame>({
+		AnimationFrame(1, false, false, true, offset, 0),
+		AnimationFrame(2, false, true, true),
+		AnimationFrame(1, true, false, false, 0, -offset) }), false);
+	map[DrawState::attackUp] = Animation(std::vector<AnimationFrame>({
+		AnimationFrame(1, false, false, false, -offset, 0),
+		AnimationFrame(2, false, false, false),
+		AnimationFrame(1, true, true, false, 0, offset) }), false);
+	map[DrawState::attackLeft] = Animation(std::vector<AnimationFrame>({
+		AnimationFrame(1, true, false, false, 0, offset),
+		AnimationFrame(2, false, true, false),
+		AnimationFrame(1, false, false, false, offset, 0) }), false);
+	map[DrawState::attackRight] = Animation(std::vector<AnimationFrame>({
+		AnimationFrame(1, true, true, false, 0, -offset),
+		AnimationFrame(2, false, false, true),
+		AnimationFrame(1, false, false, true, -offset, 0) }), false);
+	return map;
+}
+
 const EntityData PlayerSystem::SWORD =
 {
 	// sprite file name path
@@ -166,9 +190,9 @@ const EntityData PlayerSystem::SWORD =
 	// is player
 	false,
 	// animation map
-	nullptr,
+	std::make_unique< std::unordered_map<DrawState, Animation> >(createSwordAnims()),
 	// animation time to update
-	-1,
+	300,
 	// bounding box
 	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
 	// solid
@@ -186,5 +210,6 @@ const EntityData PlayerSystem::SWORD =
 	// hostile groups
 	{ Group::enemy },
 	// lifetime
-	500
+	1000
 };
+

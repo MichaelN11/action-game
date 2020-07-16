@@ -25,8 +25,8 @@ void SpriteSystem::drawSprites(Graphics& graphics, const Rectangle<float>& view)
 				PositionComponent* position = entity->getComponent<PositionComponent>();
 				if (position)
 				{
-					int destX = (int)std::round(position->x - view.getX());
-					int destY = (int)std::round(position->y - view.getY());
+					int destX = (int)std::round(position->x + sprite->xOffset - view.getX());
+					int destY = (int)std::round(position->y + sprite->yOffset - view.getY());
 					Rectangle<int> rect(destX, destY, sprite->width, sprite->height);
 					graphics.drawImage(sprite->filePath, sprite->tileNum, rect, sprite->flipDiagonal, sprite->flipHorizontal, sprite->flipVertical, true);
 				}

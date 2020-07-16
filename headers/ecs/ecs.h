@@ -14,12 +14,6 @@ class Graphics;
 class EventManager;
 class TileMap;
 
-struct PlayerAnim
-{
-	static std::unordered_map<DrawState, Animation> create_map();
-	static std::unordered_map<DrawState, Animation> map;
-};
-
 class ECS
 {
 public:

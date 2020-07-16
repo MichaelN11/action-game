@@ -43,6 +43,8 @@ struct SpriteComponent : public Component
 	bool flipVertical = false;
 	bool flipHorizontal = false;
 	bool flipDiagonal = false;
+	float xOffset = 0;
+	float yOffset = 0;
 	bool visible = true;
 };
 
@@ -118,16 +120,39 @@ private:
 
 struct AnimationFrame
 {
-	int tileNum;
-	bool flipDiagonal;
-	bool flipHorizontal;
-	bool flipVertical;
+	int tileNum = 0;
+	bool flipDiagonal = false;
+	bool flipHorizontal = false;
+	bool flipVertical = false;
+	float xOffset = 0.f;
+	float yOffset = 0.f;
+
+	AnimationFrame() {}
+
+	AnimationFrame(int tileNum) : tileNum(tileNum)
+	{}
+
+	AnimationFrame(int tileNum, bool flipDiagonal, bool flipHorizontal, bool flipVertical) 
+		: tileNum(tileNum), flipDiagonal(flipDiagonal), flipHorizontal(flipHorizontal), flipVertical(flipVertical)
+	{}
+
+	AnimationFrame(int tileNum, bool flipDiagonal, bool flipHorizontal, bool flipVertical, float xOffset, float yOffset) 
+		: tileNum(tileNum), flipDiagonal(flipDiagonal), flipHorizontal(flipHorizontal), flipVertical(flipVertical), xOffset(xOffset), yOffset(yOffset)
+	{}
 };
 
 struct Animation
 {
 	std::vector<AnimationFrame> frameList;
-	bool loop;
+	bool loop = true;
+
+	Animation() {}
+
+	Animation(std::vector<AnimationFrame> frameList) : frameList(frameList) 
+	{}
+
+	Animation(std::vector<AnimationFrame> frameList, bool loop) : frameList(frameList), loop(loop)
+	{}
 };
 
 struct AnimationComponent : public Component

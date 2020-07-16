@@ -5,6 +5,7 @@
 #include "enums.h"
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 class ComponentManager;
 
@@ -17,7 +18,7 @@ struct EntityData
 	int spriteLayer = -1;
 	float moveSpeed = -1.f;
 	bool player = false;
-	std::unordered_map<DrawState, Animation>* animationMap;
+	std::unique_ptr<std::unordered_map<DrawState, Animation>> animationMap;
 	int animationTimeToUpdate = -1;
 	Rectangle<float> boundingBox;
 	bool solid = false;
@@ -38,6 +39,7 @@ public:
 	// returns entity id
 	int createEntity(const EntityData& data);
 	int createEntity(float x, float y, const EntityData& data);
+	int createEntity(float x, float y, const EntityData& data, DrawState drawState);
 
 	void destroyEntity(int entityId);
 private:
@@ -47,5 +49,5 @@ private:
 	std::vector<int> unusedEntityIds;
 
 	int getNextEntityId();
-	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data);
+	void createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState);
 };
