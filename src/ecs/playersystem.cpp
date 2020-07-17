@@ -5,7 +5,7 @@
 #include "ecs/statesystem.h"
 
 // DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#include <iostream>
+//#include <iostream>
 
 const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
@@ -106,15 +106,13 @@ void PlayerSystem::attack()
 				movement->xAcceleration = 0;
 				movement->yAcceleration = 0;
 			}
-			StateSystem::setStunned(entity, 1000, attackState);
+			StateSystem::setStunned(entity, 500, attackState);
 		}
 	}
 }
 
 void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKeys)
 {
-	std::cout << "parsing movement" << std::endl;
-
 	bool up = false, down = false, left = false, right = false;
 	auto upIt = heldKeys.find(Keybind::up);
 	if (upIt != heldKeys.end())
@@ -199,7 +197,7 @@ const EntityData PlayerSystem::SWORD =
 	// animation map
 	std::make_unique< std::unordered_map<DrawState, Animation> >(createSwordAnims()),
 	// animation time to update
-	300,
+	150,
 	// bounding box
 	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
 	// solid
@@ -217,6 +215,6 @@ const EntityData PlayerSystem::SWORD =
 	// hostile groups
 	{ Group::enemy },
 	// lifetime
-	1000
+	500
 };
 

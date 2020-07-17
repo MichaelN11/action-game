@@ -102,7 +102,7 @@ void movement::knockback(ComponentManager::EntityComponents* entity, float angle
 	MovementComponent* targetMovement = entity->getComponent<MovementComponent>();
 	if (targetMovement)
 	{
-		StateSystem::setStunned(entity, speed / deceleration);
+		StateSystem::setStunned(entity, speed / deceleration + 2);
 
 		//std::cout << "Angle: " << angle << std::endl;
 
