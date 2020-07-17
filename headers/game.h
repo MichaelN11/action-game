@@ -38,6 +38,7 @@ private:
 	EventManager eventManager;
 	ECS ecs;
 	GameView gameView;
+	Input input;
 
 	void gameLoop();
 	void draw(Graphics &graphics);

@@ -15,7 +15,8 @@ Game::Game() :
 	graphics(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, 0, "Action Game", config::SPRITE_SCALE),
 	tileMap(graphics),
 	ecs(eventManager, tileMap),
-	gameView(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, &ecs)
+	gameView(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, &ecs),
+	input(eventManager)
 {
 	gameLoop();
 }
@@ -23,7 +24,6 @@ Game::Game() :
 void Game::gameLoop()
 {
 	SDL_Event event;
-	Input input(eventManager);
 
 	systemEvents::initSystemEvents(*this, eventManager);
 
@@ -206,6 +206,7 @@ void Game::handleEvents(Input& input, SDL_Event& event)
 	{
 		input.handleSDLEvent(event);
 	}
+	input.update();
 }
 
 void Game::stopGame()

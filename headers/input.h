@@ -17,6 +17,8 @@ public:
 	void keyUpEvent(Keybind key);
 	void keyHeldEvent(Keybind key);
 	void quitEvent();
+
+	void update();
 private:
 	std::unordered_map<SDL_Scancode, Keybind> keybindMap;
 	std::unordered_map<Keybind, bool> heldKeys;

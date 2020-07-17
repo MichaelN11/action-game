@@ -79,8 +79,11 @@ struct StateComponent : public Component
 	}
 	void setBufferedDrawState(DrawState dState)
 	{
-		bufferedDrawState = dState;
-		drawBuffer = 0;
+		if (bufferedDrawState != dState)
+		{
+			bufferedDrawState = dState;
+			drawBuffer = 0;
+		}
 	}
 
 	DrawState getDrawState() const

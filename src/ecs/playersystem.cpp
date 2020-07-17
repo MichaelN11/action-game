@@ -64,7 +64,7 @@ void PlayerSystem::attack()
 			float x = position->x;
 			float y = position->y;
 
-			std::cout << "player   x: " << x << "   y: " << y << std::endl;
+			//std::cout << "player   x: " << x << "   y: " << y << std::endl;
 
 			DrawState attackState = DrawState::none;
 			Direction dir = Direction::none;
@@ -113,6 +113,8 @@ void PlayerSystem::attack()
 
 void PlayerSystem::parseMovement(const std::unordered_map<Keybind, bool>& heldKeys)
 {
+	std::cout << "parsing movement" << std::endl;
+
 	bool up = false, down = false, left = false, right = false;
 	auto upIt = heldKeys.find(Keybind::up);
 	if (upIt != heldKeys.end())
