@@ -47,7 +47,6 @@ void StateSystem::entityDeath(ComponentManager::EntityComponents* entity, StateC
 	CollisionComponent* collision = entity->getComponent<CollisionComponent>();
 	if (collision)
 	{
-		collision->solid = false;
 		collision->interactable = false;
 	}
 	MovementComponent* movement = entity->getComponent<MovementComponent>();
