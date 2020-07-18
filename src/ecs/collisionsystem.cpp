@@ -159,10 +159,10 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 		Rectangle<float> boundingBox = collisionComp->boundingBox;
 		boundingBox.shift(positionComp->x, positionComp->y);
 
-		int startRow = std::max((int)boundingBox.getY() / tileMap.getScaledTileHeight(), 0);
-		int endRow = std::min((int)boundingBox.getY2() / tileMap.getScaledTileHeight() + 2, tileMap.getHeightInTiles());
-		int startCol = std::max((int)boundingBox.getX() / tileMap.getScaledTileWidth(), 0);
-		int endCol = std::min((int)boundingBox.getX() / tileMap.getScaledTileWidth() + 2, tileMap.getWidthInTiles());
+		int startRow = std::max((int)boundingBox.getY() / tileMap.getTileHeight(), 0);
+		int endRow = std::min((int)boundingBox.getY2() / tileMap.getTileHeight() + 2, tileMap.getHeightInTiles());
+		int startCol = std::max((int)boundingBox.getX() / tileMap.getTileWidth(), 0);
+		int endCol = std::min((int)boundingBox.getX() / tileMap.getTileWidth() + 2, tileMap.getWidthInTiles());
 
 		float xMoveStored = 0;
 		float yMoveStored = 0;
@@ -173,7 +173,7 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 				Rectangle<float> tileCollisionBox = tileCollisionGrid.at(row).at(col);
 				if (tileCollisionBox.getW() > 0)
 				{
-					tileCollisionBox.shift((float)tileMap.getScaledTileWidth() * col, (float)tileMap.getScaledTileHeight() * row);
+					tileCollisionBox.shift((float)tileMap.getTileWidth() * col, (float)tileMap.getTileHeight() * row);
 					if (boundingBox.isColliding(tileCollisionBox))
 					{
 						float xMove, yMove;

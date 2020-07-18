@@ -45,7 +45,7 @@ void Game::gameLoop()
 	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
 	graphics.loadTilesheet("content/tilesheets/attack.png", 16, 16, 1);
 
-	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth() * config::SPRITE_SCALE), (int)(tileMap.getHeight() * config::SPRITE_SCALE)));
+	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth()), (int)(tileMap.getHeight())));
 
 	EntityManager& em = ecs.getEntityManager();
 	em.createEntity(300.f, 364.f, ECS::DUMMY);

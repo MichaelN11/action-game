@@ -11,7 +11,7 @@ public:
 	void setView(float x, float y);
 	void offsetView(float offsetX, float offsetY);
 	void update(int deltaTime);
-	void setBounds(const Rectangle<int>& bounds);
+	void setBounds(Rectangle<int> bounds);
 
 	const Rectangle<float>& getView() const;
 private:

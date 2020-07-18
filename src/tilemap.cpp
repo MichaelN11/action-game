@@ -54,7 +54,6 @@ void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_m
 			if (it != tileCollisions.end())
 			{
 				Rectangle<float> rect = it->second;
-				rect.scalePositionAndSize(graphics.getScale());
 				collisionRow.push_back(rect);
 			}
 			else
@@ -76,10 +75,7 @@ void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_m
 
 void TileMap::drawToBackground()
 {
-	int scaledTileWidth = getScaledTileWidth();
-	int scaledTileHeight = getScaledTileHeight();
-
-	graphics.createBackgroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
+	graphics.createBackgroundTexture(mapWidth * tileWidth, mapHeight * tileHeight);
 
 	size_t bgLayerIndex = 0;
 	if (bgLayerIndex < tileGridLayers.size())
@@ -93,10 +89,10 @@ void TileMap::drawToBackground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<int> destRect(colNum * scaledTileWidth,
-						rowNum * scaledTileHeight,
-						scaledTileWidth,
-						scaledTileHeight);
+					Rectangle<int> destRect(colNum * tileWidth,
+						rowNum * tileHeight,
+						tileWidth,
+						tileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
@@ -109,10 +105,7 @@ void TileMap::drawToBackground()
 
 void TileMap::drawToForeground()
 {
-	int scaledTileWidth = getScaledTileWidth();
-	int scaledTileHeight = getScaledTileHeight();
-
-	graphics.createForegroundTexture(mapWidth * scaledTileWidth, mapHeight * scaledTileHeight);
+	graphics.createForegroundTexture(mapWidth * tileWidth, mapHeight * tileHeight);
 
 	size_t fgLayerIndex = 1;
 	if (fgLayerIndex < tileGridLayers.size())
@@ -126,10 +119,10 @@ void TileMap::drawToForeground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<int> destRect(colNum * scaledTileWidth,
-						rowNum * scaledTileHeight,
-						scaledTileWidth,
-						scaledTileHeight);
+					Rectangle<int> destRect(colNum * tileWidth,
+						rowNum * tileHeight,
+						tileWidth,
+						tileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
@@ -150,16 +143,6 @@ int TileMap::getHeight() const
 	return mapHeight * tileHeight;
 }
 
-int TileMap::getScaledTileWidth() const
-{
-	return (int)(tileWidth * graphics.getScale());
-}
-
-int TileMap::getScaledTileHeight() const
-{
-	return (int)(tileHeight * graphics.getScale());
-}
-
 int TileMap::getHeightInTiles() const
 {
 	return mapHeight;
@@ -168,6 +151,16 @@ int TileMap::getHeightInTiles() const
 int TileMap::getWidthInTiles() const
 {
 	return mapWidth;
+}
+
+int TileMap::getTileHeight() const
+{
+	return tileHeight;
+}
+
+int TileMap::getTileWidth() const
+{
+	return tileWidth;
 }
 
 const std::vector<std::vector<Rectangle<float>>>& TileMap::getCollisionGrid() const

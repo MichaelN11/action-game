@@ -77,7 +77,7 @@ const EntityData ECS::DUMMY =
 	// sprite layer
 	1,
 	// move speed
-	0.1f,
+	0.05f,
 	// is player
 	false,
 	// animation map
@@ -149,7 +149,7 @@ const EntityData ECS::PLAYER =
 	// sprite layer
 	2,
 	// move speed
-	0.2f,
+	0.1f,
 	// is player
 	true,
 	// animation map

@@ -49,15 +49,17 @@ public:
 	void createForegroundTexture(int width, int height);
 	void drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 	void drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
-	void drawBackground(const Rectangle<float> view);
-	void drawForeground(const Rectangle<float> view);
-	void drawTextureToScreen(const Rectangle<float> view, Texture* texture, int tWidth, int tHeight);
+	void drawBackground(Rectangle<float> view);
+	void drawForeground(Rectangle<float> view);
+	void drawTextureToScreen(Rectangle<float> view, Texture* texture, int tWidth, int tHeight);
 	
-	float getScale() const;
+
 
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 private:
+	float getScale() const;
+
 	Texture* getTexture(const std::string& filePath);
 	SDL_Rect getSDLRect(Rectangle<int> rect);
 	void scaleRect(Rectangle<int>& rect);

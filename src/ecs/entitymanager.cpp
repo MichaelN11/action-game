@@ -87,7 +87,6 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	if (data.boundingBox.getW() > 0)
 	{
 		Rectangle<float> bBox = data.boundingBox;
-		bBox.scalePositionAndSize(config::SPRITE_SCALE);
 		compManager.addComponent(CollisionComponent(entityId, bBox, data.solid, data.interactable));
 	}
 	if (data.health > 0)

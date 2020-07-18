@@ -26,10 +26,10 @@ public:
 	void drawToForeground();
 	int getWidth() const;
 	int getHeight() const;
-	int getScaledTileWidth() const;
-	int getScaledTileHeight() const;
 	int getHeightInTiles() const;
 	int getWidthInTiles() const;
+	int getTileWidth() const;
+	int getTileHeight() const;
 	const std::vector<std::vector<Rectangle<float>>>& getCollisionGrid() const;
 private:
 	Graphics& graphics;
