@@ -12,10 +12,13 @@ void StateSystem::setInvincible(ComponentManager::EntityComponents* entity, Stat
 		state->invincible = true;
 		state->invincibilityTimer = (int)(baseTime * state->invTimeFactor);
 		state->flashing = true;
-		CollisionComponent* collision = entity->getComponent<CollisionComponent>();
-		if (collision)
+		if (entity->getComponent<PlayerComponent>())
 		{
-			collision->collideWithEntities = false;
+			CollisionComponent* collision = entity->getComponent<CollisionComponent>();
+			if (collision)
+			{
+				collision->collideWithEntities = false;
+			}
 		}
 	}
 }
@@ -130,11 +133,15 @@ void StateSystem::update(int deltaTime, EntityManager& ecs)
 			state->invincibilityTimer = 0;
 			state->flashing = false;
 
-			CollisionComponent* collision = compManager.getComponent<CollisionComponent>(state->entityId);
-			if (collision)
+			auto entity = compManager.getEntityComponents(state->entityId);
+			if (entity->getComponent<PlayerComponent>())
 			{
-				collision->collideWithEntities = true;
-				eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(collision->entityId));
+				CollisionComponent* collision = entity->getComponent<CollisionComponent>();
+				if (collision)
+				{
+					collision->collideWithEntities = true;
+					eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(collision->entityId));
+				}
 			}
 		}
 

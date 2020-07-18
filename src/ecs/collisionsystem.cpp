@@ -33,15 +33,21 @@ void CollisionSystem::checkCollisions(int entityId)
 		auto position = entity->getComponent<PositionComponent>();
 		if (position)
 		{
+			if (collision->collideWithEntities)
+			{
+				checkEntityCollisions(collision, position, entity);
+			}
+
 			if (collision->solid)
 			{
 				checkTileCollisions(collision, position);
 			}
 
-			if (collision->collideWithEntities)
-			{
-				checkEntityCollisions(collision, position, entity);
-			}
+			//for (int checkId : checkList)
+			//{
+			//	//eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(checkId));
+			//}
+			//checkList.clear();
 		}
 	}
 }
@@ -104,10 +110,11 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 					}
 
 					// solid entity collisions
-					float xMove, yMove;
-					boundingBox.getCollisionDirection(otherBox, xMove, yMove);
 					if (collisionComp->solid && other->solid)
 					{
+						float xMove, yMove;
+						boundingBox.getCollisionDirection(otherBox, xMove, yMove);
+
 						if (xMove == 0 || yMove == 0)
 						{
 							positionComp->x += xMove;
@@ -122,6 +129,9 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 							xMoveStored = xMove;
 							yMoveStored = yMove;
 						}
+
+						// check if other entity is still colliding after collision resolution
+						//checkList.push_back(other->entityId);
 					}
 				}
 
