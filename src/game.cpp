@@ -48,13 +48,13 @@ void Game::gameLoop()
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth()), (int)(tileMap.getHeight())));
 
 	EntityManager& em = ecs.getEntityManager();
-	em.createEntity(300.f, 364.f, ECS::DUMMY);
+	em.createEntity(300.f, 200.f, ECS::DUMMY);
 	em.createEntity(332.f, 364.f, ECS::DUMMY);
 	em.createEntity(364.f, 364.f, ECS::DUMMY);
 	em.createEntity(396.f, 364.f, ECS::DUMMY);
 	em.createEntity(428.f, 364.f, ECS::DUMMY);
 	em.createEntity(460.f, 364.f, ECS::DUMMY);
-	em.createEntity(492.f, 364.f, ECS::DUMMY);
+	em.createEntity(492.f, 200.f, ECS::DUMMY);
 
 	em.destroyEntity(3);
 	em.createEntity(200.f, 200.f, ECS::PLAYER);

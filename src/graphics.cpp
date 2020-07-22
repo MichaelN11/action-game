@@ -3,9 +3,6 @@
 
 #include <cmath>
 
-// DELETE LATER $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#include <iostream>
-
 Graphics::Graphics(int width, int height, std::uint32_t windowFlags, std::string title, float spriteScale)
 {
 	this->spriteScale = spriteScale;
@@ -53,7 +50,7 @@ bool Graphics::loadTilesheet(const std::string& filePath, int tileWidth, int til
 	return (textureMap.count(filePath) > 0);
 }
 
-void Graphics::drawImage(const std::string& filePath, Rectangle<int> destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, Rectangle<float> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -65,7 +62,7 @@ void Graphics::drawImage(const std::string& filePath, Rectangle<int> destination
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, Rectangle<int> sourceRect, Rectangle<int> destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, Rectangle<int> sourceRect, Rectangle<float> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -77,7 +74,7 @@ void Graphics::drawImage(const std::string& filePath, Rectangle<int> sourceRect,
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool scaled)
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 	if (texture)
@@ -91,7 +88,7 @@ void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<int
 	}
 }
 
-void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+void Graphics::drawImage(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
 	Texture* texture = getTexture(filePath);
 
@@ -137,26 +134,28 @@ Texture* Graphics::getTexture(const std::string& filePath)
 		return nullptr;
 }
 
-void Graphics::createBackgroundTexture(int width, int height)
+void Graphics::createBackgroundTexture(float width, float height)
 {
+	width *= spriteScale;
+	height *= spriteScale;
+	background = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (int)width, (int)height));
 	bgWidth = width;
 	bgHeight = height;
-	width *= spriteScale;
-	height *= spriteScale;
-	background = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height));
+
 }
 
-void Graphics::createForegroundTexture(int width, int height)
+void Graphics::createForegroundTexture(float width, float height)
 {
+	width *= spriteScale;
+	height *= spriteScale;
+	foreground = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (int)width, (int)height));
+	SDL_SetTextureBlendMode(foreground.get()->getSDLTexture(), SDL_BLENDMODE_BLEND);
 	fgWidth = width;
 	fgHeight = height;
-	width *= spriteScale;
-	height *= spriteScale;
-	foreground = std::make_unique<Texture>(SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height));
-	SDL_SetTextureBlendMode(foreground.get()->getSDLTexture(), SDL_BLENDMODE_BLEND);
+
 }
 
-void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
 	scaleRect(destinationRect);
 	if (background)
@@ -170,7 +169,7 @@ void Graphics::drawToBackgroundTexture(const std::string& filePath, int tileNum,
 	}
 }
 
-void Graphics::drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
+void Graphics::drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled)
 {
 	scaleRect(destinationRect);
 	if (foreground)
@@ -196,9 +195,11 @@ void Graphics::drawForeground(Rectangle<float> view)
 		drawTextureToScreen(view, foreground.get(), fgWidth, fgHeight);
 }
 
-void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int tWidth, int tHeight)
+void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, float tWidth, float tHeight)
 {
-	std::cout << "view x: " << view.getX() << "   y: " << view.getY() << "   w: " << view.getW() << "   h: " << view.getH() << std::endl;
+	view.scalePositionAndSize(spriteScale);
+
+	//std::cout << "view x: " << view.getX() << "   y: " << view.getY() << "   w: " << view.getW() << "   h: " << view.getH() << std::endl;
 
 	int sourceX = (view.getX() > 0) ? (int)std::round(view.getX()) : 0;
 	int sourceY = (view.getY() > 0) ? (int)std::round(view.getY()) : 0;
@@ -207,7 +208,7 @@ void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int 
 	if (view.getX() < 0)
 	{
 		if (view.getX2() > tWidth)
-			rectWidth = tWidth;
+			rectWidth = (int)tWidth;
 		else if (view.getX2() > 0)
 			rectWidth = (int)(view.getX2() + 0.5f);
 		else
@@ -216,7 +217,7 @@ void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int 
 	else if (view.getX2() > tWidth)
 	{
 		if (view.getX() < tWidth)
-			rectWidth = tWidth - (int)(view.getX() + 0.5f);
+			rectWidth = (int)(tWidth - view.getX() - 0.5f);
 		else
 			rectWidth = 0;
 	}
@@ -228,7 +229,7 @@ void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int 
 	if (view.getY() < 0)
 	{
 		if (view.getY2() > tHeight)
-			rectHeight = tHeight;
+			rectHeight = (int)tHeight;
 		else if (view.getY2() > 0)
 			rectHeight = (int)(view.getY2() + 0.5f);
 		else
@@ -237,7 +238,7 @@ void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int 
 	else if (view.getY2() > tHeight)
 	{
 		if (view.getY() < tHeight)
-			rectHeight = tHeight - (int)(view.getY() + 0.5f);
+			rectHeight = (int)(tHeight - view.getY() - 0.5f);
 		else
 			rectHeight = 0;
 	}
@@ -249,9 +250,6 @@ void Graphics::drawTextureToScreen(Rectangle<float> view, Texture* texture, int 
 	int destY = (view.getY() > 0) ? 0 : (int)(view.getY() + 0.5f) * -1;
 	Rectangle<int> srcRect(sourceX, sourceY, rectWidth, rectHeight);
 	Rectangle<int> destRect(destX, destY, rectWidth, rectHeight);
-
-	srcRect.scalePositionAndSize(spriteScale);
-	destRect.scalePositionAndSize(spriteScale);
 
 	SDL_RenderCopy(renderer, texture->getSDLTexture(), &getSDLRect(srcRect), &getSDLRect(destRect));
 }
@@ -266,11 +264,14 @@ SDL_Rect Graphics::getSDLRect(Rectangle<int> rect)
 	return SDL_Rect({ rect.getX(), rect.getY(), rect.getW(), rect.getH() });
 }
 
-void Graphics::scaleRect(Rectangle<int>& rect)
+SDL_Rect Graphics::getSDLRect(Rectangle<float> rect)
+{
+	return SDL_Rect({ (int)(rect.getX() + 0.5f), (int)(rect.getY() + 0.5f), (int)(rect.getW() + 0.5f), (int)(rect.getH() + 0.5f) });
+}
+
+void Graphics::scaleRect(Rectangle<float>& rect)
 {
 	rect.scalePositionAndSize(spriteScale);
-//	rect.setH((int)(rect.getH() * spriteScale));
-//	rect.setW((int)(rect.getW() * spriteScale));
 }
 
 void Graphics::convertRotation(float& angle, int& flip, bool flipDiagonal, bool flipHorizontal, bool flipVertical)

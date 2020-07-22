@@ -28,11 +28,11 @@ public:
 	bool loadTilesheet(const std::string& filePath, int tileWidth, int tileHeight, int tileSpacing);
 
 	// Draws the image from the source texture or filePath, drawing the source rectangle into the destination rectangle
-	void drawImage(const std::string& filePath, Rectangle<int> destinationRect, bool scaled);
-	void drawImage(const std::string& filePath, Rectangle<int> sourceRect, Rectangle<int> destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, Rectangle<float> destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, Rectangle<int> sourceRect, Rectangle<float> destinationRect, bool scaled);
 	// Tile sheet must already be loaded
-	void drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool scaled);
-	void drawImage(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
+	void drawImage(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool scaled);
+	void drawImage(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 
 	// Displays the renderer to the window
 	void display();
@@ -45,13 +45,13 @@ public:
 	void unloadAllImages();
 
 	// Draws to a texture that is then drawn all at once, useful for drawing tilemaps
-	void createBackgroundTexture(int width, int height);
-	void createForegroundTexture(int width, int height);
-	void drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
-	void drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<int> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
+	void createBackgroundTexture(float width, float height);
+	void createForegroundTexture(float width, float height);
+	void drawToBackgroundTexture(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
+	void drawToForegroundTexture(const std::string& filePath, int tileNum, Rectangle<float> destinationRect, bool flipDiagonal, bool flipHorizontal, bool flipVertical, bool scaled);
 	void drawBackground(Rectangle<float> view);
 	void drawForeground(Rectangle<float> view);
-	void drawTextureToScreen(Rectangle<float> view, Texture* texture, int tWidth, int tHeight);
+	void drawTextureToScreen(Rectangle<float> view, Texture* texture, float tWidth, float tHeight);
 	
 
 
@@ -62,7 +62,8 @@ private:
 
 	Texture* getTexture(const std::string& filePath);
 	SDL_Rect getSDLRect(Rectangle<int> rect);
-	void scaleRect(Rectangle<int>& rect);
+	SDL_Rect getSDLRect(Rectangle<float> rect);
+	void scaleRect(Rectangle<float>& rect);
 	// convert from TMX style 3 flip flags to SDL style rotation/flipping
 	void convertRotation(float& angle, int& flip, bool flipDiagonal, bool flipHorizontal, bool flipVertical);
 
@@ -72,6 +73,6 @@ private:
 	std::unordered_map<std::string, Texture> textureMap;
 	std::unique_ptr<Texture> background;
 	std::unique_ptr<Texture> foreground;
-	int bgWidth = 0, bgHeight = 0;
-	int fgWidth = 0, fgHeight = 0;
+	float bgWidth = 0.f, bgHeight = 0.f;
+	float fgWidth = 0.f, fgHeight = 0.f;
 };

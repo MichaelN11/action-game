@@ -75,7 +75,7 @@ void TileMap::initFromTMX(const std::string& tmxFileName, const std::unordered_m
 
 void TileMap::drawToBackground()
 {
-	graphics.createBackgroundTexture(mapWidth * tileWidth, mapHeight * tileHeight);
+	graphics.createBackgroundTexture((float)(mapWidth * tileWidth), (float)(mapHeight * tileHeight));
 
 	size_t bgLayerIndex = 0;
 	if (bgLayerIndex < tileGridLayers.size())
@@ -89,7 +89,7 @@ void TileMap::drawToBackground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<int> destRect(colNum * tileWidth,
+					Rectangle<float> destRect(colNum * tileWidth,
 						rowNum * tileHeight,
 						tileWidth,
 						tileHeight);
@@ -105,7 +105,7 @@ void TileMap::drawToBackground()
 
 void TileMap::drawToForeground()
 {
-	graphics.createForegroundTexture(mapWidth * tileWidth, mapHeight * tileHeight);
+	graphics.createForegroundTexture((float)(mapWidth * tileWidth), (float)(mapHeight * tileHeight));
 
 	size_t fgLayerIndex = 1;
 	if (fgLayerIndex < tileGridLayers.size())
@@ -119,7 +119,7 @@ void TileMap::drawToForeground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<int> destRect(colNum * tileWidth,
+					Rectangle<float> destRect(colNum * tileWidth,
 						rowNum * tileHeight,
 						tileWidth,
 						tileHeight);

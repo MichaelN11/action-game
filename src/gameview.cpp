@@ -14,8 +14,6 @@ void GameView::setBounds(Rectangle<int> bounds)
 
 void GameView::setView(float x, float y)
 {
-	//x /= config::SPRITE_SCALE;
-	//y /= config::SPRITE_SCALE;
 	if (viewBounds.getW() > 0)
 	{
 		if (x >= viewBounds.getX() && x + view.getW() < viewBounds.getX2())
