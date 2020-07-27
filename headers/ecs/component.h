@@ -67,10 +67,11 @@ struct PlayerComponent : public Component
 
 struct StateComponent : public Component
 {
-	StateComponent(int entityId, DrawState draw, int drawBuffer, ActivityState activity = ActivityState::alive) : 
-		Component(entityId), drawState(draw), bufferedDrawState(drawState), drawBufferMax(drawBuffer), activityState(activity)
+	StateComponent(int entityId, DrawState draw, Direction facing, int drawBuffer, ActivityState activity = ActivityState::alive) : 
+		Component(entityId), drawState(draw), bufferedDrawState(drawState), drawBufferMax(drawBuffer), activityState(activity), facing(facing)
 	{}
 
+	Direction facing;
 	const int drawBufferMax;
 	int drawBuffer = 0;
 

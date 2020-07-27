@@ -69,26 +69,26 @@ void PlayerSystem::attack()
 			DrawState attackState = DrawState::none;
 			Direction dir = Direction::none;
 
-			if (state->getBufferedDrawState() == DrawState::standDown || state->getBufferedDrawState() == DrawState::walkDown)
+			if (state->facing == Direction::down)
 			{
 				// change this later
 				y += position->height;
 				attackState = DrawState::attackDown;
 				dir = Direction::down;
 			}
-			else if (state->getBufferedDrawState() == DrawState::standUp || state->getBufferedDrawState() == DrawState::walkUp)
+			else if (state->facing == Direction::up)
 			{
 				y -= position->height;
 				attackState = DrawState::attackUp;
 				dir = Direction::up;
 			}
-			else if (state->getBufferedDrawState() == DrawState::standLeft || state->getBufferedDrawState() == DrawState::walkLeft)
+			else if (state->facing == Direction::left)
 			{
 				x -= position->width;
 				attackState = DrawState::attackLeft;
 				dir = Direction::left;
 			}
-			else if (state->getBufferedDrawState() == DrawState::standRight || state->getBufferedDrawState() == DrawState::walkRight)
+			else if (state->facing == Direction::right)
 			{
 				x += position->width;
 				attackState = DrawState::attackRight;

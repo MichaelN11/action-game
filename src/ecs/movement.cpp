@@ -43,6 +43,7 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 							state->setDrawState(DrawState::walkRight);
 						else
 							state->setBufferedDrawState(DrawState::walkRight);
+						state->facing = Direction::right;
 					}
 					else if (xMultiplier < 0)
 					{
@@ -50,6 +51,7 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 							state->setDrawState(DrawState::walkLeft);
 						else
 							state->setBufferedDrawState(DrawState::walkLeft);
+						state->facing = Direction::left;
 					}
 				}
 				else if (xMultiplier == 0)
@@ -60,6 +62,7 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 							state->setDrawState(DrawState::walkDown);
 						else
 							state->setBufferedDrawState(DrawState::walkDown);
+						state->facing = Direction::down;
 					}
 					else if (yMultiplier < 0)
 					{
@@ -67,14 +70,21 @@ void movement::standardMove(ComponentManager::EntityComponents* entity, float xM
 							state->setDrawState(DrawState::walkUp);
 						else
 							state->setBufferedDrawState(DrawState::walkUp);
+						state->facing = Direction::up;
 					}
 				}
 				else if (standing)
 				{
 					if (yMultiplier > 0)
+					{
 						state->setDrawState(DrawState::walkDown);
+						state->facing = Direction::down;
+					}
 					else
+					{
 						state->setDrawState(DrawState::walkUp);
+						state->facing = Direction::up;
+					}
 				}
 
 				float moveSpeed = movement->moveSpeed;

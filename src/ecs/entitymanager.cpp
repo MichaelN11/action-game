@@ -60,11 +60,12 @@ int EntityManager::getNextEntityId()
 	return nextEntityId++;
 }
 
+// always creates entities facing down
 void EntityManager::createEntityFromData(ComponentManager& compManager, int entityId, const EntityData& data, DrawState drawState, Direction direction)
 {
 	std::cout << "Entity # " << entityId << " created." << std::endl;
-
-	StateComponent stateComponent(entityId, drawState, 100);
+	
+	StateComponent stateComponent(entityId, drawState, Direction::down, 100);
 
 	if (data.spritePath != "")
 	{
