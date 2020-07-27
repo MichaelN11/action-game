@@ -106,7 +106,7 @@ void PlayerSystem::attack()
 				movement->xAcceleration = 0;
 				movement->yAcceleration = 0;
 			}
-			StateSystem::setStunned(entity, 500, attackState);
+			StateSystem::setStunned(entity, (float)PlayerSystem::SWORD.lifetime, attackState);
 		}
 	}
 }
@@ -215,6 +215,6 @@ const EntityData PlayerSystem::SWORD =
 	// hostile groups
 	{ Group::enemy },
 	// lifetime
-	500
+	350
 };
 

@@ -89,10 +89,10 @@ void TileMap::drawToBackground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<float> destRect(colNum * tileWidth,
-						rowNum * tileHeight,
-						tileWidth,
-						tileHeight);
+					Rectangle<float> destRect((float) colNum * tileWidth,
+						(float) rowNum * tileHeight,
+						(float) tileWidth,
+						(float) tileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
@@ -119,10 +119,10 @@ void TileMap::drawToForeground()
 				Tile tile = layer.at(rowNum).at(colNum);
 				if (tile.id >= 0 && tile.tileSheetId >= 0)
 				{
-					Rectangle<float> destRect(colNum * tileWidth,
-						rowNum * tileHeight,
-						tileWidth,
-						tileHeight);
+					Rectangle<float> destRect((float)colNum * tileWidth,
+						(float)rowNum * tileHeight,
+						(float)tileWidth,
+						(float)tileHeight);
 
 					std::string filePath = tileSheetPaths.at(tile.tileSheetId);
 					// scaled is false because it's already scaled here
