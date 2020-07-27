@@ -101,7 +101,11 @@ const EntityData ECS::DUMMY =
 	// hostile groups
 	{ Group::player },
 	// lifetime
-	-1
+	-1,
+	// entity width
+	16.f,
+	// entity height
+	16.f
 };
 
 std::unordered_map<DrawState, Animation> createPlayerAnims()
@@ -174,5 +178,9 @@ const EntityData ECS::PLAYER =
 	// hostile groups
 	{ Group::enemy },
 	// lifetime
-	-1
+	-1,
+	// entity width
+	16.f,
+	// entity height
+	16.f
 };

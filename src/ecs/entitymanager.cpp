@@ -27,7 +27,7 @@ int EntityManager::createEntity(float x, float y, const EntityData& data)
 int EntityManager::createEntity(float x, float y, const EntityData& data, DrawState drawState, Direction direction)
 {
 	int entityId = getNextEntityId();
-	PositionComponent position(entityId, x, y);
+	PositionComponent position(entityId, x, y, data.width, data.height);
 	compManager.addComponent(position);
 	createEntityFromData(compManager, entityId, data, drawState, direction);
 

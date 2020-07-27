@@ -22,9 +22,11 @@ struct InactiveComponent : public Component
 
 struct PositionComponent : public Component
 {
-	PositionComponent(int entityId, float x, float y) : Component(entityId), x(x), y(y) {}
+	PositionComponent(int entityId, float x, float y, float w, float h) : Component(entityId), x(x), y(y), width(w), height(h){}
 	float x;
 	float y;
+	float width;
+	float height;
 };
 
 struct SpriteComponent : public Component

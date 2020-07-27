@@ -5,7 +5,7 @@
 #include "ecs/statesystem.h"
 
 // DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//#include <iostream>
+#include <iostream>
 
 const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
@@ -64,7 +64,7 @@ void PlayerSystem::attack()
 			float x = position->x;
 			float y = position->y;
 
-			//std::cout << "player   x: " << x << "   y: " << y << std::endl;
+			std::cout << "player   x: " << x << "   y: " << y << std::endl;
 
 			DrawState attackState = DrawState::none;
 			Direction dir = Direction::none;
@@ -72,25 +72,25 @@ void PlayerSystem::attack()
 			if (state->getBufferedDrawState() == DrawState::standDown || state->getBufferedDrawState() == DrawState::walkDown)
 			{
 				// change this later
-				y += 32.f;
+				y += position->height;
 				attackState = DrawState::attackDown;
 				dir = Direction::down;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standUp || state->getBufferedDrawState() == DrawState::walkUp)
 			{
-				y -= 32.f;
+				y -= position->height;
 				attackState = DrawState::attackUp;
 				dir = Direction::up;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standLeft || state->getBufferedDrawState() == DrawState::walkLeft)
 			{
-				x -= 32.f;
+				x -= position->width;
 				attackState = DrawState::attackLeft;
 				dir = Direction::left;
 			}
 			else if (state->getBufferedDrawState() == DrawState::standRight || state->getBufferedDrawState() == DrawState::walkRight)
 			{
-				x += 32.f;
+				x += position->width;
 				attackState = DrawState::attackRight;
 				dir = Direction::right;
 			}
@@ -157,7 +157,7 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 // booleans = diagonal, horizontal, vertical flips
 std::unordered_map<DrawState, Animation> createSwordAnims()
 {
-	float offset = 8.f;
+	float offset = 4.f;
 	std::unordered_map<DrawState, Animation> map;
 	map[DrawState::attackDown] = Animation(std::vector<AnimationFrame>({
 		AnimationFrame(1, false, false, true, offset, 0),

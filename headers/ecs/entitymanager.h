@@ -29,6 +29,8 @@ struct EntityData
 	Group group;
 	std::vector<Group> hostileGroups;
 	int lifetime = -1;
+	float width;
+	float height;
 };
 
 class EntityManager
