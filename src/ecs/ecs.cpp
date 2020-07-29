@@ -10,7 +10,7 @@
 //#include <iostream>
 
 ECS::ECS(EventManager& eventManager, const TileMap& tileMap) :
-	entityManager(compManager),
+	entityManager(compManager, eventManager),
 	eventManager(eventManager),
 	playerSystem(compManager, eventManager, entityManager),
 	posUpdateSystem(compManager),
@@ -81,7 +81,7 @@ const EntityData ECS::DUMMY =
 	// is player
 	false,
 	// animation map
-	nullptr,
+	std::unordered_map<DrawState, Animation>(),
 	// animation time to update
 	-1,
 	// bounding box
@@ -105,7 +105,9 @@ const EntityData ECS::DUMMY =
 	// entity width
 	16.f,
 	// entity height
-	16.f
+	16.f,
+	// ability list
+	{ }
 };
 
 std::unordered_map<DrawState, Animation> createPlayerAnims()
@@ -157,7 +159,7 @@ const EntityData ECS::PLAYER =
 	// is player
 	true,
 	// animation map
-	std::make_unique<std::unordered_map<DrawState, Animation>>(createPlayerAnims()),
+	createPlayerAnims(),
 	// animation time to update
 	150,
 	// bounding box
@@ -182,5 +184,7 @@ const EntityData ECS::PLAYER =
 	// entity width
 	16.f,
 	// entity height
-	16.f
+	16.f,
+	// ability list
+	{ "swordAttack" }
 };

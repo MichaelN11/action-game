@@ -1,11 +1,12 @@
 #include "ecs/entitymanager.h"
 #include "ecs/componentmanager.h"
 #include "config.h"
+#include "eventmanager.h"
 
 // REMOVE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #include <iostream>
 
-EntityManager::EntityManager(ComponentManager& compManager) : compManager(compManager)
+EntityManager::EntityManager(ComponentManager& compManager, EventManager& eventManager) : compManager(compManager), eventManager(eventManager), abilityManager(compManager, eventManager, *this)
 {
 	std::cout << "only see this once!" << std::endl;
 }
@@ -81,9 +82,9 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 		stateComponent.timeToDie = 5000;
 		stateComponent.invTimeFactor = 4.0f;
 	}
-	if (data.animationMap)
+	if (data.animationMap.size() > 0)
 	{
-		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, data.animationMap.get()));
+		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, &data.animationMap));
 	}
 	if (data.boundingBox.getW() > 0)
 	{
@@ -105,6 +106,20 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	if (data.lifetime > 0)
 	{
 		stateComponent.lifetime = data.lifetime;
+	}
+	if (data.abilityList.size() > 0)
+	{
+		AbilityComponent abilities(entityId);
+		int i = 1;
+		for (std::string abilityName : data.abilityList)
+		{
+			auto it = abilityManager.abilityMap.find(abilityName);
+			if (it != abilityManager.abilityMap.end())
+			{
+				abilities.abilityMap.insert({ i++, &(it->second) });
+			}
+		}
+		compManager.addComponent(abilities);
 	}
 
 	compManager.addComponent(stateComponent);

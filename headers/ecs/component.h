@@ -7,6 +7,9 @@
 #include "enums.h"
 #include "rectangle.h"
 
+//forward declare
+class Ability;
+
 struct Component
 {
 	Component(int entityId) : entityId(entityId) {}
@@ -163,14 +166,14 @@ struct Animation
 
 struct AnimationComponent : public Component
 {
-	AnimationComponent(int entityId, int timeToUpdate, std::unordered_map<DrawState, Animation>* animationMap) :
+	AnimationComponent(int entityId, int timeToUpdate, const std::unordered_map<DrawState, Animation>* animationMap) :
 		Component(entityId), timeToUpdate(timeToUpdate), animationMap(animationMap)
 	{}
 	DrawState prevState = DrawState::standDown;
 	int timeElapsed = 0;
 	int frameNum = 0;
 	int timeToUpdate;
-	std::unordered_map<DrawState, Animation>* animationMap;
+	const std::unordered_map<DrawState, Animation>* animationMap;
 
 	bool flashing = false;
 	int flashTimer = 0;
@@ -215,13 +218,13 @@ struct GroupComponent : public Component
 	std::vector<Group> hostileGroups;
 };
 
-//struct StunComponent : public Component
-//{
-//	StunComponent(int entityId, DrawState previousDrawState, int recoveryTimer) : Component(entityId), previousDrawState(previousDrawState), recoveryTimer(recoveryTimer)
-//	{}
-//	DrawState previousDrawState = DrawState::none;
-//	int recoveryTimer = 0;
-//};
+struct AbilityComponent : public Component
+{
+	AbilityComponent(int entityId) : Component(entityId)
+	{}
+
+	std::unordered_map<int, Ability*> abilityMap;
+};
 
 
 

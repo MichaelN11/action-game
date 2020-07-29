@@ -47,7 +47,7 @@ void AnimationSystem::update(int deltaTime)
 			auto it = animation->animationMap->find(animation->prevState);
 			if (it != animation->animationMap->end())
 			{
-				Animation& frameAnimation = it->second;
+				const Animation& frameAnimation = it->second;
 				auto& frameList = frameAnimation.frameList;
 				if (animation->frameNum < (int)frameList.size())
 				{
@@ -56,7 +56,7 @@ void AnimationSystem::update(int deltaTime)
 					if (animation->timeElapsed >= animation->timeToUpdate)
 					{
 						animation->timeElapsed -= animation->timeToUpdate;
-						AnimationFrame& frame = frameList.at(animation->frameNum);
+						const AnimationFrame& frame = frameList.at(animation->frameNum);
 						sprite->tileNum = frame.tileNum;
 						sprite->flipHorizontal = frame.flipHorizontal;
 						sprite->flipVertical = frame.flipVertical;
