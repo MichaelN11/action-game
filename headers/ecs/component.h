@@ -164,6 +164,17 @@ struct Animation
 	{}
 };
 
+struct AnimationSet
+{
+	std::unordered_map<DrawState, Animation> animationMap;
+	std::string filePath = "";
+	int initialTileNum = 0;
+	int spriteWidth = 0;
+	int spriteHeight = 0;
+	int spriteLayer = 0;
+	int timeToUpdate = 0;
+};
+
 struct AnimationComponent : public Component
 {
 	AnimationComponent(int entityId, int timeToUpdate, const std::unordered_map<DrawState, Animation>* animationMap) :

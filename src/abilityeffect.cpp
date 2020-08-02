@@ -2,8 +2,18 @@
 #include "ecs/entitymanager.h"
 #include "eventmanager.h"
 
-effect::SpawnAdjacentEntity::SpawnAdjacentEntity(const EntityData& entity) : entitySpawned(entity)
-{}
+effect::SpawnAdjacentEntity::SpawnAdjacentEntity(AnimationSet animSet, Rectangle<float> boundingBox, bool solid, bool interactable, int health, int damage, int lifetime)
+{
+	entitySpawned.animSet = animSet;
+	entitySpawned.boundingBox = boundingBox;
+	entitySpawned.solid = solid;
+	entitySpawned.interactable = interactable;
+	entitySpawned.health = health;
+	entitySpawned.damage = damage;
+	entitySpawned.lifetime = lifetime;
+	entitySpawned.width = boundingBox.getW();
+	entitySpawned.height = boundingBox.getH();
+}
 
 void effect::SpawnAdjacentEntity::trigger(ComponentManager& compManager, EntityManager& entityManager, EventManager& eventManager, ComponentManager::EntityComponents* source, float x, float y)
 {
@@ -11,8 +21,13 @@ void effect::SpawnAdjacentEntity::trigger(ComponentManager& compManager, EntityM
 
 	StateComponent* state = source->getComponent<StateComponent>();
 	PositionComponent* position = source->getComponent<PositionComponent>();
-	if (state && position)
+	GroupComponent* group = source->getComponent<GroupComponent>();
+	if (state && position && group)
 	{
+		entitySpawned.group = group->group;
+		entitySpawned.hostileGroups = group->hostileGroups;
+		entitySpawned.damageGroups = group->hostileGroups;
+
 		float localX = position->x;
 		float localY = position->y;
 
@@ -36,31 +51,7 @@ void effect::SpawnAdjacentEntity::trigger(ComponentManager& compManager, EntityM
 				break;
 		}
 
-		int attackId = entityManager.createEntity(localX, localY, SWORD, attackState, state->facing);
+		int attackId = entityManager.createEntity(localX, localY, entitySpawned, attackState, state->facing);
 		eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
 	}
-}
-
-// booleans = diagonal, horizontal, vertical flips
-std::unordered_map<DrawState, Animation> effect::createSwordAnims()
-{
-	float offset = 4.f;
-	std::unordered_map<DrawState, Animation> map;
-	map[DrawState::attackDown] = Animation(std::vector<AnimationFrame>({
-		AnimationFrame(1, false, false, true, offset, 0),
-		AnimationFrame(2, false, true, true),
-		AnimationFrame(1, true, false, false, 0, -offset) }), false);
-	map[DrawState::attackUp] = Animation(std::vector<AnimationFrame>({
-		AnimationFrame(1, false, false, false, -offset, 0),
-		AnimationFrame(2, false, false, false),
-		AnimationFrame(1, true, true, false, 0, offset) }), false);
-	map[DrawState::attackLeft] = Animation(std::vector<AnimationFrame>({
-		AnimationFrame(1, true, false, false, 0, offset),
-		AnimationFrame(2, false, true, false),
-		AnimationFrame(1, false, false, false, offset, 0) }), false);
-	map[DrawState::attackRight] = Animation(std::vector<AnimationFrame>({
-		AnimationFrame(1, true, true, false, 0, -offset),
-		AnimationFrame(2, false, false, true),
-		AnimationFrame(1, false, false, true, -offset, 0) }), false);
-	return map;
 }

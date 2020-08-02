@@ -15,6 +15,8 @@ public:
 	static void useAbility(ComponentManager::EntityComponents* source, int abilityNum, float x, float y);
 
 	std::unordered_map<std::string, Ability> abilityMap;
+
+	static const AnimationSet SWORD;
 private:
 	EventManager& eventManager;
 	EntityManager& entityManager;

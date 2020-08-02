@@ -68,9 +68,9 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 	
 	StateComponent stateComponent(entityId, drawState, Direction::down, 100);
 
-	if (data.spritePath != "")
+	if (data.animSet.filePath != "")
 	{
-		compManager.addComponent(SpriteComponent(entityId, data.spritePath, data.tileNum, data.spriteWidth, data.spriteHeight, data.spriteLayer));
+		compManager.addComponent(SpriteComponent(entityId, data.animSet.filePath, data.animSet.initialTileNum, data.animSet.spriteWidth, data.animSet.spriteHeight, data.animSet.spriteLayer));
 	}
 	if (data.moveSpeed >= 0)
 	{
@@ -82,9 +82,9 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 		stateComponent.timeToDie = 5000;
 		stateComponent.invTimeFactor = 4.0f;
 	}
-	if (data.animationMap.size() > 0)
+	if (data.animSet.animationMap.size() > 0)
 	{
-		compManager.addComponent(AnimationComponent(entityId, data.animationTimeToUpdate, &data.animationMap));
+		compManager.addComponent(AnimationComponent(entityId, data.animSet.timeToUpdate, &data.animSet.animationMap));
 	}
 	if (data.boundingBox.getW() > 0)
 	{

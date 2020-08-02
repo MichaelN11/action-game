@@ -66,24 +66,27 @@ std::pair<float, float> ECS::getPlayerPosition()
 
 const EntityData ECS::DUMMY =
 {
-	// sprite file name path
-	"content/tilesheets/tileset_legacy.png",
-	// tile number on spritesheet
-	32,
-	// sprite width
-	16,
-	// sprite height
-	16,
-	// sprite layer
-	1,
+	// animation set
+	{
+		// animation map
+		std::unordered_map<DrawState, Animation>(),
+		// sprite file name path
+		"content/tilesheets/tileset_legacy.png",
+		// tile number on spritesheet
+		32,
+		// sprite width
+		16,
+		// sprite height
+		16,
+		// sprite layer
+		1,
+		// animation time to update
+		-1
+	},
 	// move speed
 	0.05f,
 	// is player
 	false,
-	// animation map
-	std::unordered_map<DrawState, Animation>(),
-	// animation time to update
-	-1,
 	// bounding box
 	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
 	// solid
@@ -144,24 +147,27 @@ std::unordered_map<DrawState, Animation> createPlayerAnims()
 
 const EntityData ECS::PLAYER =
 {
-	// sprite file name path
-	"content/tilesheets/link.png",
-	// tile number on spritesheet
-	1,
-	// sprite width
-	16,
-	// sprite height
-	16,
-	// sprite layer
-	2,
+	// Animation Set
+	{
+		// animation map
+		createPlayerAnims(),
+		// sprite file name path
+		"content/tilesheets/link.png",
+		// tile number on spritesheet
+		1,
+		// sprite width
+		16,
+		// sprite height
+		16,
+		// sprite layer
+		2,
+		// animation time to update
+		150
+	},
 	// move speed
 	0.1f,
 	// is player
 	true,
-	// animation map
-	createPlayerAnims(),
-	// animation time to update
-	150,
 	// bounding box
 	Rectangle<float>(4.f, 4.f, 8.f, 12.f),
 	// solid
