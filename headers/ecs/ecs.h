@@ -8,6 +8,7 @@
 #include "ecs/damagesystem.h"
 #include "ecs/statesystem.h"
 #include "ecs/entitymanager.h"
+#include "ecs/aisystem.h"
 
 // forward declare
 class Graphics;
@@ -33,6 +34,7 @@ public:
 
 	static const EntityData PLAYER;
 	static const EntityData DUMMY;
+	static const EntityData ENEMY;
 private:
 	EventManager& eventManager;
 	ComponentManager compManager;
@@ -44,4 +46,5 @@ private:
 	CollisionSystem collisionSystem;
 	DamageSystem damageSystem;
 	StateSystem stateSystem;
+	AISystem aiSystem;
 };

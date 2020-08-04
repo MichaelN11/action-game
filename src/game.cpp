@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <time.h>
 #include "game.h"
 #include "systemevents.h"
 #include "tilemap.h"
@@ -18,6 +19,7 @@ Game::Game() :
 	gameView(config::RESOLUTION_WIDTH, config::RESOLUTION_HEIGHT, &ecs),
 	input(eventManager)
 {
+	std::srand((unsigned)time(nullptr));
 	gameLoop();
 }
 
@@ -44,6 +46,7 @@ void Game::gameLoop()
 	graphics.loadTilesheet(filePath, 16, 16, 0);
 	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
 	graphics.loadTilesheet("content/tilesheets/attack.png", 16, 16, 1);
+	graphics.loadTilesheet("content/tilesheets/enemies.png", 16, 16, 1);
 
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth()), (int)(tileMap.getHeight())));
 
@@ -58,6 +61,12 @@ void Game::gameLoop()
 
 	em.destroyEntity(3);
 	em.createEntity(200.f, 200.f, ECS::PLAYER);
+
+	em.createEntity(300.f, 300.f, ECS::ENEMY);
+	em.createEntity(350.f, 300.f, ECS::ENEMY);
+	em.createEntity(400.f, 300.f, ECS::ENEMY);
+	em.createEntity(450.f, 300.f, ECS::ENEMY);
+	em.createEntity(500.f, 300.f, ECS::ENEMY);
 	
 	em.createEntity(200.f, 350.f, ECS::DUMMY);
 

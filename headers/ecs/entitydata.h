@@ -18,4 +18,5 @@ struct EntityData
 	float width;
 	float height;
 	std::vector<std::string> abilityList;
+	Behavior aiBehavior = Behavior::none;
 };

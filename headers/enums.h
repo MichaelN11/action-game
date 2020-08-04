@@ -9,3 +9,5 @@ enum class DrawState { none, standLeft, standRight, standUp, standDown, walkLeft
 enum class ActivityState { alive, stunned, dead };
 
 enum class Group { none, player, enemy };
+
+enum class Behavior { none, wander };

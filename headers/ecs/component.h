@@ -237,6 +237,15 @@ struct AbilityComponent : public Component
 	std::unordered_map<int, Ability*> abilityMap;
 };
 
+struct AIComponent : public Component
+{
+	AIComponent(int entityId, Behavior behavior) : Component(entityId), behavior(behavior)
+	{}
+
+	Behavior behavior = Behavior::none;
+	int timer = 0;
+};
+
 
 
 

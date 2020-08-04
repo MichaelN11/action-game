@@ -121,6 +121,10 @@ void EntityManager::createEntityFromData(ComponentManager& compManager, int enti
 		}
 		compManager.addComponent(abilities);
 	}
+	if (data.aiBehavior != Behavior::none)
+	{
+		compManager.addComponent(AIComponent(entityId, data.aiBehavior));
+	}
 
 	compManager.addComponent(stateComponent);
 }
