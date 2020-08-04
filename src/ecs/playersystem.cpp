@@ -6,7 +6,7 @@
 #include "ecs/abilitymanager.h"
 
 // DELETE LATER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#include <iostream>
+//#include <iostream>
 
 const float PlayerSystem::DIAGONAL_SPEED = 0.7071f;
 //const float PlayerSystem::DIAGONAL_SPEED = 1.f;
@@ -54,63 +54,6 @@ PlayerSystem::PlayerSystem(ComponentManager& compManager, EventManager& eventMan
 
 void PlayerSystem::attack()
 {
-	//auto playerList = compManager.getComponentList<PlayerComponent>();
-	//for (auto player : playerList)
-	//{
-	//	ComponentManager::EntityComponents* entity = compManager.getEntityComponents(player->entityId);
-	//	PositionComponent* position = entity->getComponent<PositionComponent>();
-	//	StateComponent* state = entity->getComponent<StateComponent>();
-	//	if (position && state && state->activityState == ActivityState::alive)
-	//	{
-	//		float x = position->x;
-	//		float y = position->y;
-
-	//		std::cout << "player   x: " << x << "   y: " << y << std::endl;
-
-	//		DrawState attackState = DrawState::none;
-	//		Direction dir = Direction::none;
-
-	//		if (state->facing == Direction::down)
-	//		{
-	//			// change this later
-	//			y += position->height;
-	//			attackState = DrawState::attackDown;
-	//			dir = Direction::down;
-	//		}
-	//		else if (state->facing == Direction::up)
-	//		{
-	//			y -= position->height;
-	//			attackState = DrawState::attackUp;
-	//			dir = Direction::up;
-	//		}
-	//		else if (state->facing == Direction::left)
-	//		{
-	//			x -= position->width;
-	//			attackState = DrawState::attackLeft;
-	//			dir = Direction::left;
-	//		}
-	//		else if (state->facing == Direction::right)
-	//		{
-	//			x += position->width;
-	//			attackState = DrawState::attackRight;
-	//			dir = Direction::right;
-	//		}
-
-	//		int attackId = entityManager.createEntity(x, y, SWORD, attackState, dir);
-	//		eventManager.fireEvent<CollisionCheckEvent>(CollisionCheckEvent(attackId));
-
-	//		MovementComponent* movement = entity->getComponent<MovementComponent>();
-	//		if (movement)
-	//		{
-	//			movement->dx = 0;
-	//			movement->dy = 0;
-	//			movement->xAcceleration = 0;
-	//			movement->yAcceleration = 0;
-	//		}
-	//		StateSystem::setStunned(entity, (float)PlayerSystem::SWORD.lifetime, attackState);
-	//	}
-	//}
-
 	auto playerList = compManager.getComponentList<PlayerComponent>();
 	for (auto player : playerList)
 	{
@@ -169,68 +112,3 @@ void PlayerSystem::updateMovement(float xDirection, float yDirection)
 		}
 	}
 }
-
-//// booleans = diagonal, horizontal, vertical flips
-//std::unordered_map<DrawState, Animation> createSwordAnims()
-//{
-//	float offset = 4.f;
-//	std::unordered_map<DrawState, Animation> map;
-//	map[DrawState::attackDown] = Animation(std::vector<AnimationFrame>({
-//		AnimationFrame(1, false, false, true, offset, 0),
-//		AnimationFrame(2, false, true, true),
-//		AnimationFrame(1, true, false, false, 0, -offset) }), false);
-//	map[DrawState::attackUp] = Animation(std::vector<AnimationFrame>({
-//		AnimationFrame(1, false, false, false, -offset, 0),
-//		AnimationFrame(2, false, false, false),
-//		AnimationFrame(1, true, true, false, 0, offset) }), false);
-//	map[DrawState::attackLeft] = Animation(std::vector<AnimationFrame>({
-//		AnimationFrame(1, true, false, false, 0, offset),
-//		AnimationFrame(2, false, true, false),
-//		AnimationFrame(1, false, false, false, offset, 0) }), false);
-//	map[DrawState::attackRight] = Animation(std::vector<AnimationFrame>({
-//		AnimationFrame(1, true, true, false, 0, -offset),
-//		AnimationFrame(2, false, false, true),
-//		AnimationFrame(1, false, false, true, -offset, 0) }), false);
-//	return map;
-//}
-//
-//const EntityData PlayerSystem::SWORD =
-//{
-//	// sprite file name path
-//	"content/tilesheets/attack.png",
-//	// tile number on spritesheet
-//	2,
-//	// sprite width
-//	16,
-//	// sprite height
-//	16,
-//	// sprite layer
-//	1,
-//	// move speed
-//	0.f,
-//	// is player
-//	false,
-//	// animation map
-//	 createSwordAnims(),
-//	// animation time to update
-//	150,
-//	// bounding box
-//	Rectangle<float>(0.f, 0.f, 16.f, 16.f),
-//	// solid
-//	false,
-//	// interactable
-//	true,
-//	// health
-//	-1,
-//	// damage
-//	10,
-//	// damage group
-//	{ Group::enemy },
-//	// group
-//	Group::player,
-//	// hostile groups
-//	{ Group::enemy },
-//	// lifetime
-//	350
-//};
-
