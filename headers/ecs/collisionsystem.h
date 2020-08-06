@@ -13,6 +13,8 @@ class CollisionSystem : public System
 public:
 	CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap);
 	void afterUpdate();
+
+	static bool isCollision(const TileMap& tileMap, Rectangle<float> boundingBox, float x, float y);
 private:
 	EventManager& eventManager;
 	const TileMap& tileMap;

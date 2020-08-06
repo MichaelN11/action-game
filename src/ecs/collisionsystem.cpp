@@ -6,7 +6,7 @@
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELETE LATER
-//#include <iostream>
+#include <iostream>
 
 CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap) :
 	System(compManager),
@@ -210,4 +210,34 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 void CollisionSystem::afterUpdate()
 {
 	collisionList.clear();
+}
+
+bool CollisionSystem::isCollision(const TileMap& tileMap, Rectangle<float> boundingBox, float x, float y)
+{
+	const std::vector<std::vector<Rectangle<float>>>& tileCollisionGrid = tileMap.getCollisionGrid();
+	boundingBox.shift(x, y);
+
+	int startRow = std::max((int)boundingBox.getY() / tileMap.getTileHeight(), 0);
+	int endRow = std::min((int)boundingBox.getY2() / tileMap.getTileHeight() + 2, tileMap.getHeightInTiles());
+	int startCol = std::max((int)boundingBox.getX() / tileMap.getTileWidth(), 0);
+	int endCol = std::min((int)boundingBox.getX() / tileMap.getTileWidth() + 2, tileMap.getWidthInTiles());
+
+	for (int row = startRow; row < endRow; ++row)
+	{
+		for (int col = startCol; col < endCol; ++col)
+		{
+			Rectangle<float> tileCollisionBox = tileCollisionGrid.at(row).at(col);
+			if (tileCollisionBox.getW() > 0)
+			{
+				tileCollisionBox.shift((float)tileMap.getTileWidth() * col, (float)tileMap.getTileHeight() * row);
+				if (boundingBox.isColliding(tileCollisionBox))
+				{
+					std::cout << "COLLIDING AT " << x << "  " << y << std::endl;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
