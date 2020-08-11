@@ -33,6 +33,9 @@ void CollisionSystem::checkCollisions(int entityId)
 		auto position = entity->getComponent<PositionComponent>();
 		if (position)
 		{
+			// flag is set every time collisions are checked, if entity collides with something solid it's set to true
+			collision->collidedLastCheck = false;
+
 			if (collision->collideWithEntities)
 			{
 				checkEntityCollisions(collision, position, entity);
@@ -132,6 +135,8 @@ void CollisionSystem::checkEntityCollisions(CollisionComponent* collisionComp, P
 
 						// check if other entity is still colliding after collision resolution
 						//checkList.push_back(other->entityId);
+
+						collisionComp->collidedLastCheck = true;
 					}
 				}
 
@@ -194,6 +199,8 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 							xMoveStored = xMove;
 							yMoveStored = yMove;
 						}
+
+						collisionComp->collidedLastCheck = true;
 					}
 				}
 			}

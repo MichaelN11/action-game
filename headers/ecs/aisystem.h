@@ -3,6 +3,7 @@
 class ComponentManager;
 class TileMap;
 class ComponentManager::EntityComponents;
+struct CollisionComponent;
 
 class AISystem : public System
 {
@@ -12,5 +13,5 @@ public:
 private:
 	const TileMap& tileMap;
 
-	bool pathBlocked(ComponentManager::EntityComponents* entity, float dx, float dy);
+	bool pathBlocked(ComponentManager::EntityComponents* entity, CollisionComponent* collision, float dx, float dy);
 };

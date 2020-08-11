@@ -199,6 +199,10 @@ struct CollisionComponent : public Component
 	bool solid = false;
 	bool collideWithEntities = true;
 	bool interactable = false;
+
+	// whether or not the entity had a solid collision in its last collision check
+	bool collidedLastCheck = false;
+
 	Rectangle<float> boundingBox;
 };
 

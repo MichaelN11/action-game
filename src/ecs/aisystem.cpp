@@ -26,6 +26,8 @@ void AISystem::update(int deltaTime)
 					MovementComponent* movement = entity->getComponent<MovementComponent>();
 					if (movement)
 					{
+						CollisionComponent* collision = entity->getComponent<CollisionComponent>();
+
 						if (movement->dx == 0.f && movement->dy == 0.f)
 						{
 							if (ai->timer >= 2000)
@@ -55,7 +57,7 @@ void AISystem::update(int deltaTime)
 										break;
 									}
 									directionList.erase(directionList.begin() + index);
-								} while (directionList.size() > 0 && pathBlocked(entity, dx, dy));
+								} while (directionList.size() > 0 && pathBlocked(entity, collision, dx, dy));
 
 								movement::standardMove(entity, dx, dy);
 							}
@@ -63,7 +65,7 @@ void AISystem::update(int deltaTime)
 						else
 						{
 							if (ai->timer >= 2000
-								|| pathBlocked(entity, movement->dx, movement->dy))
+								|| (collision && collision->collidedLastCheck))
 							{
 								ai->timer = 0;
 
@@ -78,10 +80,9 @@ void AISystem::update(int deltaTime)
 }
 
 // either there is a tile collision in the direction being moved in, or the entity will end up off the map
-bool AISystem::pathBlocked(ComponentManager::EntityComponents* entity, float dx, float dy)
+bool AISystem::pathBlocked(ComponentManager::EntityComponents* entity, CollisionComponent* collision, float dx, float dy)
 {
 	PositionComponent* position = entity->getComponent<PositionComponent>();
-	CollisionComponent* collision = entity->getComponent<CollisionComponent>();
 
 	if (collision && position)
 	{
