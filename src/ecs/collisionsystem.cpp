@@ -6,7 +6,7 @@
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELETE LATER
-#include <iostream>
+//#include <iostream>
 
 CollisionSystem::CollisionSystem(ComponentManager& compManager, EventManager& eventManager, const TileMap& tileMap) :
 	System(compManager),
@@ -211,6 +211,33 @@ void CollisionSystem::checkTileCollisions(CollisionComponent* collisionComp, Pos
 			positionComp->x += xMoveStored;
 			positionComp->y += yMoveStored;
 		}
+
+		// check for collision with edge of map
+		float xMapOffset = 0;
+		float yMapOffset = 0;
+		if (boundingBox.getX() < 0.f)
+		{
+			xMapOffset = boundingBox.getX() * -1.f;
+		}
+		else if (boundingBox.getX2() > tileMap.getWidth())
+		{
+			xMapOffset = tileMap.getWidth() - boundingBox.getX2();
+		}
+		if (boundingBox.getY() < 0.f)
+		{
+			yMapOffset = boundingBox.getY() * -1.f;
+		}
+		else if (boundingBox.getY2() > tileMap.getHeight())
+		{
+			yMapOffset = tileMap.getHeight() - boundingBox.getY2();
+		}
+
+		if (xMapOffset != 0.f || yMapOffset != 0.f)
+		{
+			collisionComp->collidedLastCheck = true;
+			positionComp->x += xMapOffset;
+			positionComp->y += yMapOffset;
+		}
 	}
 }
 
@@ -239,7 +266,6 @@ bool CollisionSystem::isCollision(const TileMap& tileMap, Rectangle<float> bound
 				tileCollisionBox.shift((float)tileMap.getTileWidth() * col, (float)tileMap.getTileHeight() * row);
 				if (boundingBox.isColliding(tileCollisionBox))
 				{
-					std::cout << "COLLIDING AT " << x << "  " << y << std::endl;
 					return true;
 				}
 			}
