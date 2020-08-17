@@ -47,6 +47,7 @@ void Game::gameLoop()
 	graphics.loadTilesheet("content/tilesheets/link.png", 16, 16, 1);
 	graphics.loadTilesheet("content/tilesheets/attack.png", 16, 16, 1);
 	graphics.loadTilesheet("content/tilesheets/enemies.png", 16, 16, 1);
+	graphics.loadTilesheet("content/tilesheets/maincharacter.png", 32, 32, 0);
 
 	gameView.setBounds(Rectangle<int>(0, 0, (int)(tileMap.getWidth()), (int)(tileMap.getHeight())));
 

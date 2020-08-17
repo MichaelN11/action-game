@@ -22,31 +22,46 @@ void effect::SpawnAdjacentEntity::trigger(ComponentManager& compManager, EntityM
 	StateComponent* state = source->getComponent<StateComponent>();
 	PositionComponent* position = source->getComponent<PositionComponent>();
 	GroupComponent* group = source->getComponent<GroupComponent>();
+	CollisionComponent* collision = source->getComponent<CollisionComponent>();
 	if (state && position && group)
 	{
 		entitySpawned.group = group->group;
 		entitySpawned.hostileGroups = group->hostileGroups;
 		entitySpawned.damageGroups = group->hostileGroups;
 
-		float localX = position->x;
-		float localY = position->y;
+		// if entity has collision use its hitbox for placement, otherwise use sprite
+		float localX, localY, width, height;
+		if (collision)
+		{
+			localX = collision->boundingBox.getX() + position->x;
+			localY = collision->boundingBox.getY() + position->y;
+			width = collision->boundingBox.getW();
+			height = collision->boundingBox.getH();
+		}
+		else
+		{
+			localX = position->x;
+			localY = position->y;
+			width = position->width;
+			height = position->height;
+		}
 
 		switch (state->facing)
 		{
 		case Direction::down:
-				localY += position->height;
+				localY += height;
 				attackState = DrawState::attackDown;
 				break;
 		case Direction::up:
-				localY -= position->height;
+				localY -= height;
 				attackState = DrawState::attackUp;
 				break;
 		case Direction::left:
-				localX -= position->width;
+				localX -= width;
 				attackState = DrawState::attackLeft;
 				break;
 		case Direction::right:
-				localX += position->width;
+				localX += width;
 				attackState = DrawState::attackRight;
 				break;
 		}
